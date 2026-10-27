@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sawit Empire - Perkebunan Nusantara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #1b2e1b;
+        color: #f4f6f4;
+      }
+      .font-bubble {
+        font-family: "Fredoka", cursive;
+      }
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0px) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-45px) scale(1.2);
+          opacity: 0;
+        }
+      }
+      .floating-text {
+        animation: floatUp 1s ease-out forwards;
+        pointer-events: none;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(27, 46, 27, 0.8);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(74, 120, 74, 0.5);
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(74, 120, 74, 0.8);
+      }
+
+      /* ====== SCENE KEBUN REALISTIS (Hijau Alam) ====== */
+      #farmScene {
+        position: relative;
+        width: 100%;
+        height: 210px;
+        overflow: hidden;
+        border-radius: 0.75rem;
+        border: 1px solid #365336;
+        background: linear-gradient(to bottom, #7fb3d5 0%, #aed6f1 50%, #58d68d 100%);
+      }
+      .scene-cloud {
+        position: absolute;
+        font-size: 28px;
+        opacity: 0.8;
+        animation: cloudMove linear infinite;
+      }
+      @keyframes cloudMove {
+        from {
+          transform: translateX(-80px);
+        }
+        to {
+          transform: translateX(1200px);
+        }
+      }
+      .scene-ground {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 44px;
+        background: linear-gradient(to bottom, #784212, #512e0f);
+        border-top: 4px solid #27ae60;
+      }
+      .scene-path {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 6px;
+        height: 0;
+        border-top: 2px dashed rgba(255, 255, 255, 0.3);
+      }
+      .scene-plot {
+        position: absolute;
+        bottom: 34px;
+        width: 40px;
+        text-align: center;
+        line-height: 1;
+        transition: font-size 0.4s;
+        transform-origin: bottom center;
+      }
+      .scene-plot.ready {
+        animation: sway 1.8s infinite ease-in-out;
+        filter: drop-shadow(0 0 4px rgba(241, 196, 15, 0.8));
+      }
+      @keyframes sway {
+        0%,
+        100% {
+          transform: rotate(-3deg);
+        }
+        50% {
+          transform: rotate(3deg);
+        }
+      }
+      .scene-store {
+        position: absolute;
+        bottom: 30px;
+        width: 70px;
+        text-align: center;
+        font-size: 42px;
+        line-height: 1;
+      }
+      .scene-store small {
+        display: block;
+        font-size: 9px;
+        font-weight: 700;
+        color: #fff;
+        background: #2c3e50;
+        border-radius: 4px;
+        padding: 1px 4px;
+        margin-top: 2px;
+      }
+
+      /* ====== SPRITE MANUSIA ====== */
+      .human {
+        position: absolute;
+        bottom: 6px;
+        width: 26px;
+        height: 46px;
+        will-change: left;
+        z-index: 5;
+      }
+      .human .flip {
+        position: absolute;
+        inset: 0;
+      }
+      .h-head {
+        position: absolute;
+        top: 0;
+        left: 7px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #f3c99b;
+        border: 1px solid #c08a5b;
+      }
+      .h-hat {
+        position: absolute;
+        top: -4px;
+        left: 5px;
+        width: 16px;
+        height: 8px;
+        border-radius: 8px 8px 2px 2px;
+        background: var(--hat, #f1c40f);
+        border: 1px solid #7f8c8d;
+      }
+      .h-body {
+        position: absolute;
+        top: 12px;
+        left: 6px;
+        width: 14px;
+        height: 17px;
+        border-radius: 3px;
+        background: var(--shirt, #2980b9);
+      }
+      .h-arm {
+        position: absolute;
+        top: 14px;
+        left: 10px;
+        width: 5px;
+        height: 15px;
+        border-radius: 3px;
+        background: var(--shirt, #2980b9);
+        filter: brightness(0.8);
+        transform-origin: 50% 2px;
+      }
+      .h-leg {
+        position: absolute;
+        top: 28px;
+        width: 6px;
+        height: 16px;
+        border-radius: 3px;
+        background: #2c3e50;
+        transform-origin: 50% 2px;
+      }
+      .h-leg.l {
+        left: 6px;
+      }
+      .h-leg.r {
+        left: 14px;
+      }
+      .h-basket {
+        position: absolute;
+        top: -20px;
+        left: 1px;
+        font-size: 18px;
+        display: none;
+      }
+      .h-name {
+        position: absolute;
+        top: -15px;
+        left: -6px;
+        width: 38px;
+        text-align: center;
+        font-size: 8px;
+        font-weight: 700;
+        color: #2c3e50;
+        background: #ecf0f1;
+        border-radius: 3px;
+      }
+      .human.carrying .h-basket {
+        display: block;
+      }
+      .human.carrying .h-name {
+        display: none;
+      }
+      .human.walking .h-leg.l {
+        animation: stride 0.42s infinite ease-in-out;
+      }
+      .human.walking .h-leg.r {
+        animation: stride 0.42s infinite ease-in-out reverse;
+      }
+      .human.walking .h-arm {
+        animation: stride 0.42s infinite ease-in-out reverse;
+      }
+      .human.walking .flip {
+        animation: bobWalk 0.21s infinite alternate ease-in-out;
+      }
+      .human.working .h-arm {
+        animation: chop 0.3s infinite alternate ease-in-out;
+      }
+      .human.working .flip {
+        animation: bobWalk 0.3s infinite alternate ease-in-out;
+      }
+      @keyframes stride {
+        0%,
+        100% {
+          transform: rotate(-35deg);
+        }
+        50% {
+          transform: rotate(35deg);
+        }
+      }
+      @keyframes bobWalk {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-2px);
+        }
+      }
+      @keyframes chop {
+        from {
+          transform: rotate(-150deg);
+        }
+        to {
+          transform: rotate(-30deg);
+        }
+      }
+      .human.left .h-name {
+        transform: scaleX(-1);
+      }
+
+      /* ====== SCENE PABRIK PENGOLAHAN CPO ====== */
+      #factoryScene {
+        position: relative;
+        width: 100%;
+        height: 175px;
+        overflow: hidden;
+        border-radius: 0.75rem;
+        border: 1px solid #566573;
+        background: linear-gradient(to bottom, #34495e 0%, #2c3e50 65%, #1b2631 100%);
+      }
+      .f-floor {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 42px;
+        background: linear-gradient(to bottom, #5d6d7e, #34495e);
+        border-top: 3px solid #85929e;
+      }
+      .f-belt {
+        position: absolute;
+        left: 2%;
+        right: 2%;
+        bottom: 46px;
+        height: 8px;
+        border-radius: 4px;
+        background: repeating-linear-gradient(90deg, #17202a 0 12px, #566573 12px 24px);
+      }
+      #factoryScene.running .f-belt {
+        animation: beltMove 0.5s linear infinite;
+      }
+      @keyframes beltMove {
+        from {
+          background-position: 0 0;
+        }
+        to {
+          background-position: 24px 0;
+        }
+      }
+      .fstation {
+        position: absolute;
+        bottom: 54px;
+        width: 62px;
+        text-align: center;
+      }
+      .fstation .ficon {
+        font-size: 36px;
+        line-height: 1;
+        display: inline-block;
+      }
+      .fstation small {
+        display: block;
+        font-size: 9px;
+        font-weight: 700;
+        color: #fff;
+        background: #1c2833;
+        border-radius: 4px;
+        padding: 1px 4px;
+        margin-top: 2px;
+        white-space: nowrap;
+      }
+      .fstation.active .ficon {
+        animation: machineShake 0.15s infinite;
+      }
+      .fstation.active small {
+        background: #f39c12;
+        color: #1c2833;
+      }
+      @keyframes machineShake {
+        0% {
+          transform: translate(-1px, 0) rotate(-2deg);
+        }
+        50% {
+          transform: translate(1px, -1px) rotate(2deg);
+        }
+        100% {
+          transform: translate(-1px, 1px) rotate(-2deg);
+        }
+      }
+      .fstation .steam {
+        position: absolute;
+        top: -12px;
+        left: 22px;
+        font-size: 16px;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .fstation.active .steam {
+        animation: steamUp 1s infinite;
+      }
+      @keyframes steamUp {
+        0% {
+          transform: translateY(8px) scale(0.7);
+          opacity: 0;
+        }
+        30% {
+          opacity: 0.9;
+        }
+        100% {
+          transform: translateY(-20px) scale(1.2);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body class="w-screen h-screen flex flex-col justify-between overflow-hidden select-none bg-[#142214]">
+    <!-- Header -->
+    <header class="w-full bg-[#1b2e1b] border-b border-[#2e4d2e] px-4 py-3 z-20 flex flex-wrap justify-between items-center shadow-md">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-[#27ae60] flex items-center justify-center shadow text-2xl">🌴</div>
+        <div>
+          <h1 class="font-bubble text-lg md:text-xl font-bold tracking-wider text-[#a3e4d7]">SAWIT EMPIRE</h1>
+          <p class="text-xs text-[#95a5a6]">CEO: <span id="playerNameDisplay" class="text-[#2ecc71] font-medium">Bos Sawit</span></p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 md:space-x-3 text-xs md:text-sm font-semibold mt-2 sm:mt-0">
+        <div class="bg-[#243824] px-3 py-1.5 rounded-xl border border-[#3e5e3e] flex items-center space-x-2 shadow-xs">
+          <span class="text-base">💰</span>
+          <div>
+            <div class="text-[9px] text-[#95a5a6] uppercase">Kas Perusahaan</div>
+            <div id="statMoney" class="text-[#2ecc71] text-xs md:text-sm font-bold">Rp 100.000</div>
+          </div>
+        </div>
+        <div class="bg-[#243824] px-3 py-1.5 rounded-xl border border-[#3e5e3e] flex items-center space-x-2 shadow-xs">
+          <span class="text-base">🥥</span>
+          <div>
+            <div class="text-[9px] text-[#95a5a6] uppercase">Stok TBS</div>
+            <div id="statTbs" class="text-[#f39c12] text-xs md:text-sm font-bold">0 Ton</div>
+          </div>
+        </div>
+        <div class="bg-[#243824] px-3 py-1.5 rounded-xl border border-[#3e5e3e] flex items-center space-x-2 shadow-xs">
+          <span class="text-base">🛢️</span>
+          <div>
+            <div class="text-[9px] text-[#95a5a6] uppercase">Stok CPO</div>
+            <div id="statCpo" class="text-[#f1c40f] text-xs md:text-sm font-bold">0 Ton</div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-1.5">
+          <button id="audioToggleBtn" onclick="toggleAudio()" class="px-2.5 py-2 bg-[#243824] hover:bg-[#2d462d] border border-[#3e5e3e] rounded-xl text-xs flex items-center space-x-1 shadow">
+            <span>🔊</span><span id="audioLabel" class="hidden sm:inline">On</span>
+          </button>
+          <button id="pauseToggleBtn" onclick="togglePause()" class="px-2.5 py-2 bg-[#243824] hover:bg-[#2d462d] border border-[#3e5e3e] rounded-xl text-xs flex items-center space-x-1 shadow text-[#f39c12] font-bold">
+            <span>⏸️</span><span id="pauseLabel" class="hidden sm:inline">Pause</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Area Utama -->
+    <main class="w-full flex-1 p-4 md:p-5 overflow-y-auto grid grid-cols-1 lg:grid-cols-3 gap-5 max-w-7xl mx-auto z-10">
+      <div class="lg:col-span-2 flex flex-col space-y-5">
+        <!-- Perkebunan -->
+        <div class="bg-[#203320] rounded-2xl p-4 border border-[#314d31] shadow-lg relative overflow-hidden">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-lg">🌱</span>
+              <h2 class="font-bubble text-base md:text-lg font-bold text-[#a3e4d7]">Perkebunan Kelapa Sawit</h2>
+            </div>
+            <div class="text-xs bg-[#172617] text-[#a3e4d7] px-2.5 py-1 rounded-lg border border-[#2e4d2e] flex items-center space-x-2">
+              <span>Pekerja: <span id="statActiveWorkers" class="font-bold text-[#3498db]">1</span></span>
+              <span>•</span>
+              <span>Lahan: <span id="statLandCount" class="font-bold">2</span> Ha</span>
+            </div>
+          </div>
+
+          <!-- LINTASAN KEBUN -->
+          <div id="farmScene" class="mb-3">
+            <div class="scene-cloud" style="top: 10px; animation-duration: 60s">☁️</div>
+            <div class="scene-cloud" style="top: 35px; animation-duration: 80s; animation-delay: -25s">☁️</div>
+            <div class="absolute top-2 right-3 text-2xl">☀️</div>
+            <div class="scene-ground"></div>
+            <div class="scene-path"></div>
+            <div id="sceneStore" class="scene-store">🏚️<small id="storeLabel">Gudang</small></div>
+          </div>
+
+          <!-- TOMBOL TERHUBUNG DI BAWAH KEBUN -->
+          <div class="flex flex-wrap items-center justify-between gap-2.5 mb-3 p-2.5 bg-[#172617] rounded-xl border border-[#2c422c]">
+            <button onclick="hireWorker()" class="flex-1 min-w-[150px] py-2 bg-[#2980b9] hover:bg-[#2471a3] text-white font-bold rounded-lg text-xs transition shadow flex items-center justify-center space-x-1.5">
+              <span>👷 Rekrut Pekerja (Rp <span id="workerPrice2">50.000</span>)</span>
+            </button>
+            <button onclick="harvestAll()" class="py-2 px-3.5 bg-[#d35400] hover:bg-[#ba4a00] text-white font-bold rounded-lg text-xs transition shadow flex items-center space-x-1">
+              <span>🚜 Panen Semua</span>
+            </button>
+            <button onclick="buyLand()" class="py-2 px-3.5 bg-[#27ae60] hover:bg-[#219653] text-white font-bold rounded-lg text-xs transition shadow flex items-center space-x-1">
+              <span>➕ Beli Lahan (Rp <span id="landPrice">75.000</span>)</span>
+            </button>
+          </div>
+
+          <div id="landGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"></div>
+        </div>
+
+        <!-- Pabrik -->
+        <div class="bg-[#203320] rounded-2xl p-4 border border-[#314d31] shadow-lg relative overflow-hidden">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="text-lg">🏭</span>
+            <h2 class="font-bubble text-base md:text-lg font-bold text-[#f39c12]">Pabrik Pengolahan & Pasar CPO</h2>
+          </div>
+
+          <!-- LINI PENGOLAHAN -->
+          <div id="factoryScene" class="mb-3">
+            <div class="absolute top-2 left-3 text-[9px] font-extrabold tracking-widest text-[#f39c12]">PKS • LINI PENGOLAHAN CPO</div>
+            <div class="f-belt"></div>
+            <div class="f-floor"></div>
+            <div id="st-gudang" class="fstation" style="left: 2%">
+              <div class="ficon">🏚️</div>
+              <small id="fGudangLbl">TBS 0</small>
+            </div>
+            <div id="st-rebus" class="fstation" style="left: 22%">
+              <div class="steam">💨</div>
+              <div class="ficon">♨️</div>
+              <small>Rebus</small>
+            </div>
+            <div id="st-pemipil" class="fstation" style="left: 42%">
+              <div class="steam">💨</div>
+              <div class="ficon">⚙️</div>
+              <small>Pemipil</small>
+            </div>
+            <div id="st-pres" class="fstation" style="left: 62%">
+              <div class="steam">💨</div>
+              <div class="ficon">🗜️</div>
+              <small>Pres</small>
+            </div>
+            <div id="st-tangki" class="fstation" style="left: 82%">
+              <div class="ficon">🛢️</div>
+              <small id="fTankLbl">CPO 0</small>
+            </div>
+          </div>
+
+          <!-- TOMBOL TERHUBUNG DI BAWAH PABRIK -->
+          <div class="flex flex-wrap items-center justify-between gap-2.5 mb-3 p-2.5 bg-[#172617] rounded-xl border border-[#2c422c]">
+            <button onclick="hireOperator()" class="flex-1 min-w-[150px] py-2 bg-[#d68910] hover:bg-[#b7950b] text-white font-bold rounded-lg text-xs transition shadow flex items-center justify-center space-x-1.5">
+              <span>👨‍🔧 Tambah Operator (Rp <span id="operatorPrice">80.000</span>)</span>
+            </button>
+            <button id="autoBtn" onclick="toggleAutoFactory()" class="px-3 py-2 bg-[#2c3e50] border border-[#34495e] text-[#f1c40f] text-xs font-bold rounded-lg hover:bg-[#1a252f] transition">🔁 Otomatis: ON</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="bg-[#182618] p-3.5 rounded-xl border border-[#2a3e2a] flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center mb-1.5">
+                  <span class="font-bold text-xs text-[#f39c12]">Mesin Pengolahan PKS</span>
+                  <span id="factoryStatus" class="text-[10px] text-[#95a5a6]">Standby</span>
+                </div>
+                <p class="text-[11px] text-[#b2babb] mb-3 leading-relaxed">Olah <strong>10 Ton TBS</strong> menjadi <strong>4 Ton CPO</strong> bernilai jual tinggi.</p>
+              </div>
+              <button onclick="processCpo()" class="w-full py-2 bg-[#d35400] hover:bg-[#ba4a00] text-white font-bold rounded-lg text-xs transition shadow">⚙️ Olah TBS Jadi CPO</button>
+            </div>
+
+            <div class="bg-[#182618] p-3.5 rounded-xl border border-[#2a3e2a] flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center mb-1.5">
+                  <span class="font-bold text-xs text-[#2ecc71]">Pasar Ekspor CPO</span>
+                  <span class="text-[10px] text-[#2ecc71] bg-[#142214] px-1.5 py-0.5 rounded">Rp 25.000/Ton</span>
+                </div>
+                <p class="text-[11px] text-[#b2babb] mb-3 leading-relaxed">Jual stok CPO ke pasar global untuk mendapatkan kas perusahaan.</p>
+              </div>
+              <button onclick="sellCpo()" class="w-full py-2 bg-[#27ae60] hover:bg-[#219653] text-white font-bold rounded-lg text-xs transition shadow">📦 Jual Semua Stok CPO</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kolom Kanan -->
+      <div class="flex flex-col space-y-5">
+        <div class="bg-[#203320] rounded-2xl p-4 border border-[#314d31] shadow-lg">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-lg">👷‍♂️</span>
+              <h2 class="font-bubble text-sm md:text-base font-bold text-[#3498db]">Informasi Pegawai</h2>
+            </div>
+            <span id="workerCount" class="text-xs bg-[#172617] text-[#3498db] px-2 py-0.5 rounded border border-[#2c422c]">1 Pekerja</span>
+          </div>
+          <p class="text-xs text-[#b2babb] leading-relaxed">Pekerja berjalan otomatis ke lahan siap panen, membawa TBS ke gudang secara berkala.</p>
+        </div>
+
+        <div class="bg-[#203320] rounded-2xl p-4 border border-[#314d31] shadow-lg">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="text-lg">🧪</span>
+            <h2 class="font-bubble text-sm md:text-base font-bold text-[#9b59b6]">Riset & Bibit Unggul</h2>
+          </div>
+          <div class="bg-[#182618] p-3 rounded-xl border border-[#2a3e2a] flex flex-col space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-xs text-[#d7bde2]">Bibit Sawit Clone</span>
+              <span id="seedLevel" class="text-[11px] bg-[#142214] text-[#d7bde2] px-1.5 py-0.5 rounded">Lv. 1</span>
+            </div>
+            <p class="text-[10px] text-[#95a5a6]">Mempercepat pertumbuhan pohon dan hasil panen.</p>
+            <button onclick="upgradeSeed()" class="w-full py-1.5 bg-[#8e44ad] hover:bg-[#7d3c98] text-white font-bold rounded-lg text-xs transition">Upgrade Bibit (Rp <span id="seedUpgradeCost">120.000</span>)</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Intro -->
+    <div id="introModal" class="fixed inset-0 bg-black/80 backdrop-blur-xs z-50 flex flex-col justify-center items-center p-6 text-center">
+      <div class="max-w-md bg-[#1b2e1b] border border-[#3e5e3e] rounded-2xl p-6 shadow-2xl relative">
+        <div class="text-4xl mb-2">🌴🚜💰</div>
+        <h2 class="font-bubble text-xl font-bold text-[#a3e4d7] mb-2">Sawit Empire</h2>
+        <p class="text-[#d5dbdf] text-xs mb-5 leading-relaxed">Mulai bisnis perkebunan kelapa sawit dari modal kecil (Rp 100.000). Tanam, panen, olah jadi CPO di pabrik, dan perluas kerajaan bisnis Anda!</p>
+        <div class="mb-4 text-left">
+          <label class="block text-xs font-bold text-[#a3e4d7] mb-1">Nama Perusahaan:</label>
+          <input type="text" id="inputPlayerName" value="PT Sawit Mandiri" class="w-full bg-[#142214] border border-[#3e5e3e] focus:border-[#2ecc71] text-white px-3 py-2.5 rounded-xl outline-none text-xs font-semibold" />
+        </div>
+        <button onclick="startEmpireGame()" class="w-full py-3 bg-[#27ae60] hover:bg-[#219653] text-white font-bold rounded-xl shadow transition text-xs">Mulai Berbisnis 🚀</button>
+      </div>
+    </div>
+
+    <!-- Script Game dengan Efek Suara Tombol & Penjualan (Sfx Web Audio API) -->
+    <script>
+      let audioCtx = null;
+      let isMusicPlaying = false;
+      let musicTimer = null;
+
+      function initAudio() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+      }
+
+      // Efek Suara (Sound Effect) Interaktif untuk Tombol & Transaksi
+      function playSfx(type) {
+        initAudio();
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          const now = audioCtx.currentTime;
+
+          if (type === "click") {
+            // Suara klik ringan standar
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(200, now + 0.08);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+          } else if (type === "buy") {
+            // Suara nada naik (sukses beli/rekrut)
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
+            osc.start(now);
+            osc.stop(now + 0.15);
+          } else if (type === "sell") {
+            // Suara mesin kasir / koin (ringtone sukses jual CPO)
+            osc.type = "square";
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+          }
+        } catch (e) {}
+      }
+
+      function playChime(freq, time = 0, type = "sine", duration = 0.5) {
+        if (!audioCtx || !isMusicPlaying) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + time);
+          gain.gain.setValueAtTime(0.04, audioCtx.currentTime + time);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + time + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + time);
+          osc.stop(audioCtx.currentTime + time + duration);
+        } catch (e) {}
+      }
+
+      const melodyNotes = [261.63, 329.63, 392.0, 523.25, 392.0, 329.63];
+      let noteIndex = 0;
+
+      function startBgmLoop() {
+        if (musicTimer) clearInterval(musicTimer);
+        musicTimer = setInterval(() => {
+          if (!isMusicPlaying) return;
+          initAudio();
+          playChime(melodyNotes[noteIndex], 0, "sine", 0.8);
+          noteIndex = (noteIndex + 1) % melodyNotes.length;
+        }, 900);
+      }
+
+      function toggleAudio() {
+        playSfx("click");
+        isMusicPlaying = !isMusicPlaying;
+        const btnLbl = document.getElementById("audioLabel");
+        if (isMusicPlaying) {
+          initAudio();
+          startBgmLoop();
+          btnLbl.textContent = "On";
+        } else {
+          if (musicTimer) clearInterval(musicTimer);
+          btnLbl.textContent = "Off";
+        }
+      }
+
+      let empire = {
+        name: "PT Sawit Mandiri",
+        money: 100000,
+        tbs: 0,
+        cpo: 0,
+        lands: [
+          { id: 1, stage: 2, progress: 100, claimedBy: null },
+          { id: 2, stage: 1, progress: 30, claimedBy: null },
+        ],
+        landPrice: 75000,
+        workers: 1,
+        workerPrice: 50000,
+        operators: 1,
+        operatorPrice: 80000,
+        seedLevel: 1,
+        seedUpgradeCost: 120000,
+      };
+
+      let isPaused = false;
+      function togglePause() {
+        playSfx("click");
+        isPaused = !isPaused;
+        document.getElementById("pauseLabel").textContent = isPaused ? "Resume" : "Pause";
+      }
+
+      const cpoPricePerTon = 25000;
+      const shirtColors = ["#2980b9", "#d35400", "#8e44ad", "#c0392b", "#27ae60", "#16a085"];
+
+      function initGame() {
+        for (let i = 0; i < empire.workers; i++) addWorkerSprite();
+        createOperator();
+        renderLands();
+        syncScenePlots();
+        updateStats();
+        setInterval(gameLoop, 1000);
+        requestAnimationFrame(animTick);
+      }
+
+      function startEmpireGame() {
+        playSfx("buy");
+        const nameInput = document.getElementById("inputPlayerName").value.trim();
+        if (nameInput) empire.name = nameInput;
+        document.getElementById("playerNameDisplay").textContent = empire.name;
+        document.getElementById("introModal").classList.add("hidden");
+        updateStats();
+        isMusicPlaying = true;
+        initAudio();
+        startBgmLoop();
+        document.getElementById("audioLabel").textContent = "On";
+      }
+
+      function gameLoop() {
+        if (isPaused) return;
+        empire.lands.forEach((land) => {
+          if (land.stage === 0) {
+            if (empire.workers > 0 && !land.claimedBy) {
+              land.stage = 1;
+              land.progress = 0;
+            }
+          } else if (land.stage === 1) {
+            land.progress += 12 * empire.seedLevel;
+            if (land.progress >= 100) {
+              land.progress = 100;
+              land.stage = 2;
+            }
+          }
+        });
+        renderLands();
+        syncScenePlots();
+        updateStats();
+      }
+
+      function sceneW() {
+        return document.getElementById("farmScene").clientWidth;
+      }
+      function plotX(i) {
+        const n = Math.max(1, empire.lands.length);
+        const usable = sceneW() - 170;
+        const step = Math.max(30, Math.min(80, usable / n));
+        return 14 + i * step;
+      }
+      function storeX() {
+        return sceneW() - 78;
+      }
+
+      function syncScenePlots() {
+        const scene = document.getElementById("farmScene");
+        const store = document.getElementById("sceneStore");
+        store.style.left = storeX() + "px";
+        document.getElementById("storeLabel").textContent = "Gudang: " + empire.tbs + "T";
+
+        empire.lands.forEach((land, i) => {
+          let el = document.getElementById("plot-" + land.id);
+          if (!el) {
+            el = document.createElement("div");
+            el.id = "plot-" + land.id;
+            el.className = "scene-plot";
+            scene.appendChild(el);
+          }
+          el.style.left = plotX(i) + "px";
+          el.classList.toggle("ready", land.stage === 2);
+          if (land.stage === 0) {
+            el.style.fontSize = "20px";
+            el.textContent = "🟫";
+          } else if (land.stage === 1) {
+            const size = 20 + Math.round(land.progress * 0.15);
+            el.style.fontSize = size + "px";
+            el.textContent = land.progress < 50 ? "🌱" : "🌿";
+          } else {
+            el.style.fontSize = "38px";
+            el.textContent = "🌴";
+          }
+        });
+      }
+
+      const sceneWorkers = [];
+      function addWorkerSprite() {
+        const idx = sceneWorkers.length;
+        const el = document.createElement("div");
+        el.className = "human";
+        el.style.setProperty("--shirt", shirtColors[idx % shirtColors.length]);
+        el.innerHTML = `
+                <div class="flip">
+                    <div class="h-basket">🧺</div>
+                    <div class="h-name">P${idx + 1}</div>
+                    <div class="h-leg l"></div><div class="h-leg r"></div>
+                    <div class="h-body"></div>
+                    <div class="h-arm"></div>
+                    <div class="h-head"></div><div class="h-hat"></div>
+                </div>`;
+        document.getElementById("farmScene").appendChild(el);
+        sceneWorkers.push({
+          idx,
+          el,
+          x: Math.max(0, storeX() - 50 - idx * 20),
+          dir: 1,
+          state: "idle",
+          timer: 0.4 + idx * 0.3,
+          landId: null,
+          carry: 0,
+        });
+      }
+
+      function homeX(w) {
+        return Math.max(10, storeX() - 45 - (w.idx % 4) * 22);
+      }
+
+      function moveToward(w, tx, dt) {
+        const speed = 75 + empire.seedLevel * 10;
+        const d = tx - w.x;
+        if (Math.abs(d) < 1.5) return true;
+        w.dir = d > 0 ? 1 : -1;
+        w.x += w.dir * Math.min(speed * dt, Math.abs(d));
+        return false;
+      }
+
+      function releaseLand(w) {
+        const land = empire.lands.find((l) => l.id === w.landId);
+        if (land && land.claimedBy === w.idx) land.claimedBy = null;
+        w.landId = null;
+      }
+
+      function updateWorker(w, dt) {
+        let walking = false,
+          working = false;
+
+        switch (w.state) {
+          case "idle": {
+            const arrived = moveToward(w, homeX(w), dt);
+            walking = !arrived;
+            w.timer -= dt;
+            if (w.timer <= 0) {
+              const target = empire.lands.find((l) => l.stage === 2 && !l.claimedBy);
+              if (target) {
+                target.claimedBy = w.idx;
+                w.landId = target.id;
+                w.state = "toLand";
+              } else {
+                w.timer = 0.4;
+              }
+            }
+            break;
+          }
+          case "toLand": {
+            const i = empire.lands.findIndex((l) => l.id === w.landId);
+            if (i < 0) {
+              w.state = "idle";
+              break;
+            }
+            const arrived = moveToward(w, plotX(i) + 7, dt);
+            walking = !arrived;
+            if (arrived) {
+              if (empire.lands[i].stage === 2) {
+                w.state = "harvest";
+                w.timer = 1.0;
+              } else {
+                releaseLand(w);
+                w.state = "idle";
+                w.timer = 0.3;
+              }
+            }
+            break;
+          }
+          case "harvest": {
+            working = true;
+            w.timer -= dt;
+            if (w.timer <= 0) {
+              const land = empire.lands.find((l) => l.id === w.landId);
+              if (land && land.stage === 2) {
+                land.stage = 0;
+                land.progress = 0;
+                land.claimedBy = null;
+                w.carry = 5 * empire.seedLevel;
+                w.landId = null;
+                w.state = "toStore";
+                renderLands();
+                syncScenePlots();
+              } else {
+                releaseLand(w);
+                w.state = "idle";
+                w.timer = 0.3;
+              }
+            }
+            break;
+          }
+          case "toStore": {
+            const arrived = moveToward(w, storeX() - 14, dt);
+            walking = !arrived;
+            if (arrived) {
+              w.state = "drop";
+              w.timer = 0.3;
+            }
+            break;
+          }
+          case "drop": {
+            w.timer -= dt;
+            if (w.timer <= 0) {
+              empire.tbs += w.carry;
+              spawnFloat(w.x, "+" + w.carry + " 🥥");
+              w.carry = 0;
+              w.state = "idle";
+              w.timer = 0.3;
+              updateStats();
+              syncScenePlots();
+            }
+            break;
+          }
+        }
+
+        w.el.style.left = w.x + "px";
+        w.el.classList.toggle("walking", walking);
+        w.el.classList.toggle("working", working);
+        w.el.classList.toggle("carrying", w.carry > 0);
+        w.el.querySelector(".flip").style.transform = "";
+        w.el.style.transform = w.dir < 0 ? "scaleX(-1)" : "scaleX(1)";
+        w.el.classList.toggle("left", w.dir < 0);
+      }
+
+      function spawnFloat(x, text, sceneId) {
+        const span = document.createElement("div");
+        span.className = "floating-text absolute text-xs font-bold text-[#f39c12] z-10";
+        span.style.left = Math.max(0, x - 6) + "px";
+        span.style.bottom = "50px";
+        span.textContent = text;
+        document.getElementById(sceneId || "farmScene").appendChild(span);
+        setTimeout(() => span.remove(), 1000);
+      }
+
+      const fStations = { gudang: 0.02, rebus: 0.22, pemipil: 0.42, pres: 0.62, tangki: 0.82 };
+      const fSteps = [
+        { key: "rebus", label: "Rebus", dur: 1.5 },
+        { key: "pemipil", label: "Mipil", dur: 1.2 },
+        { key: "pres", label: "Pres", dur: 1.5 },
+      ];
+      let fOps = [];
+      let autoFactory = true;
+      let lastFStatus = "";
+
+      function fW() {
+        return document.getElementById("factoryScene").clientWidth;
+      }
+      function fX(key) {
+        return fW() * fStations[key] + 31 - 13;
+      }
+
+      function createOperator() {
+        const idx = fOps.length;
+        const el = document.createElement("div");
+        el.className = "human";
+        el.style.setProperty("--shirt", "#d35400");
+        el.style.setProperty("--hat", "#ecf0f1");
+        el.innerHTML = `
+                <div class="flip">
+                    <div class="h-basket">🥥</div>
+                    <div class="h-name">O${idx + 1}</div>
+                    <div class="h-leg l"></div><div class="h-leg r"></div>
+                    <div class="h-body"></div>
+                    <div class="h-arm"></div>
+                    <div class="h-head"></div><div class="h-hat"></div>
+                </div>`;
+        document.getElementById("factoryScene").appendChild(el);
+        fOps.push({ el, x: fX("gudang") + 35 + idx * 15, dir: 1, state: "idle", timer: 0.5 + idx * 0.2, carry: "", step: 0 });
+      }
+
+      function setStationActive(key, on) {
+        const el = document.getElementById("st-" + key);
+        if (el) el.classList.toggle("active", on);
+      }
+
+      function setFactoryStatus(text) {
+        if (text === lastFStatus) return;
+        lastFStatus = text;
+        const el = document.getElementById("factoryStatus");
+        if (el) el.textContent = text;
+      }
+
+      function updateOperator(w, dt) {
+        let walking = false,
+          working = false;
+
+        switch (w.state) {
+          case "idle": {
+            const arrived = moveToward(w, fX("gudang") + 30, dt);
+            walking = !arrived;
+            w.timer -= dt;
+            if (w.timer <= 0) {
+              if (autoFactory && empire.tbs >= 10) w.state = "toGudang";
+              else w.timer = 0.4;
+            }
+            break;
+          }
+          case "toGudang": {
+            const arrived = moveToward(w, fX("gudang"), dt);
+            walking = !arrived;
+            if (arrived) {
+              w.state = "load";
+              w.timer = 0.5;
+            }
+            break;
+          }
+          case "load": {
+            working = true;
+            w.timer -= dt;
+            if (w.timer <= 0) {
+              if (empire.tbs >= 10) {
+                empire.tbs -= 10;
+                w.carry = "🥥";
+                w.step = 0;
+                w.state = "toStep";
+                updateStats();
+                syncScenePlots();
+              } else {
+                w.state = "idle";
+                w.timer = 0.5;
+              }
+            }
+            break;
+          }
+          case "toStep": {
+            const s = fSteps[w.step];
+            const arrived = moveToward(w, fX(s.key), dt);
+            walking = !arrived;
+            if (arrived) {
+              w.state = "work";
+              w.timer = s.dur;
+              setStationActive(s.key, true);
+            }
+            break;
+          }
+          case "work": {
+            const s = fSteps[w.step];
+            working = true;
+            w.timer -= dt;
+            if (w.timer <= 0) {
+              setStationActive(s.key, false);
+              w.step++;
+              if (w.step >= fSteps.length) {
+                w.carry = "🛢️";
+                w.state = "toTank";
+              } else {
+                w.state = "toStep";
+              }
+            }
+            break;
+          }
+          case "toTank": {
+            const arrived = moveToward(w, fX("tangki"), dt);
+            walking = !arrived;
+            if (arrived) {
+              w.state = "drop";
+              w.timer = 0.4;
+            }
+            break;
+          }
+          case "drop": {
+            w.timer -= dt;
+            if (w.timer <= 0) {
+              empire.cpo += 2;
+              spawnFloat(w.x, "+2 🛢️", "factoryScene");
+              w.carry = "";
+              w.state = "idle";
+              w.timer = 0.5;
+              updateStats();
+            }
+            break;
+          }
+        }
+
+        document.getElementById("factoryScene").classList.toggle("running", w.state === "work");
+        w.el.style.left = w.x + "px";
+        w.el.classList.toggle("walking", walking);
+        w.el.classList.toggle("working", working);
+        w.el.classList.toggle("carrying", !!w.carry);
+        const basket = w.el.querySelector(".h-basket");
+        if (basket && basket.textContent !== w.carry && w.carry) basket.textContent = w.carry;
+        w.el.style.transform = w.dir < 0 ? "scaleX(-1)" : "scaleX(1)";
+        w.el.classList.toggle("left", w.dir < 0);
+      }
+
+      let lastTs = 0;
+      function animTick(ts) {
+        const dt = Math.min(0.05, (ts - lastTs) / 1000 || 0);
+        lastTs = ts;
+        if (!isPaused) {
+          while (sceneWorkers.length < empire.workers) addWorkerSprite();
+          sceneWorkers.forEach((w) => updateWorker(w, dt));
+          while (fOps.length < empire.operators) createOperator();
+          fOps.forEach((op) => updateOperator(op, dt));
+        }
+        requestAnimationFrame(animTick);
+      }
+
+      window.addEventListener("resize", syncScenePlots);
+
+      function renderLands() {
+        const grid = document.getElementById("landGrid");
+        grid.innerHTML = "";
+
+        empire.lands.forEach((land, index) => {
+          let bgClass = "bg-[#182618] border-[#2a3e2a]";
+          let statusText = "Lahan Kosong";
+          let icon = "🟫";
+          let actionBtn = `<button onclick="plantLand(${index})" class="mt-2 w-full py-1.5 bg-[#27ae60] hover:bg-[#219653] text-white rounded-lg text-xs font-bold transition shadow-xs">🌱 Tanam</button>`;
+          let progressBar = "";
+
+          if (land.stage === 1) {
+            bgClass = "bg-[#162916] border-[#2e522e]";
+            statusText = `Tumbuh... (${land.progress}%)`;
+            icon = "🌿";
+            actionBtn = `<div class="text-[10px] text-[#2ecc71] font-medium text-center mt-1">Dirawat mandor...</div>`;
+            progressBar = `
+                        <div class="w-full bg-[#111a11] rounded-full h-1.5 mt-1.5 overflow-hidden border border-[#2e522e]">
+                            <div class="bg-[#2ecc71] h-full transition-all duration-500" style="width: ${land.progress}%"></div>
+                        </div>`;
+          } else if (land.stage === 2) {
+            bgClass = "bg-[#332914] border-[#665228]";
+            statusText = land.claimedBy !== null && land.claimedBy !== undefined ? "Pekerja menuju kebun..." : "Siap Panen 🥥";
+            icon = "🌴";
+            actionBtn = `<button onclick="harvestLand(${index})" class="mt-2 w-full py-1.5 bg-[#d35400] hover:bg-[#ba4a00] text-white font-bold rounded-lg text-xs transition shadow-xs">🚜 Panen</button>`;
+            progressBar = `
+                        <div class="w-full bg-[#111a11] rounded-full h-1.5 mt-1.5 overflow-hidden border border-[#665228]">
+                            <div class="bg-[#f39c12] h-full w-full animate-pulse"></div>
+                        </div>`;
+          }
+
+          const card = document.createElement("div");
+          card.className = `p-3 rounded-xl border ${bgClass} flex flex-col justify-between shadow transition`;
+          card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] text-[#95a5a6] font-semibold">Plot #${land.id}</span>
+                        <span class="text-xl">${icon}</span>
+                    </div>
+                    <div class="my-1.5">
+                        <div class="text-xs font-bold text-[#ecf0f1]">${statusText}</div>
+                        ${progressBar}
+                    </div>
+                    ${actionBtn}`;
+          grid.appendChild(card);
+        });
+      }
+
+      function plantLand(index) {
+        playSfx("click");
+        if (empire.lands[index].stage === 0) {
+          empire.lands[index].stage = 1;
+          empire.lands[index].progress = 0;
+          renderLands();
+          syncScenePlots();
+        }
+      }
+
+      function harvestLand(index) {
+        playSfx("click");
+        const land = empire.lands[index];
+        if (land.stage === 2) {
+          land.stage = 0;
+          land.progress = 0;
+          land.claimedBy = null;
+          empire.tbs += 10 * empire.seedLevel;
+          renderLands();
+          syncScenePlots();
+          updateStats();
+        }
+      }
+
+      function harvestAll() {
+        playSfx("click");
+        let harvested = false;
+        empire.lands.forEach((land) => {
+          if (land.stage === 2) {
+            land.stage = 0;
+            land.progress = 0;
+            land.claimedBy = null;
+            empire.tbs += 10 * empire.seedLevel;
+            harvested = true;
+          }
+        });
+        if (harvested) {
+          renderLands();
+          syncScenePlots();
+          updateStats();
+        }
+      }
+
+      function buyLand() {
+        if (empire.money >= empire.landPrice) {
+          empire.money -= empire.landPrice;
+          empire.lands.push({ id: empire.lands.length + 1, stage: 0, progress: 0, claimedBy: null });
+          empire.landPrice = Math.round(empire.landPrice * 1.3);
+          playSfx("buy");
+          renderLands();
+          syncScenePlots();
+          updateStats();
+        } else {
+          playSfx("click");
+        }
+      }
+
+      function processCpo() {
+        playSfx("click");
+        if (fOps.length === 0) return;
+        const freeOp = fOps.find((op) => op.state === "idle");
+        if (!freeOp) return;
+        if (empire.tbs < 10) return;
+        freeOp.state = "toGudang";
+      }
+
+      function toggleAutoFactory() {
+        playSfx("click");
+        autoFactory = !autoFactory;
+        document.getElementById("autoBtn").textContent = "🔁 Otomatis: " + (autoFactory ? "ON" : "OFF");
+      }
+
+      function sellCpo() {
+        if (empire.cpo > 0) {
+          const revenue = empire.cpo * cpoPricePerTon;
+          empire.money += revenue;
+          const soldCpo = empire.cpo;
+          empire.cpo = 0;
+          updateStats();
+          // Memainkan Sound Effect khusus transaksi penjualan (Ringtone/Suara Koin Kasir Sukses)
+          playSfx("sell");
+        } else {
+          playSfx("click");
+        }
+      }
+
+      function hireWorker() {
+        if (empire.money >= empire.workerPrice) {
+          empire.money -= empire.workerPrice;
+          empire.workers++;
+          empire.workerPrice = Math.round(empire.workerPrice * 1.35);
+          addWorkerSprite();
+          updateStats();
+          // Memainkan Sound Effect beli/rekrut tanpa popup
+          playSfx("buy");
+        } else {
+          playSfx("click");
+        }
+      }
+
+      function hireOperator() {
+        if (empire.money >= empire.operatorPrice) {
+          empire.money -= empire.operatorPrice;
+          empire.operators++;
+          empire.operatorPrice = Math.round(empire.operatorPrice * 1.4);
+          createOperator();
+          updateStats();
+          // Memainkan Sound Effect beli/rekrut tanpa popup
+          playSfx("buy");
+        } else {
+          playSfx("click");
+        }
+      }
+
+      function upgradeSeed() {
+        if (empire.money >= empire.seedUpgradeCost) {
+          empire.money -= empire.seedUpgradeCost;
+          empire.seedLevel++;
+          empire.seedUpgradeCost = Math.round(empire.seedUpgradeCost * 1.6);
+          updateStats();
+          playSfx("buy");
+        } else {
+          playSfx("click");
+        }
+      }
+
+      function updateStats() {
+        document.getElementById("statMoney").textContent = "Rp " + empire.money.toLocaleString("id-ID");
+        document.getElementById("statTbs").textContent = empire.tbs + " Ton";
+        document.getElementById("statCpo").textContent = empire.cpo + " Ton";
+        document.getElementById("statLandCount").textContent = empire.lands.length;
+        document.getElementById("statActiveWorkers").textContent = empire.workers;
+        document.getElementById("landPrice").textContent = empire.landPrice.toLocaleString("id-ID");
+        document.getElementById("workerCount").textContent = empire.workers + " Pekerja";
+        document.getElementById("workerPrice2").textContent = empire.workerPrice.toLocaleString("id-ID");
+        document.getElementById("operatorPrice").textContent = empire.operatorPrice.toLocaleString("id-ID");
+        document.getElementById("seedLevel").textContent = "Lv. " + empire.seedLevel;
+        document.getElementById("seedUpgradeCost").textContent = empire.seedUpgradeCost.toLocaleString("id-ID");
+        const lbl = document.getElementById("storeLabel");
+        if (lbl) lbl.textContent = "Gudang: " + empire.tbs + "T";
+        const gl = document.getElementById("fGudangLbl");
+        if (gl) gl.textContent = "TBS " + empire.tbs;
+        const tl = document.getElementById("fTankLbl");
+        if (tl) tl.textContent = "CPO " + empire.cpo;
+      }
+
+      window.onload = initGame;
+    </script>
+  </body>
+</html>

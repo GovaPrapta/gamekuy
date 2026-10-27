@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamatkan Ikan dari Hiu</title>
+    <!-- Tailwind CSS untuk tata letak -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font bulat yang santai -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mint: #7dffd9;
+            --aqua: #6be3ff;
+            --pink: #ff8fc8;
+            --lav: #b9a6ff;
+            --peach: #ffc58f;
+            --coral: #ff6b8b;
+            --gold: #ffd86b;
+        }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Nunito', ui-rounded, system-ui, sans-serif;
+            background:
+                radial-gradient(900px 500px at 12% 0%, rgba(125, 255, 217, 0.13), transparent 60%),
+                radial-gradient(900px 600px at 92% 8%, rgba(255, 143, 200, 0.10), transparent 60%),
+                linear-gradient(180deg, #0f3d66 0%, #0b2a52 38%, #081d3e 72%, #06142c 100%);
+            overflow: hidden;
+            user-select: none;
+        }
+        .font-bubble { font-family: 'Fredoka', ui-rounded, system-ui, sans-serif; }
+        .text-mint { color: var(--mint); }
+        .text-aqua { color: var(--aqua); }
+        .text-pink { color: var(--pink); }
+        .text-peach { color: var(--peach); }
+        .text-coral { color: var(--coral); }
+        .text-lav { color: var(--lav); }
+        .typed { color: var(--mint); }
+
+        /* ===== Kartu kaca dengan neon lembut ===== */
+        .glass {
+            background: rgba(9, 28, 58, 0.55);
+            border: 1px solid rgba(125, 255, 217, 0.20);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 28px rgba(107, 227, 255, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+        }
+        .pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+        }
+        .title-glow {
+            background: linear-gradient(90deg, var(--mint), var(--aqua) 55%, var(--lav));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 10px rgba(107, 227, 255, 0.35));
+        }
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 6px 11px;
+            transition: all 0.2s;
+        }
+        .icon-btn:hover:not(:disabled) { border-color: var(--mint); box-shadow: 0 0 14px rgba(125, 255, 217, 0.3); }
+        .icon-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .menu-btn {
+            width: 100%; padding: 12px 18px; border-radius: 16px;
+            font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 17px;
+            transition: transform 0.15s, box-shadow 0.2s;
+        }
+        .menu-btn:hover { transform: translateY(-2px); }
+
+        /* Pilihan bahasa */
+        .lang-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 9px 16px; border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            color: #cfe6f5; font-weight: 700; font-size: 14px;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { border-color: var(--aqua); }
+        .lang-chip {
+            font-family: 'Fredoka', sans-serif; font-size: 11px; font-weight: 700;
+            padding: 2px 7px; border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .lang-on {
+            background: rgba(125, 255, 217, 0.16);
+            border-color: var(--mint);
+            color: #fff;
+            box-shadow: 0 0 16px rgba(125, 255, 217, 0.35);
+        }
+        .lang-on .lang-chip { background: var(--mint); color: #06304a; }
+
+        /* ===== Suasana laut ===== */
+        .ray {
+            position: absolute; top: -10%; width: var(--w); height: 120%;
+            background: linear-gradient(180deg, rgba(190, 255, 245, 0.16), transparent 70%);
+            transform: skewX(-14deg);
+            filter: blur(6px);
+            animation: rayShift var(--d) ease-in-out infinite alternate;
+        }
+        @keyframes rayShift {
+            from { transform: translateX(-30px) skewX(-14deg); opacity: 0.35; }
+            to   { transform: translateX(40px) skewX(-14deg); opacity: 0.85; }
+        }
+        .mote {
+            position: absolute; border-radius: 50%;
+            animation: twinkle var(--t) ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; transform: translateY(0); }
+            50% { opacity: 0.7; transform: translateY(-10px); }
+        }
+        @keyframes bubbleUp {
+            0%   { transform: translateY(100vh) scale(0.6); opacity: 0; }
+            50%  { opacity: 0.6; }
+            100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
+        }
+        .bubble {
+            position: absolute; bottom: -20px;
+            background: rgba(190, 240, 255, 0.10);
+            border: 1px solid rgba(190, 240, 255, 0.28);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: bubbleUp linear infinite;
+        }
+        .seaweed { transform-origin: 50% 100%; animation: sway 4s ease-in-out infinite; }
+        @keyframes sway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(6deg); }
+        }
+        .caustics {
+            position: absolute; inset: 0; pointer-events: none; opacity: 0.6;
+            background:
+                radial-gradient(90px 40px at 20% 18%, rgba(255, 255, 255, 0.08), transparent 70%),
+                radial-gradient(110px 50px at 72% 36%, rgba(255, 255, 255, 0.06), transparent 70%),
+                radial-gradient(100px 45px at 38% 70%, rgba(255, 255, 255, 0.05), transparent 70%);
+            animation: caustic 9s ease-in-out infinite alternate;
+        }
+        @keyframes caustic {
+            from { transform: translateX(-14px) scale(1); }
+            to   { transform: translateX(16px) scale(1.08); }
+        }
+
+        /* ===== Hiu: tetap galak ===== */
+        @keyframes sharkAttackGalak {
+            0%   { transform: translate(0, 0) rotate(-3deg) scale(1); }
+            15%  { transform: translate(-10px, -4px) rotate(3deg) scale(1.04); }
+            30%  { transform: translate(3px, 3px) rotate(-5deg) scale(0.98); }
+            45%  { transform: translate(-14px, -2px) rotate(4deg) scale(1.07); }
+            60%  { transform: translate(2px, 4px) rotate(-3deg) scale(1); }
+            80%  { transform: translate(-8px, -5px) rotate(5deg) scale(1.05); }
+            100% { transform: translate(0, 0) rotate(-3deg) scale(1); }
+        }
+        .animate-shark-galak { animation: sharkAttackGalak 0.55s ease-in-out infinite; }
+        .shark-graphic svg {
+            overflow: visible;
+            filter: drop-shadow(0 0 10px rgba(255, 107, 139, 0.40)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.55));
+        }
+        .shark-enraged { animation-duration: 0.3s; }
+        .shark-enraged svg {
+            filter: drop-shadow(0 0 18px rgba(255, 80, 120, 0.95)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.55)) saturate(1.3);
+        }
+        .shark-word {
+            font-family: 'Fredoka', ui-rounded, sans-serif;
+            background: rgba(8, 22, 48, 0.88);
+            border: 2px solid rgba(255, 143, 200, 0.75);
+            box-shadow: 0 0 14px rgba(255, 143, 200, 0.30);
+            color: #fff;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+        .shark-word .tag { margin-right: 8px; }
+        .shark-word .pips { margin-left: 10px; font-size: 0.7em; letter-spacing: 0.12em; color: var(--lav); }
+        .shark-word.t-fast    { border-color: var(--aqua);  box-shadow: 0 0 14px rgba(107, 227, 255, 0.45); }
+        .shark-word.t-armor   { border-color: var(--lav);   box-shadow: 0 0 14px rgba(185, 166, 255, 0.45); }
+        .shark-word.t-reverse { border-color: var(--peach); box-shadow: 0 0 14px rgba(255, 197, 143, 0.45); }
+        .shark-word.t-boss    { border-color: var(--gold);  box-shadow: 0 0 20px rgba(255, 216, 107, 0.55); font-size: 1.2em; }
+        .shark-word.bubble-danger {
+            background: rgba(120, 18, 52, 0.92);
+            border-color: var(--coral);
+            animation: dangerBlink 0.4s steps(2, end) infinite;
+        }
+        @keyframes dangerBlink { 50% { box-shadow: 0 0 20px 4px rgba(255, 107, 139, 0.85); } }
+        @keyframes sharkDead {
+            0%   { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            50%  { transform: scale(1.3) rotate(-25deg); filter: brightness(2.2) saturate(2) hue-rotate(90deg); }
+            100% { transform: scale(0) rotate(-90deg); opacity: 0; filter: brightness(0); }
+        }
+        .shark-dying { animation: sharkDead 0.4s forwards ease-out; }
+        @keyframes sharkHit {
+            0%   { filter: brightness(2.6) drop-shadow(0 0 22px #ffffff); }
+            100% { filter: brightness(1) drop-shadow(0 0 10px rgba(255, 107, 139, 0.4)); }
+        }
+        .shark-hit .shark-graphic svg { animation: sharkHit 0.35s ease-out; }
+
+        /* Hiu membeku */
+        .frozen .shark-graphic svg {
+            filter: drop-shadow(0 0 16px #9fe8ff) brightness(1.15) saturate(0.45) hue-rotate(-20deg) !important;
+        }
+        .frozen .animate-shark-galak { animation-play-state: paused; }
+
+        /* Garis merah (versi neon lembut) */
+        .danger-line {
+            background: repeating-linear-gradient(to bottom, #ff7b9a 0 10px, transparent 10px 18px);
+            box-shadow: 0 0 16px 2px rgba(255, 107, 139, 0.50);
+            animation: dangerPulse 1.4s ease-in-out infinite;
+        }
+        @keyframes dangerPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+        /* ===== Kata ajaib (item) ===== */
+        .item-orb {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 28px;
+            background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.06) 60%);
+            border: 2px solid var(--c);
+            box-shadow: 0 0 20px var(--c), inset 0 0 12px rgba(255, 255, 255, 0.2);
+            animation: orbPulse 1.4s ease-in-out infinite;
+        }
+        @keyframes orbPulse { 50% { transform: scale(1.1); } }
+        .item-word {
+            font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 1.1rem;
+            background: rgba(8, 22, 48, 0.9);
+            border: 2px solid var(--c);
+            border-radius: 14px; padding: 2px 12px; letter-spacing: 0.06em; color: #fff;
+            box-shadow: 0 0 12px var(--c);
+        }
+
+        /* Perisai akuarium */
+        #shieldBubble {
+            position: absolute; inset: 4px; border-radius: 22px; z-index: 30; pointer-events: none;
+            border: 3px solid rgba(201, 184, 255, 0.9);
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), rgba(185, 166, 255, 0.10) 60%);
+            box-shadow: 0 0 28px rgba(185, 166, 255, 0.65), inset 0 0 40px rgba(185, 166, 255, 0.35);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        #tank.shielded #shieldBubble { opacity: 1; animation: shieldGlow 1.8s ease-in-out infinite; }
+        @keyframes shieldGlow { 50% { box-shadow: 0 0 40px rgba(185, 166, 255, 0.9), inset 0 0 50px rgba(185, 166, 255, 0.5); } }
+
+        /* Saat dijeda, semua animasi hiu berhenti */
+        .is-paused .animate-shark-galak,
+        .is-paused .shark-word.bubble-danger,
+        .is-paused .danger-line,
+        .is-paused .item-orb { animation-play-state: paused; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animate-shark-galak { animation-duration: 1.2s; }
+            .bubble, .ray, .mote { display: none; }
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- Latar suasana laut -->
+    <div id="scene" class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="ray" style="left:6%;  --w:150px; --d:15s"></div>
+        <div class="ray" style="left:30%; --w:90px;  --d:11s"></div>
+        <div class="ray" style="left:58%; --w:170px; --d:17s"></div>
+        <div class="ray" style="left:82%; --w:100px; --d:13s"></div>
+        <div id="plankton" class="absolute inset-0"></div>
+    </div>
+    <div id="bubbleContainer" class="fixed inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <div class="relative z-10 flex flex-col gap-3 p-3" style="height:100dvh; width:100vw;">
+
+        <!-- Header -->
+        <header class="glass flex-shrink-0 flex justify-between items-center px-4 py-2.5">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🦈</span>
+                <div>
+                    <h1 class="font-bubble text-xl md:text-2xl font-semibold title-glow leading-tight" data-i18n="title">Selamatkan Ikan</h1>
+                    <p class="text-xs text-slate-300/80 hidden sm:block" data-i18n="subtitle">Ketik kata pada hiu untuk mengusirnya</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 md:gap-3 text-sm font-bold">
+                <div class="pill px-3 py-1.5 flex items-center" data-i18n-title="livesTitle" title="Nyawa">
+                    <span id="statLives" class="text-base tracking-tight">❤️❤️❤️</span>
+                </div>
+                <div class="pill px-3 py-1.5 flex items-center gap-1.5" data-i18n-title="fishTitle" title="Ikan terkumpul di akuarium">
+                    <span>🐠</span><span id="statFish" class="text-mint text-base">1</span>
+                </div>
+                <div class="pill px-3 py-1.5 flex items-center gap-1.5" data-i18n-title="scoreTitle" title="Skor">
+                    <span>⭐</span><span id="statScore" class="text-peach text-base">0</span>
+                </div>
+                <div class="pill px-3 py-1.5 hidden sm:flex items-center gap-1.5" data-i18n-title="wpmTitle" title="Kecepatan mengetik">
+                    <span>⚡</span><span id="statWpm" class="text-aqua text-base">0</span><span class="text-xs text-slate-300/70 font-semibold">WPM</span>
+                </div>
+                <div id="comboPill" class="pill px-3 py-1.5 items-center gap-1.5" style="display:none" data-i18n-title="comboTitle" title="Combo">
+                    <span>🔥</span><span id="statCombo" class="text-peach text-base">x2</span>
+                </div>
+
+                <!-- Tombol pause -->
+                <button id="btnPause" type="button" tabindex="-1" onclick="pauseGame()" disabled data-i18n-title="pauseBtn" title="Jeda"
+                    class="icon-btn flex items-center gap-1.5 font-bold" style="border-color:rgba(255,197,143,0.55);">
+                    <span>⏸</span><span class="hidden md:inline" data-i18n="pauseBtn">Jeda</span>
+                </button>
+
+                <button id="btnMusic" type="button" tabindex="-1" onclick="toggleMusic()" data-i18n-title="musicTitle" title="Musik latar" class="icon-btn text-base">🎵</button>
+                <button id="btnSfx" type="button" tabindex="-1" onclick="toggleSfx()" data-i18n-title="sfxTitle" title="Efek suara" class="icon-btn text-base">🔊</button>
+                <button id="btnFs" type="button" tabindex="-1" onclick="toggleFullscreen()" data-i18n-title="fsTitle" title="Layar penuh" class="icon-btn text-base">⛶</button>
+            </div>
+        </header>
+
+        <!-- Area bermain: akuarium (kiri) + arena hiu (kanan) -->
+        <main class="glass flex-1 min-h-0 relative overflow-hidden flex flex-row">
+
+            <!-- Akuarium: di sebelah kiri, SEBELUM garis merah -->
+            <aside id="tank" class="relative flex-shrink-0 flex flex-col overflow-hidden"
+                   style="width:clamp(150px, 26vw, 380px); background:linear-gradient(180deg, rgba(107,227,255,0.16), rgba(125,255,217,0.10) 55%, rgba(255,197,143,0.16));">
+                <div class="caustics"></div>
+                <div class="relative z-20 flex items-center justify-between px-4 pt-3 pb-1">
+                    <div class="font-bubble text-lg font-semibold text-mint" data-i18n="tankTitle">Akuarium</div>
+                    <div class="pill px-2.5 py-0.5 text-xs font-bold text-slate-200">
+                        <span data-i18n="fishLabel">Ikan</span> <span id="tankCount" class="text-mint text-sm">1</span>
+                    </div>
+                </div>
+                <div id="tankDecor" class="absolute inset-x-0 bottom-0 h-28 z-0 pointer-events-none">
+                    <div class="absolute inset-x-0 bottom-0 h-10" style="background:linear-gradient(0deg, rgba(255,197,143,0.28), transparent)"></div>
+                </div>
+                <!-- Tempat ikan berenang kiri-kanan -->
+                <div id="aquariumContainer" class="relative z-10 flex-1 min-h-0"></div>
+                <div id="shieldBubble"></div>
+            </aside>
+
+            <!-- Arena hiu -->
+            <div id="arena" class="relative flex-1 min-w-0">
+                <div id="arenaDecor" class="absolute inset-x-0 bottom-0 h-28 z-0 pointer-events-none">
+                    <div class="absolute inset-x-0 bottom-0 h-10" style="background:linear-gradient(0deg, rgba(255,197,143,0.22), transparent)"></div>
+                </div>
+
+                <!-- Garis merah batas bahaya -->
+                <div class="danger-line absolute left-0 top-0 bottom-0 w-[4px] z-20 pointer-events-none"></div>
+                <span class="absolute left-3 bottom-3 z-20 text-xs font-bold px-2.5 py-1 rounded-full pointer-events-none"
+                      style="background:rgba(120,18,52,0.75); color:#ffc2d1; border:1px solid rgba(255,107,139,0.5)" data-i18n="dangerLine">Garis bahaya</span>
+
+                <div id="sharksContainer" class="absolute inset-0 overflow-hidden z-10 pointer-events-none"></div>
+
+                <!-- Kartu misi tantangan -->
+                <div id="missionChip" class="absolute top-3 inset-x-0 z-20 justify-center pointer-events-none px-3" style="display:none">
+                    <div class="glass px-5 py-2.5 flex flex-col items-center gap-1.5 max-w-full" style="border-radius:20px; border-color:rgba(255,197,143,0.45); background:rgba(40,28,60,0.7);">
+                        <div class="text-sm md:text-base font-bold text-center"><span id="missionText"></span> <span id="missionProg" class="text-peach font-bubble"></span></div>
+                        <div id="missionBarWrap" class="w-full h-1.5 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.12)">
+                            <div id="missionBar" class="h-full rounded-full" style="width:100%; background:linear-gradient(90deg,#ffc58f,#ff8fc8)"></div>
+                        </div>
+                        <div class="text-[11px] text-slate-300 flex gap-3"><span id="missionReward"></span><span id="missionTime" class="text-peach font-bold"></span></div>
+                    </div>
+                </div>
+
+                <div id="toastLayer" class="absolute inset-x-0 top-28 z-30 flex flex-col items-center gap-2 pointer-events-none"></div>
+                <div id="effectsLayer" class="absolute inset-0 z-30 pointer-events-none"></div>
+            </div>
+
+            <!-- Kilatan saat ikan digigit -->
+            <div id="hitFlash" class="absolute inset-0 opacity-0 pointer-events-none z-30" style="background:#ff6b8b"></div>
+
+            <!-- Layar mulai -->
+            <div id="startScreen" class="absolute inset-0 z-40 flex flex-col justify-center items-center p-4 md:p-6 text-center" style="background:rgba(5,16,36,0.72); backdrop-filter:blur(8px);">
+                <div class="glass max-w-2xl w-full max-h-full overflow-y-auto p-6 md:p-8 relative" style="background:rgba(10,30,62,0.86);">
+                    <div class="absolute -top-14 -right-14 w-40 h-40 rounded-full blur-3xl pointer-events-none" style="background:rgba(255,143,200,0.18)"></div>
+                    <div class="absolute -bottom-16 -left-12 w-44 h-44 rounded-full blur-3xl pointer-events-none" style="background:rgba(125,255,217,0.16)"></div>
+                    <div class="relative">
+                        <div class="text-4xl mb-2">🦈 🐠 🌊</div>
+                        <h2 class="font-bubble text-3xl font-semibold title-glow mb-3" data-i18n="startTitle">Selamatkan Ikan Akuarium!</h2>
+                        <p class="text-slate-200 text-sm mb-2 leading-relaxed" data-i18n-html="startP1"></p>
+                        <p class="text-slate-200 text-sm mb-4 leading-relaxed" data-i18n-html="startP2"></p>
+
+                        <!-- Daftar tantangan -->
+                        <div class="text-left rounded-2xl p-4 mb-5" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10)">
+                            <div class="font-bubble text-sm font-semibold text-peach mb-2" data-i18n="legTitle">Tantangan di laut ini</div>
+                            <div class="grid md:grid-cols-2 gap-x-5 gap-y-1.5 text-xs text-slate-300 leading-snug">
+                                <div data-i18n-html="legFast"></div>
+                                <div data-i18n-html="legArmor"></div>
+                                <div data-i18n-html="legRev"></div>
+                                <div data-i18n-html="legBoss"></div>
+                                <div data-i18n-html="legItem"></div>
+                                <div data-i18n-html="legMission"></div>
+                                <div data-i18n-html="legWave"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-slate-300/80 mb-2 font-semibold" data-i18n="chooseLang">Pilih bahasa</div>
+                        <div class="flex gap-2 justify-center flex-wrap mb-5">
+                            <button type="button" data-lang-btn="id" onclick="setLang('id')" class="lang-btn"><span class="lang-chip">ID</span>Bahasa Indonesia</button>
+                            <button type="button" data-lang-btn="en" onclick="setLang('en')" class="lang-btn"><span class="lang-chip">EN</span>English</button>
+                        </div>
+
+                        <button onclick="startGame()" class="menu-btn text-lg"
+                                style="background:linear-gradient(90deg,#4fe3c1,#5bc8ff); color:#04263f; box-shadow:0 0 24px rgba(107,227,255,0.4);" data-i18n="startBtn">Mulai bermain 🚀</button>
+                        <p class="text-slate-400 text-xs mt-3" data-i18n="startHint">Layar akan dibuat penuh dan musik menyala 🎵</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layar game over -->
+            <div id="gameOverScreen" class="absolute inset-0 z-40 hidden flex-col justify-center items-center p-4 md:p-6 text-center" style="background:rgba(5,16,36,0.78); backdrop-filter:blur(8px);">
+                <div class="glass max-w-lg w-full max-h-full overflow-y-auto p-7" style="background:rgba(10,30,62,0.88); border-color:rgba(255,107,139,0.35);">
+                    <div class="text-5xl mb-2">💥🦈</div>
+                    <h2 class="font-bubble text-2xl font-semibold text-coral mb-1" data-i18n="goTitle">Semua ikan dimakan hiu!</h2>
+                    <p class="text-slate-300 text-sm mb-5" data-i18n="goText">Permainan berakhir.</p>
+
+                    <div class="grid grid-cols-2 gap-3 mb-5 p-4 rounded-2xl text-left" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1)">
+                        <div><div class="text-xs text-slate-400 font-semibold" data-i18n="goScore">Skor akhir</div><div id="finalScore" class="font-bubble text-2xl font-semibold text-peach">0</div></div>
+                        <div><div class="text-xs text-slate-400 font-semibold" data-i18n="goDefeated">Hiu diusir</div><div id="finalDefeated" class="font-bubble text-2xl font-semibold text-mint">0</div></div>
+                        <div><div class="text-xs text-slate-400 font-semibold" data-i18n="goSpeed">Kecepatan</div><div id="finalWpm" class="font-bubble text-2xl font-semibold text-aqua">0 WPM</div></div>
+                        <div><div class="text-xs text-slate-400 font-semibold" data-i18n="goHigh">Skor tertinggi</div><div id="finalHighScore" class="font-bubble text-2xl font-semibold text-lav">0</div></div>
+                        <div><div class="text-xs text-slate-400 font-semibold" data-i18n="goCombo">Combo terbaik</div><div id="finalCombo" class="font-bubble text-2xl font-semibold text-pink">0</div></div>
+                        <div><div class="text-xs text-slate-400 font-semibold" data-i18n="goMissions">Tantangan selesai</div><div id="finalMissions" class="font-bubble text-2xl font-semibold text-peach">0</div></div>
+                    </div>
+
+                    <div class="flex gap-2 justify-center flex-wrap mb-4">
+                        <button type="button" data-lang-btn="id" onclick="setLang('id')" class="lang-btn"><span class="lang-chip">ID</span>Bahasa Indonesia</button>
+                        <button type="button" data-lang-btn="en" onclick="setLang('en')" class="lang-btn"><span class="lang-chip">EN</span>English</button>
+                    </div>
+
+                    <button onclick="startGame()" class="menu-btn mb-2"
+                            style="background:linear-gradient(90deg,#ff9ccf,#b9a6ff); color:#2a1040; box-shadow:0 0 24px rgba(255,143,200,0.35);" data-i18n="again">Main lagi 🔄</button>
+                    <button onclick="exitToMenu()" class="menu-btn" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:#dbeaf5;" data-i18n="exitBtn">🚪 Keluar ke menu</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Kotak input -->
+        <footer class="glass flex-shrink-0 p-3 md:p-4 flex flex-col gap-2">
+            <div class="flex justify-between items-center text-xs px-1 text-slate-300/80 font-semibold">
+                <span id="targetSharkInfo" class="text-aqua font-bold truncate"></span>
+                <span><span data-i18n="pressKey">Tekan</span> <kbd class="px-1.5 py-0.5 rounded border border-white/15 bg-white/5 text-slate-200">Enter</kbd></span>
+            </div>
+            <div class="relative flex items-center">
+                <input type="text" id="typingInput" disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    data-i18n-ph="placeholder" placeholder="Ketik kata di sini lalu tekan Enter..."
+                    class="w-full text-white placeholder-slate-400/70 text-xl md:text-2xl rounded-2xl px-5 py-3.5 outline-none transition font-bubble disabled:opacity-50 disabled:cursor-not-allowed"
+                    style="background:rgba(4,14,34,0.7); border:2px solid rgba(107,227,255,0.35); letter-spacing:0.05em;">
+                <div class="absolute right-5 text-slate-400 text-sm hidden sm:block font-bold" data-i18n="typeBadge">⌨️ Ketik</div>
+            </div>
+        </footer>
+
+        <!-- Pop-up pause -->
+        <div id="pauseScreen" class="fixed inset-0 z-50 hidden items-center justify-center p-6" style="background:rgba(4,12,28,0.72); backdrop-filter:blur(8px);">
+            <div class="glass max-w-sm w-full p-7 text-center" style="background:rgba(10,30,62,0.94); border-color:rgba(255,197,143,0.4);">
+                <div class="text-5xl mb-2">⏸️</div>
+                <h2 class="font-bubble text-2xl font-semibold title-glow mb-1" data-i18n="pauseTitle">Permainan dijeda</h2>
+                <p class="text-sm text-slate-300 mb-4" data-i18n="pauseText">Hiu dan ikan menunggu. Siap lanjut?</p>
+
+                <div class="flex justify-center gap-3 mb-5">
+                    <div class="pill px-3 py-1.5 flex items-center font-bold"><span id="pauseLives" class="text-base">❤️❤️❤️</span></div>
+                    <div class="pill px-3 py-1.5 flex items-center gap-1.5 font-bold"><span>🐠</span><span id="pauseFish" class="text-mint font-bubble text-lg">1</span></div>
+                    <div class="pill px-3 py-1.5 flex items-center gap-1.5 font-bold"><span>⭐</span><span id="pauseScore" class="text-peach font-bubble text-lg">0</span></div>
+                </div>
+
+                <button onclick="resumeGame()" class="menu-btn mb-2"
+                        style="background:linear-gradient(90deg,#4fe3c1,#5bc8ff); color:#04263f; box-shadow:0 0 22px rgba(107,227,255,0.4);" data-i18n="resumeBtn">▶ Lanjutkan</button>
+                <button onclick="restartFromPause()" class="menu-btn mb-2"
+                        style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:#dbeaf5;" data-i18n="restartBtn">🔄 Ulangi</button>
+                <button onclick="exitToMenu()" class="menu-btn"
+                        style="background:rgba(255,107,139,0.14); border:1px solid rgba(255,107,139,0.5); color:#ffc2d1;" data-i18n="exitBtn">🚪 Keluar ke menu</button>
+                <p class="text-xs text-slate-400 mt-3" data-i18n="pauseHint">Tekan Esc untuk lanjut</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  BAHASA (Indonesia / English)
+        // ================================================================
+        const I18N = {
+            id: {
+                docTitle: 'Selamatkan Ikan dari Hiu',
+                title: 'Selamatkan Ikan',
+                subtitle: 'Ketik kata pada hiu untuk mengusirnya',
+                tankTitle: 'Akuarium', fishLabel: 'Ikan', dangerLine: 'Garis bahaya',
+                fishTitle: 'Ikan terkumpul di akuarium', livesTitle: 'Nyawa', scoreTitle: 'Skor', wpmTitle: 'Kecepatan mengetik', comboTitle: 'Combo benar berturut-turut',
+                musicTitle: 'Musik latar', sfxTitle: 'Efek suara', fsTitle: 'Layar penuh',
+                startTitle: 'Selamatkan Ikan Akuarium!',
+                startP1: 'Kamu punya <strong class="text-coral">3 nyawa ❤️</strong>. Ketik kata pada hiu lalu tekan Enter. Setiap hiu yang diusir akan <strong class="text-mint">menambah ikan</strong> ke akuarium.',
+                startP2: 'Kalau hiu menyentuh <strong class="text-coral">garis merah</strong>, kamu kehilangan 1 nyawa dan satu ikan di akuarium ikut hilang. Nyawa habis, permainan selesai.',
+                legTitle: 'Tantangan di laut ini',
+                legFast: '⚡ <b class="text-aqua">Hiu Kilat</b>: sangat cepat, kata pendek',
+                legArmor: '🛡️ <b class="text-lav">Hiu Baja</b>: ketik 2 kata berturut-turut',
+                legRev: '🔄 <b class="text-peach">Hiu Terbalik</b>: kata tampil terbalik, ketik kata aslinya',
+                legBoss: '👑 <b style="color:#ffd86b">Raja Hiu</b>: 3 kata, hadiah 2 ikan dan 1 nyawa',
+                legItem: '❄️🌊💠 <b class="text-mint">Kata ajaib</b>: ketik untuk membekukan hiu, mendorongnya mundur, atau melindungi akuarium',
+                legMission: '🎯 <b class="text-peach">Misi tantangan</b>: selesaikan untuk dapat ikan dan nyawa bonus',
+                legWave: '🌊 <b class="text-aqua">Gelombang hiu</b>: rombongan hiu datang tiap 8 hiu diusir',
+                chooseLang: 'Pilih bahasa', startBtn: 'Mulai bermain 🚀',
+                startHint: 'Layar akan dibuat penuh dan musik menyala 🎵',
+                goTitle: 'Nyawa habis, hiu menang!',
+                goText: 'Permainan berakhir. Ayo coba lagi dan selamatkan lebih banyak ikan!',
+                goScore: 'Skor akhir', goDefeated: 'Hiu diusir', goSpeed: 'Kecepatan', goHigh: 'Skor tertinggi',
+                goCombo: 'Combo terbaik', goMissions: 'Tantangan selesai',
+                again: 'Main lagi 🔄', exitBtn: '🚪 Keluar ke menu',
+                pauseBtn: 'Jeda', pauseTitle: 'Permainan dijeda', pauseText: 'Hiu dan ikan menunggu. Siap lanjut?',
+                resumeBtn: '▶ Lanjutkan', restartBtn: '🔄 Ulangi', pauseHint: 'Tekan Esc untuk lanjut',
+                infoIdle: 'Ketik kata pada hiu yang menyerang lalu tekan Enter...',
+                infoHit: 'Hiu berhasil diusir! Ikan masuk ke akuarium.',
+                infoArmor: 'Kena! Hiu baja masih bertahan, ketik kata berikutnya.',
+                infoItem: 'Kata ajaib aktif!',
+                infoMiss: 'Kata tidak cocok dengan hiu di layar!',
+                placeholder: 'Ketik kata di sini lalu tekan Enter...',
+                pressKey: 'Tekan', typeBadge: '⌨️ Ketik',
+                m_streak: 'Usir {n} hiu berturut-turut tanpa salah ketik',
+                m_timed: 'Usir {n} hiu dalam {s} detik',
+                m_long: 'Usir {n} hiu dengan kata panjang (5+ huruf)',
+                m_close: 'Usir {n} hiu yang mengamuk dekat garis merah',
+                m_special: 'Usir {n} hiu spesial (⚡🛡️🔄👑)',
+                reward: 'Hadiah: +1 🐠 dan +1 ❤️',
+                toastMission: '🎯 Tantangan baru!',
+                missionDone: '🎯 Tantangan selesai! +1 🐠', missionDoneLife: '🎯 Tantangan selesai! +1 🐠 +1 ❤️',
+                missionFail: '⏱ Waktu habis, tantangan gagal',
+                waveBanner: '🌊 Gelombang hiu!',
+                bossBanner: '👑 Raja Hiu datang!',
+                bossDown: '👑 Raja Hiu tumbang! +2 🐠',
+                toastItem: '✨ Kata ajaib muncul! Ketik untuk memakainya',
+                toastFreeze: '❄️ Semua hiu membeku!',
+                toastWave: '🌊 Hiu terdorong mundur!',
+                toastShield: '💠 Perisai aktif: satu gigitan ditahan',
+                toastShieldPop: '💠 Perisai pecah! Ikan selamat',
+                toastCombo: '🔥 Combo x{n}! +100'
+            },
+            en: {
+                docTitle: 'Save the Fish from the Sharks',
+                title: 'Save the Fish',
+                subtitle: 'Type the word on a shark to chase it away',
+                tankTitle: 'Aquarium', fishLabel: 'Fish', dangerLine: 'Danger line',
+                fishTitle: 'Fish collected in the aquarium', livesTitle: 'Lives', scoreTitle: 'Score', wpmTitle: 'Typing speed', comboTitle: 'Correct answers in a row',
+                musicTitle: 'Background music', sfxTitle: 'Sound effects', fsTitle: 'Full screen',
+                startTitle: 'Save the Aquarium Fish!',
+                startP1: 'You have <strong class="text-coral">3 lives ❤️</strong>. Type the word on a shark and press Enter. Every shark you chase away <strong class="text-mint">adds a fish</strong> to the aquarium.',
+                startP2: 'If a shark touches the <strong class="text-coral">red line</strong>, you lose 1 life and a fish in the aquarium disappears too. No lives left, game over.',
+                legTitle: 'Challenges in these waters',
+                legFast: '⚡ <b class="text-aqua">Lightning Shark</b>: super fast, short word',
+                legArmor: '🛡️ <b class="text-lav">Armored Shark</b>: type 2 words in a row',
+                legRev: '🔄 <b class="text-peach">Mirror Shark</b>: the word is shown backwards, type the real word',
+                legBoss: '👑 <b style="color:#ffd86b">Shark King</b>: 3 words, rewards 2 fish and 1 life',
+                legItem: '❄️🌊💠 <b class="text-mint">Magic words</b>: type to freeze sharks, push them back, or shield the aquarium',
+                legMission: '🎯 <b class="text-peach">Challenge missions</b>: finish them for a bonus fish and life',
+                legWave: '🌊 <b class="text-aqua">Shark waves</b>: a pack of sharks arrives every 8 sharks chased',
+                chooseLang: 'Choose language', startBtn: 'Start playing 🚀',
+                startHint: 'The screen goes full and the music starts 🎵',
+                goTitle: 'Out of lives, the sharks win!',
+                goText: 'Game over. Try again and save even more fish!',
+                goScore: 'Final score', goDefeated: 'Sharks chased', goSpeed: 'Speed', goHigh: 'High score',
+                goCombo: 'Best combo', goMissions: 'Challenges done',
+                again: 'Play again 🔄', exitBtn: '🚪 Exit to menu',
+                pauseBtn: 'Pause', pauseTitle: 'Game paused', pauseText: 'The sharks and fish are waiting. Ready to go on?',
+                resumeBtn: '▶ Resume', restartBtn: '🔄 Restart', pauseHint: 'Press Esc to resume',
+                infoIdle: 'Type the word on an attacking shark, then press Enter...',
+                infoHit: 'Shark chased away! A fish joins the aquarium.',
+                infoArmor: 'Hit! The armored shark is still up, type the next word.',
+                infoItem: 'Magic word activated!',
+                infoMiss: 'That word does not match any shark on screen!',
+                placeholder: 'Type the word here, then press Enter...',
+                pressKey: 'Press', typeBadge: '⌨️ Type',
+                m_streak: 'Chase {n} sharks in a row with no typos',
+                m_timed: 'Chase {n} sharks within {s} seconds',
+                m_long: 'Chase {n} sharks with long words (5+ letters)',
+                m_close: 'Chase {n} enraged sharks close to the red line',
+                m_special: 'Chase {n} special sharks (⚡🛡️🔄👑)',
+                reward: 'Reward: +1 🐠 and +1 ❤️',
+                toastMission: '🎯 New challenge!',
+                missionDone: '🎯 Challenge complete! +1 🐠', missionDoneLife: '🎯 Challenge complete! +1 🐠 +1 ❤️',
+                missionFail: '⏱ Time is up, challenge failed',
+                waveBanner: '🌊 Shark wave!',
+                bossBanner: '👑 The Shark King is here!',
+                bossDown: '👑 Shark King defeated! +2 🐠',
+                toastItem: '✨ A magic word appeared! Type it to use it',
+                toastFreeze: '❄️ All sharks are frozen!',
+                toastWave: '🌊 Sharks pushed back!',
+                toastShield: '💠 Shield on: one bite will be blocked',
+                toastShieldPop: '💠 Shield popped! Fish saved',
+                toastCombo: '🔥 Combo x{n}! +100'
+            }
+        };
+
+        const wordBanks = {
+            id: [
+                "aku", "dia", "ikan", "laut", "air", "biru", "hiu", "ombak",
+                "karang", "pasir", "buih", "jala", "perahu", "udang", "cumi",
+                "paus", "batu", "sirip", "kilat", "cepat", "kilau", "segar", "aman",
+                "kapal", "pantai", "kerang", "lumba", "selam", "gurita"
+            ],
+            en: [
+                "fish", "shark", "wave", "sea", "blue", "reef", "sand", "boat",
+                "crab", "whale", "coral", "shell", "tide", "swim", "dive", "fin",
+                "salt", "pearl", "squid", "kelp", "calm", "safe", "quick", "shine",
+                "ocean", "water", "foam", "island", "ship"
+            ]
+        };
+
+        let lang = 'id';
+        try { lang = localStorage.getItem('shark_lang') || 'id'; } catch (e) {}
+        if (!I18N[lang]) lang = 'id';
+
+        function t(key) { return (I18N[lang] && I18N[lang][key]) || I18N.id[key] || key; }
+        function tf(key, vars) {
+            let s = t(key);
+            for (const k in vars) s = s.replace('{' + k + '}', vars[k]);
+            return s;
+        }
+
+        // ================================================================
+        //  DATA IKAN & HIU
+        // ================================================================
+        const fishSvgs = [
+            // 1. Ikan toska bulat
+            `<svg class="w-12 h-12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="45" cy="50" rx="35" ry="30" fill="#4db6ac"/><path d="M 75 50 L 95 35 L 90 50 L 95 65 Z" fill="#26a69a"/><circle cx="25" cy="42" r="5" fill="#212121"/><circle cx="27" cy="40" r="1.5" fill="#fff"/><path d="M 22 58 Q 30 65, 40 58" stroke="#212121" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M 45 30 Q 42 40, 45 50" stroke="#26a69a" stroke-width="3" fill="none"/></svg>`,
+            // 2. Ikan pink bulat
+            `<svg class="w-12 h-12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="50" r="32" fill="#f48fb1"/><path d="M 70 50 L 92 25 L 85 50 L 92 75 Z" fill="#ce93d8"/><path d="M 68 20 L 75 10 L 80 22 Z" fill="#ce93d8"/><path d="M 68 80 L 75 90 L 80 78 Z" fill="#ce93d8"/><circle cx="28" cy="45" r="4.5" fill="#212121"/><circle cx="29" cy="43.5" r="1.5" fill="#fff"/><path d="M 25 58 Q 33 63, 40 58" stroke="#212121" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+            // 3. Ikan kuning (tang)
+            `<svg class="w-12 h-12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M 15 50 C 15 20, 60 15, 75 40 C 90 50, 95 55, 85 65 C 65 85, 30 80, 15 50 Z" fill="#ffee58"/><path d="M 75 50 L 95 38 L 88 50 L 95 62 Z" fill="#ce93d8"/><path d="M 40 23 C 50 28, 65 30, 75 35" stroke="#ce93d8" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="30" cy="45" r="4" fill="#212121"/><circle cx="31" cy="43.5" r="1.2" fill="#fff"/><path d="M 20 54 Q 28 60, 35 55" stroke="#212121" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+            // 4. Ikan pink panjang
+            `<svg class="w-12 h-12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="50" rx="42" ry="25" fill="#f48fb1"/><path d="M 85 50 L 100 35 L 95 50 L 100 65 Z" fill="#ec407a"/><circle cx="25" cy="45" r="4" fill="#212121"/><circle cx="26" cy="43.5" r="1.2" fill="#fff"/><path d="M 22 55 Q 30 60, 36 55" stroke="#212121" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`
+        ];
+
+        // Hiu super galak: mata merah menyala, alis marah, rahang menggigit, gigi tajam, bekas luka.
+        // Warna tiap jenis hiu diatur lewat palette.
+        function sharkSvg(p, sizeClass) {
+            return `
+            <svg class="${sizeClass} h-auto" viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+                <g>
+                    <animateTransform attributeName="transform" type="rotate" values="0 214 82;8 214 82;0 214 82;-8 214 82;0 214 82" dur="0.45s" repeatCount="indefinite"/>
+                    <path d="M 208 72 L 252 14 C 243 38 240 60 246 80 C 242 102 246 122 255 138 L 208 92 Z" fill="${p.fin}" stroke="#0a1830" stroke-width="3.5" stroke-linejoin="round"/>
+                </g>
+                <path d="M 90 40 Q 118 20 136 4 Q 140 30 160 48 Z" fill="${p.fin}" stroke="#0a1830" stroke-width="3.5" stroke-linejoin="round"/>
+                <path d="M 180 96 L 190 114 L 166 102 Z" fill="${p.fin}" stroke="#0a1830" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M 128 100 Q 120 128 98 146 Q 138 138 162 106 Z" fill="${p.fin}" stroke="#0a1830" stroke-width="3.5" stroke-linejoin="round"/>
+
+                <polygon points="16,82 108,93 27,126" fill="#7a1030">
+                    <animate attributeName="points" values="16,82 108,93 27,126;16,82 108,93 20,86;16,82 108,93 27,126" keyTimes="0;0.3;1" dur="0.7s" repeatCount="indefinite"/>
+                </polygon>
+
+                <g>
+                    <animateTransform attributeName="transform" type="rotate" values="-28 108 92;0 108 92;-28 108 92" keyTimes="0;0.3;1" dur="0.7s" repeatCount="indefinite"/>
+                    <path d="M 108 92 C 80 87 45 89 20 84 C 24 98 60 112 108 106 Z" fill="${p.jaw}" stroke="#0a1830" stroke-width="3.5" stroke-linejoin="round"/>
+                    <path d="M 24 86 L 29 71 L 34 86 M 36 87 L 41 72 L 46 87 M 48 88 L 53 73 L 58 88 M 60 89 L 65 75 L 70 89 M 72 90 L 77 77 L 82 90 M 84 91 L 88 80 L 92 91" fill="#ffffff" stroke="#0a1830" stroke-width="1.8" stroke-linejoin="round"/>
+                </g>
+
+                <path d="M 14 80 C 16 42 90 12 160 38 C 205 52 235 66 222 82 C 205 98 160 112 108 106 L 108 92 C 80 86 40 88 14 80 Z" fill="${p.body}" stroke="#0a1830" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M 112 105 C 160 111 203 96 219 84 C 200 96 152 99 112 95 Z" fill="${p.belly}"/>
+
+                <path d="M 22 82 L 27 98 L 32 83 M 34 83 L 39 100 L 44 85 M 46 85 L 51 101 L 56 86 M 58 86 L 63 102 L 68 88 M 70 88 L 75 102 L 80 89 M 82 89 L 86 100 L 90 90" fill="#ffffff" stroke="#0a1830" stroke-width="1.8" stroke-linejoin="round"/>
+
+                <g stroke="#0a1830" stroke-width="3.2" stroke-linecap="round" fill="none">
+                    <path d="M 122 52 C 117 62 117 74 122 82"/>
+                    <path d="M 133 54 C 128 63 128 74 133 82"/>
+                    <path d="M 144 56 C 139 64 139 73 144 80"/>
+                </g>
+                <path d="M 82 50 L 96 70 M 87 47 L 101 66" stroke="#d6e6f2" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+                <path d="M 24 70 q 3 -2 6 0" stroke="#0a1830" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+                <circle cx="50" cy="58" r="16" fill="#ff4d6d" opacity="0.3">
+                    <animate attributeName="opacity" values="0.15;0.55;0.15" dur="0.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="50" cy="58" r="10" fill="#ffffff" stroke="#0a1830" stroke-width="3"/>
+                <circle cx="48" cy="59" r="6.5" fill="#ff3358"/>
+                <ellipse cx="48" cy="59" rx="1.9" ry="5.2" fill="#0a1830"/>
+                <circle cx="45.5" cy="56" r="1.6" fill="#ffffff"/>
+                <path d="M 40.2 56 A 10 10 0 0 1 58 52 Z" fill="${p.fin}" stroke="#0a1830" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M 33 57 L 68 44" stroke="#0a1830" stroke-width="5.5" stroke-linecap="round"/>
+            </svg>`;
+        }
+
+        // Jenis-jenis hiu (tantangan)
+        const SHARK_TYPES = {
+            normal:  { hp: 1, speedMul: 1.0, score: 20,  tag: '',   size: 'w-44 md:w-56 2xl:w-64',
+                       pal: { body: '#5a7c98', fin: '#3b5570', jaw: '#b9cfe0', belly: '#eaf4fb' } },
+            fast:    { hp: 1, speedMul: 1.7, score: 35,  tag: '⚡', size: 'w-36 md:w-48 2xl:w-52', maxLen: 4,
+                       pal: { body: '#3fa7b8', fin: '#2a7f93', jaw: '#a8e4ee', belly: '#e6fbff' } },
+            armor:   { hp: 2, speedMul: 0.8, score: 50,  tag: '🛡️', size: 'w-48 md:w-60 2xl:w-72',
+                       pal: { body: '#7a6aa8', fin: '#54487e', jaw: '#cfc4ee', belly: '#f0ebff' } },
+            reverse: { hp: 1, speedMul: 0.95, score: 40, tag: '🔄', size: 'w-44 md:w-56 2xl:w-64',
+                       pal: { body: '#c28a62', fin: '#8d5f3f', jaw: '#f0cfb3', belly: '#fff1e3' } },
+            boss:    { hp: 3, speedMul: 0.5, score: 150, tag: '👑', size: 'w-64 md:w-80 2xl:w-[26rem]', minLen: 4, rewardFish: 2,
+                       pal: { body: '#8a2e48', fin: '#5e1d31', jaw: '#e3b7c3', belly: '#ffe7ee' } }
+        };
+
+        // Kata ajaib (item)
+        const ITEM_TYPES = {
+            freeze: { icon: '❄️', color: '#9fe8ff' },
+            wave:   { icon: '🌊', color: '#7dffd9' },
+            shield: { icon: '💠', color: '#c9b8ff' }
+        };
+
+        // ================================================================
+        //  AUDIO: musik latar & efek suara (dibuat oleh browser, tanpa file)
+        // ================================================================
+        const CHORDS = [
+            { bass: 45, arp: [57, 60, 64, 69] }, // Am
+            { bass: 41, arp: [53, 57, 60, 65] }, // F
+            { bass: 48, arp: [60, 64, 67, 72] }, // C
+            { bass: 43, arp: [55, 59, 62, 67] }  // G
+        ];
+        const MELODY = [
+            [69,0,72,0,76,0,72,0, 74,0,72,0,69,0,67,0],
+            [72,0,69,0,65,0,69,0, 72,0,77,0,72,0,69,0],
+            [72,0,76,0,79,0,76,0, 74,0,76,0,79,0,76,0],
+            [74,0,71,0,67,0,71,0, 74,0,76,0,74,0,71,0]
+        ];
+        const BASE_BPM = 120;
+
+        const Sound = {
+            ctx: null, master: null, musicBus: null, sfxBus: null, delaySend: null, noiseBuf: null,
+            musicOn: true, sfxOn: true, playing: false, timer: null,
+            nextTime: 0, step: 0, bpm: BASE_BPM, musicVol: 0.5,
+
+            init() {
+                if (this.ctx) return;
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                const c = this.ctx = new AC();
+
+                const comp = c.createDynamicsCompressor();
+                comp.threshold.value = -14;
+                comp.ratio.value = 6;
+                this.master = c.createGain();
+                this.master.gain.value = 0.9;
+                this.master.connect(comp);
+                comp.connect(c.destination);
+
+                this.musicBus = c.createGain();
+                this.musicBus.gain.value = this.musicOn ? this.musicVol : 0;
+                this.sfxBus = c.createGain();
+                this.sfxBus.gain.value = this.sfxOn ? 0.9 : 0;
+                this.musicBus.connect(this.master);
+                this.sfxBus.connect(this.master);
+
+                // Gema lembut supaya terasa di bawah laut
+                const dly = c.createDelay(1);
+                dly.delayTime.value = 0.32;
+                const fb = c.createGain();
+                fb.gain.value = 0.34;
+                const wet = c.createGain();
+                wet.gain.value = 0.28;
+                this.delaySend = c.createGain();
+                this.delaySend.connect(dly);
+                dly.connect(fb);
+                fb.connect(dly);
+                dly.connect(wet);
+                wet.connect(this.musicBus);
+
+                const len = c.sampleRate;
+                const buf = c.createBuffer(1, len, c.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+                this.noiseBuf = buf;
+            },
+
+            unlock() {
+                this.init();
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+            },
+
+            mtof(m) { return 440 * Math.pow(2, (m - 69) / 12); },
+
+            tone({ type = 'square', freq, t, dur, vol = 0.1, dest, attack = 0.005, release = 0.05, cutoff = 0, slideTo = 0, send = false }) {
+                const c = this.ctx;
+                const osc = c.createOscillator();
+                const g = c.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, t);
+                if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+                g.gain.setValueAtTime(0.0001, t);
+                g.gain.linearRampToValueAtTime(vol, t + attack);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + dur + release);
+                let node = osc;
+                if (cutoff) {
+                    const f = c.createBiquadFilter();
+                    f.type = 'lowpass';
+                    f.frequency.value = cutoff;
+                    osc.connect(f);
+                    node = f;
+                }
+                node.connect(g);
+                g.connect(dest);
+                if (send && this.delaySend) g.connect(this.delaySend);
+                osc.start(t);
+                osc.stop(t + dur + release + 0.02);
+            },
+
+            noise({ t, dur, vol = 0.1, filter = 'highpass', freq = 7000, q = 1, dest }) {
+                const c = this.ctx;
+                const src = c.createBufferSource();
+                src.buffer = this.noiseBuf;
+                const f = c.createBiquadFilter();
+                f.type = filter;
+                f.frequency.value = freq;
+                f.Q.value = q;
+                const g = c.createGain();
+                g.gain.setValueAtTime(vol, t);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                src.connect(f);
+                f.connect(g);
+                g.connect(dest);
+                src.start(t, Math.random() * 0.5);
+                src.stop(t + dur + 0.02);
+            },
+
+            kick(t) {
+                const c = this.ctx;
+                const o = c.createOscillator();
+                const g = c.createGain();
+                o.type = 'sine';
+                o.frequency.setValueAtTime(160, t);
+                o.frequency.exponentialRampToValueAtTime(42, t + 0.13);
+                g.gain.setValueAtTime(0.8, t);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+                o.connect(g);
+                g.connect(this.musicBus);
+                o.start(t);
+                o.stop(t + 0.3);
+            },
+
+            scheduleStep(step, t) {
+                const bar = Math.floor(step / 16) % 4;
+                const s = step % 16;
+                const ch = CHORDS[bar];
+                const stepDur = 60 / this.bpm / 4;
+                const mb = this.musicBus;
+
+                if (s % 4 === 0) this.kick(t);
+                if (s === 4 || s === 12) {
+                    this.noise({ t, dur: 0.14, vol: 0.26, filter: 'bandpass', freq: 1800, q: 0.8, dest: mb });
+                    this.tone({ type: 'triangle', freq: 200, t, dur: 0.08, vol: 0.16, dest: mb });
+                }
+                if (s % 2 === 0) this.noise({ t, dur: s === 14 ? 0.12 : 0.04, vol: 0.08, filter: 'highpass', freq: 8000, dest: mb });
+
+                if (s % 2 === 0) {
+                    const n = ch.bass + ((s === 6 || s === 14) ? 12 : 0);
+                    this.tone({ type: 'sawtooth', freq: this.mtof(n), t, dur: stepDur * 1.6, vol: 0.18, cutoff: 650, dest: mb });
+                }
+
+                const ai = [0, 1, 2, 3, 2, 1, 2, 3][s % 8];
+                this.tone({ type: 'triangle', freq: this.mtof(ch.arp[ai]), t, dur: stepDur * 0.8, vol: 0.09, dest: mb, send: true });
+
+                const m = MELODY[bar][s];
+                if (m) this.tone({ type: 'square', freq: this.mtof(m), t, dur: stepDur * 1.7, vol: 0.055, cutoff: 2600, dest: mb, send: true });
+            },
+
+            tick() {
+                const c = this.ctx;
+                if (!c) return;
+                if (this.nextTime < c.currentTime - 0.5) this.nextTime = c.currentTime + 0.05;
+                while (this.nextTime < c.currentTime + 0.15) {
+                    if (this.musicOn) this.scheduleStep(this.step, this.nextTime);
+                    this.nextTime += 60 / this.bpm / 4;
+                    this.step++;
+                }
+            },
+
+            startMusic() {
+                if (!this.ctx || this.playing) return;
+                this.playing = true;
+                this.step = 0;
+                this.bpm = BASE_BPM;
+                const now = this.ctx.currentTime;
+                this.nextTime = now + 0.1;
+                this.musicBus.gain.cancelScheduledValues(now);
+                this.musicBus.gain.setValueAtTime(this.musicOn ? this.musicVol : 0, now);
+                this.timer = setInterval(() => this.tick(), 25);
+            },
+
+            stopMusic(fade = 0.5) {
+                if (!this.playing) return;
+                this.playing = false;
+                clearInterval(this.timer);
+                this.timer = null;
+                if (this.ctx) {
+                    const now = this.ctx.currentTime;
+                    this.musicBus.gain.cancelScheduledValues(now);
+                    this.musicBus.gain.setValueAtTime(this.musicBus.gain.value, now);
+                    this.musicBus.gain.linearRampToValueAtTime(0, now + fade);
+                }
+            },
+
+            setIntensity(defeated) { this.bpm = BASE_BPM + Math.min(40, defeated * 1.8); },
+
+            setMusicOn(on) {
+                this.musicOn = on;
+                if (this.ctx) this.musicBus.gain.setTargetAtTime(on && this.playing ? this.musicVol : 0, this.ctx.currentTime, 0.05);
+            },
+
+            setSfxOn(on) {
+                this.sfxOn = on;
+                if (this.ctx) this.sfxBus.gain.setTargetAtTime(on ? 0.9 : 0, this.ctx.currentTime, 0.05);
+            },
+
+            sfx(name) {
+                if (!this.ctx || !this.sfxOn) return;
+                const t = this.ctx.currentTime + 0.01;
+                const d = this.sfxBus;
+                switch (name) {
+                    case 'start':
+                        [392, 523, 659, 784].forEach((f, i) =>
+                            this.tone({ type: 'square', freq: f, t: t + i * 0.08, dur: 0.1, vol: 0.11, dest: d }));
+                        break;
+                    case 'correct':
+                        [660, 880, 1320].forEach((f, i) =>
+                            this.tone({ type: 'square', freq: f, t: t + i * 0.06, dur: 0.09, vol: 0.11, dest: d }));
+                        this.tone({ type: 'sine', freq: 300, slideTo: 900, t, dur: 0.12, vol: 0.2, dest: d });
+                        break;
+                    case 'hit': // hiu baja kena, belum tumbang
+                        this.tone({ type: 'square', freq: 900, slideTo: 500, t, dur: 0.08, vol: 0.12, dest: d });
+                        this.noise({ t, dur: 0.08, vol: 0.2, filter: 'highpass', freq: 3000, dest: d });
+                        break;
+                    case 'fish':
+                        this.tone({ type: 'sine', freq: 500, slideTo: 1000, t, dur: 0.1, vol: 0.22, dest: d });
+                        this.tone({ type: 'sine', freq: 700, slideTo: 1500, t: t + 0.1, dur: 0.1, vol: 0.22, dest: d });
+                        break;
+                    case 'wrong':
+                        this.tone({ type: 'sawtooth', freq: 140, slideTo: 90, t, dur: 0.18, vol: 0.14, cutoff: 700, dest: d });
+                        break;
+                    case 'warn':
+                        this.tone({ type: 'sawtooth', freq: 82.4, t, dur: 0.12, vol: 0.2, cutoff: 500, dest: d });
+                        this.tone({ type: 'sawtooth', freq: 87.3, t: t + 0.18, dur: 0.12, vol: 0.2, cutoff: 500, dest: d });
+                        break;
+                    case 'bite':
+                        this.noise({ t, dur: 0.25, vol: 0.5, filter: 'lowpass', freq: 1500, dest: d });
+                        this.noise({ t: t + 0.12, dur: 0.2, vol: 0.4, filter: 'bandpass', freq: 900, q: 0.7, dest: d });
+                        this.tone({ type: 'sawtooth', freq: 220, slideTo: 50, t, dur: 0.35, vol: 0.3, cutoff: 900, dest: d });
+                        this.tone({ type: 'sine', freq: 120, slideTo: 40, t, dur: 0.3, vol: 0.6, dest: d });
+                        break;
+                    case 'item':
+                        [880, 1175, 1568].forEach((f, i) =>
+                            this.tone({ type: 'sine', freq: f, t: t + i * 0.05, dur: 0.12, vol: 0.14, dest: d }));
+                        break;
+                    case 'freeze':
+                        this.tone({ type: 'sine', freq: 1600, slideTo: 400, t, dur: 0.45, vol: 0.16, dest: d });
+                        this.noise({ t, dur: 0.3, vol: 0.14, filter: 'highpass', freq: 6000, dest: d });
+                        break;
+                    case 'shieldpop':
+                        this.noise({ t, dur: 0.2, vol: 0.3, filter: 'bandpass', freq: 2000, q: 0.8, dest: d });
+                        this.tone({ type: 'sine', freq: 1200, slideTo: 300, t, dur: 0.2, vol: 0.2, dest: d });
+                        break;
+                    case 'wave':
+                        this.noise({ t, dur: 0.7, vol: 0.35, filter: 'lowpass', freq: 900, dest: d });
+                        this.tone({ type: 'sine', freq: 150, slideTo: 60, t, dur: 0.6, vol: 0.3, dest: d });
+                        break;
+                    case 'mission':
+                        [523, 659, 784, 1047].forEach((f, i) =>
+                            this.tone({ type: 'triangle', freq: f, t: t + i * 0.09, dur: 0.14, vol: 0.2, dest: d }));
+                        break;
+                    case 'gameover':
+                        [392, 330, 262, 196].forEach((f, i) =>
+                            this.tone({ type: 'triangle', freq: f, t: t + i * 0.22, dur: 0.2, vol: 0.25, dest: d }));
+                        break;
+                }
+            }
+        };
+
+        try {
+            Sound.musicOn = localStorage.getItem('shark_music') !== 'off';
+            Sound.sfxOn = localStorage.getItem('shark_sfx') !== 'off';
+        } catch (e) {}
+
+        // ================================================================
+        //  STATE & ELEMEN
+        // ================================================================
+        const START_LIVES = 3;   // 3 nyawa
+        const MAX_LIVES = 3;
+        const START_FISH = 1;    // akuarium mulai dengan 1 ikan
+
+        let gameState = 'IDLE'; // IDLE, PLAYING, PAUSED, GAMEOVER
+        let score = 0;
+        let lives = START_LIVES;     // nyawa (❤️)
+        let fishCount = START_FISH;  // ikan yang terkumpul di akuarium
+        let sharksDefeated = 0;
+        let sharks = [];
+        let items = [];
+        let gameInterval = null;
+        let gameTime = 0;        // waktu bermain (ms), berhenti saat dijeda
+        let lastTick = 0;
+        let correctKeysTyped = 0;
+        let fsRequested = false;
+        let highscore = 0;
+        try { highscore = Number(localStorage.getItem('shark_short_highscore')) || 0; } catch (e) {}
+
+        // Tantangan
+        let combo = 0, bestCombo = 0, missionsDone = 0;
+        let mission = null;
+        let shield = false;
+        let freezeUntil = 0, frozenVisual = false;
+        let spawnQueue = [];
+        let nextSpawnAt = 0, nextMissionAt = 0, nextItemAt = 0, nextWaveAt = 8, nextBossAt = 10;
+        let lastMissionRender = 0;
+
+        const sharksContainer = document.getElementById('sharksContainer');
+        const effectsLayer = document.getElementById('effectsLayer');
+        const toastLayer = document.getElementById('toastLayer');
+        const typingInput = document.getElementById('typingInput');
+        const statFish = document.getElementById('statFish');
+        const statLives = document.getElementById('statLives');
+        const statScore = document.getElementById('statScore');
+        const statWpm = document.getElementById('statWpm');
+        const statCombo = document.getElementById('statCombo');
+        const comboPill = document.getElementById('comboPill');
+        const tankCount = document.getElementById('tankCount');
+        const targetSharkInfo = document.getElementById('targetSharkInfo');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const pauseScreen = document.getElementById('pauseScreen');
+        const finalScore = document.getElementById('finalScore');
+        const finalDefeated = document.getElementById('finalDefeated');
+        const finalWpm = document.getElementById('finalWpm');
+        const finalHighScore = document.getElementById('finalHighScore');
+        const finalCombo = document.getElementById('finalCombo');
+        const finalMissions = document.getElementById('finalMissions');
+        const pauseFish = document.getElementById('pauseFish');
+        const pauseLives = document.getElementById('pauseLives');
+        const pauseScore = document.getElementById('pauseScore');
+        const bubbleContainer = document.getElementById('bubbleContainer');
+        const aquariumContainer = document.getElementById('aquariumContainer');
+        const tank = document.getElementById('tank');
+        const hitFlash = document.getElementById('hitFlash');
+        const btnMusic = document.getElementById('btnMusic');
+        const btnSfx = document.getElementById('btnSfx');
+        const btnPause = document.getElementById('btnPause');
+        const missionChip = document.getElementById('missionChip');
+        const missionText = document.getElementById('missionText');
+        const missionProg = document.getElementById('missionProg');
+        const missionBarWrap = document.getElementById('missionBarWrap');
+        const missionBar = document.getElementById('missionBar');
+        const missionReward = document.getElementById('missionReward');
+        const missionTime = document.getElementById('missionTime');
+
+        function showEl(el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+        function hideEl(el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+
+        // ================================================================
+        //  BAHASA
+        // ================================================================
+        function applyLang() {
+            document.documentElement.lang = lang;
+            document.title = t('docTitle');
+            document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+            document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+            document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+            document.querySelectorAll('[data-lang-btn]').forEach(b => {
+                const on = b.dataset.langBtn === lang;
+                b.classList.toggle('lang-on', on);
+                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+            if (gameState !== 'PLAYING' && gameState !== 'PAUSED') targetSharkInfo.textContent = t('infoIdle');
+        }
+        function setLang(l) {
+            lang = l;
+            try { localStorage.setItem('shark_lang', l); } catch (e) {}
+            applyLang();
+        }
+
+        typingInput.addEventListener('focus', () => { typingInput.style.borderColor = 'rgba(125,255,217,0.9)'; typingInput.style.boxShadow = '0 0 18px rgba(125,255,217,0.3)'; });
+        typingInput.addEventListener('blur', () => { typingInput.style.borderColor = 'rgba(107,227,255,0.35)'; typingInput.style.boxShadow = 'none'; });
+
+        // ================================================================
+        //  LAYAR PENUH
+        // ================================================================
+        function isFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+        function enterFullscreen() {
+            const el = document.documentElement;
+            const req = el.requestFullscreen || el.webkitRequestFullscreen;
+            if (req && !isFullscreen()) {
+                try {
+                    const p = req.call(el);
+                    if (p && p.catch) p.catch(() => {});
+                } catch (e) {}
+            }
+        }
+        function exitFullscreen() {
+            const ex = document.exitFullscreen || document.webkitExitFullscreen;
+            if (ex && isFullscreen()) {
+                try {
+                    const p = ex.call(document);
+                    if (p && p.catch) p.catch(() => {});
+                } catch (e) {}
+            }
+        }
+        function toggleFullscreen() {
+            if (isFullscreen()) exitFullscreen(); else enterFullscreen();
+            if (gameState === 'PLAYING') typingInput.focus();
+        }
+
+        // ================================================================
+        //  TOMBOL SUARA
+        // ================================================================
+        function refreshSoundButtons() {
+            btnMusic.classList.toggle('opacity-40', !Sound.musicOn);
+            btnSfx.classList.toggle('opacity-40', !Sound.sfxOn);
+            btnSfx.textContent = Sound.sfxOn ? '🔊' : '🔇';
+        }
+        function toggleMusic() {
+            Sound.unlock();
+            Sound.setMusicOn(!Sound.musicOn);
+            try { localStorage.setItem('shark_music', Sound.musicOn ? 'on' : 'off'); } catch (e) {}
+            refreshSoundButtons();
+            if (gameState === 'PLAYING') typingInput.focus();
+        }
+        function toggleSfx() {
+            Sound.unlock();
+            Sound.setSfxOn(!Sound.sfxOn);
+            try { localStorage.setItem('shark_sfx', Sound.sfxOn ? 'on' : 'off'); } catch (e) {}
+            refreshSoundButtons();
+            if (gameState === 'PLAYING') typingInput.focus();
+        }
+        refreshSoundButtons();
+
+        // ================================================================
+        //  SUASANA & EFEK VISUAL
+        // ================================================================
+        function createBubbles() {
+            setInterval(() => {
+                if (bubbleContainer.childElementCount < 18) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    const size = Math.random() * 14 + 6 + 'px';
+                    bubble.style.width = size;
+                    bubble.style.height = size;
+                    bubble.style.left = Math.random() * 100 + '%';
+                    bubble.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                    bubbleContainer.appendChild(bubble);
+                    setTimeout(() => bubble.remove(), 10500);
+                }
+            }, 700);
+        }
+        createBubbles();
+
+        (function makePlankton() {
+            const box = document.getElementById('plankton');
+            const colors = ['#7dffd9', '#6be3ff', '#ff8fc8', '#b9a6ff', '#ffc58f'];
+            for (let i = 0; i < 40; i++) {
+                const m = document.createElement('div');
+                m.className = 'mote';
+                const s = 2 + Math.random() * 3;
+                const c = colors[i % colors.length];
+                m.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;width:${s}px;height:${s}px;background:${c};box-shadow:0 0 8px ${c};--t:${(4 + Math.random() * 6).toFixed(1)}s;animation-delay:${(-Math.random() * 8).toFixed(1)}s`;
+                box.appendChild(m);
+            }
+        })();
+
+        function decorate(container, count, maxH) {
+            const colors = ['#7dffd9', '#6be3ff', '#ff8fc8', '#b9a6ff'];
+            for (let i = 0; i < count; i++) {
+                const h = 34 + Math.random() * maxH;
+                const c = colors[i % colors.length];
+                const d = document.createElement('div');
+                d.className = 'absolute bottom-0 seaweed';
+                d.style.left = (2 + (i / count) * 94 + Math.random() * 3) + '%';
+                d.style.width = '18px';
+                d.style.height = h + 'px';
+                d.style.animationDuration = (3 + Math.random() * 3).toFixed(1) + 's';
+                d.style.animationDelay = (-Math.random() * 4).toFixed(1) + 's';
+                d.innerHTML = `<svg viewBox="0 0 20 100" preserveAspectRatio="none" style="width:100%;height:100%;overflow:visible"><path d="M10 100 C 0 80, 20 62, 10 42 C 2 24, 16 10, 10 0" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.55" style="filter:drop-shadow(0 0 5px ${c})"/></svg>`;
+                container.appendChild(d);
+            }
+        }
+        decorate(document.getElementById('tankDecor'), 7, 50);
+        decorate(document.getElementById('arenaDecor'), 22, 55);
+
+        function floatText(x, y, text, color) {
+            const el = document.createElement('div');
+            el.textContent = text;
+            el.className = 'absolute font-bubble font-semibold text-xl whitespace-nowrap';
+            el.style.left = '0';
+            el.style.top = '0';
+            el.style.color = color;
+            el.style.textShadow = '0 2px 8px rgba(0,0,0,0.7)';
+            el.style.transform = `translate(${x}px, ${y}px)`;
+            effectsLayer.appendChild(el);
+            el.animate([
+                { transform: `translate(${x}px, ${y}px) scale(0.8)`, opacity: 1 },
+                { transform: `translate(${x}px, ${y - 46}px) scale(1.2)`, opacity: 0 }
+            ], { duration: 900, easing: 'ease-out' }).onfinish = () => el.remove();
+        }
+
+        // Pesan kecil di bagian atas arena
+        function showToast(text, color) {
+            color = color || '#7dffd9';
+            const el = document.createElement('div');
+            el.className = 'glass px-5 py-2 font-bubble text-base font-semibold text-center';
+            el.style.borderRadius = '999px';
+            el.style.borderColor = color;
+            el.style.boxShadow = `0 0 18px ${color}66`;
+            el.textContent = text;
+            toastLayer.appendChild(el);
+            el.animate([
+                { opacity: 0, transform: 'translateY(-10px) scale(0.95)' },
+                { opacity: 1, transform: 'translateY(0) scale(1)', offset: 0.12 },
+                { opacity: 1, transform: 'translateY(0) scale(1)', offset: 0.8 },
+                { opacity: 0, transform: 'translateY(-8px) scale(1)' }
+            ], { duration: 2600, easing: 'ease-out' }).onfinish = () => el.remove();
+        }
+
+        // Tulisan besar di tengah arena
+        function showBanner(text, color) {
+            color = color || '#7dffd9';
+            const el = document.createElement('div');
+            el.textContent = text;
+            el.className = 'absolute font-bubble font-bold text-3xl md:text-5xl whitespace-nowrap text-center';
+            el.style.left = '50%';
+            el.style.top = '40%';
+            el.style.color = color;
+            el.style.textShadow = `0 0 24px ${color}, 0 4px 14px rgba(0,0,0,0.6)`;
+            effectsLayer.appendChild(el);
+            el.animate([
+                { opacity: 0, transform: 'translate(-50%, -50%) scale(0.6)' },
+                { opacity: 1, transform: 'translate(-50%, -50%) scale(1.08)', offset: 0.2 },
+                { opacity: 1, transform: 'translate(-50%, -50%) scale(1)', offset: 0.7 },
+                { opacity: 0, transform: 'translate(-50%, -80%) scale(1.1)' }
+            ], { duration: 1900, easing: 'ease-out' }).onfinish = () => el.remove();
+        }
+
+        function biteEffect(cy) {
+            const el = document.createElement('div');
+            el.textContent = '💥';
+            el.className = 'absolute text-5xl';
+            el.style.left = '0';
+            el.style.top = '0';
+            const p = `translate(-26px, ${cy - 28}px)`;
+            el.style.transform = p;
+            effectsLayer.appendChild(el);
+            el.animate([
+                { transform: `${p} scale(0.3)`, opacity: 1 },
+                { transform: `${p} scale(1.5)`, opacity: 1, offset: 0.4 },
+                { transform: `${p} scale(1.9)`, opacity: 0 }
+            ], { duration: 600, easing: 'ease-out' }).onfinish = () => el.remove();
+
+            hitFlash.animate([{ opacity: 0.35 }, { opacity: 0 }], { duration: 500 });
+            tank.animate([
+                { transform: 'translateX(0)' }, { transform: 'translateX(-6px)' },
+                { transform: 'translateX(6px)' }, { transform: 'translateX(-4px)' },
+                { transform: 'translateX(3px)' }, { transform: 'translateX(0)' }
+            ], { duration: 380 });
+        }
+
+        function waveSweep() {
+            const el = document.createElement('div');
+            el.className = 'absolute inset-y-0 left-0';
+            el.style.width = '34%';
+            el.style.background = 'linear-gradient(90deg, transparent, rgba(125,255,217,0.38), rgba(107,227,255,0.18), transparent)';
+            effectsLayer.appendChild(el);
+            el.animate([
+                { transform: 'translateX(-100%)' },
+                { transform: 'translateX(320%)' }
+            ], { duration: 1000, easing: 'ease-in-out' }).onfinish = () => el.remove();
+        }
+
+        // ================================================================
+        //  AKUARIUM: ikan berenang kiri-kanan (ikan = nyawa)
+        // ================================================================
+        const tankFish = [];
+        let tankW = 300, tankH = 500;
+        const FISH_SIZE = 48;
+
+        function measureTank() {
+            tankW = aquariumContainer.clientWidth || tankW;
+            tankH = aquariumContainer.clientHeight || tankH;
+        }
+        measureTank();
+        if (window.ResizeObserver) new ResizeObserver(measureTank).observe(aquariumContainer);
+        window.addEventListener('resize', measureTank);
+
+        function randFishY() {
+            const minY = 20;
+            const maxY = Math.max(minY + 10, tankH - FISH_SIZE - 70);
+            return minY + Math.random() * (maxY - minY);
+        }
+
+        function addFishToTank(pending) {
+            const svg = fishSvgs[Math.floor(Math.random() * fishSvgs.length)];
+            const el = document.createElement('div');
+            el.className = 'fish-item absolute';
+            el.style.left = '0';
+            el.style.top = '0';
+            el.style.willChange = 'transform';
+            el.innerHTML = `<div class="fish-body" style="filter:drop-shadow(0 0 6px rgba(125,255,217,0.35))">${svg}</div>`;
+            if (pending) el.style.visibility = 'hidden';
+            aquariumContainer.appendChild(el);
+
+            const dir = Math.random() < 0.5 ? -1 : 1;
+            const f = {
+                el: el,
+                body: el.firstElementChild,
+                svg: svg,
+                x: pending ? Math.max(0, tankW - FISH_SIZE - 16 - Math.random() * 30) : Math.random() * Math.max(1, tankW - FISH_SIZE),
+                y: randFishY(),
+                targetY: randFishY(),
+                vx: dir * (28 + Math.random() * 38),     // px per detik
+                flip: dir > 0 ? -1 : 1,                  // ikan menghadap kiri; dibalik saat berenang ke kanan
+                phase: Math.random() * 6.28,
+                turnT: 3 + Math.random() * 6,
+                pending: !!pending,
+                dying: false
+            };
+            tankFish.push(f);
+            return f;
+        }
+
+        function revealFish(f) {
+            if (!tankFish.includes(f)) return;
+            f.pending = false;
+            f.el.style.visibility = 'visible';
+            f.body.animate([
+                { transform: 'scale(0.2)', filter: 'brightness(3)' },
+                { transform: 'scale(1.5)', filter: 'brightness(1.6)', offset: 0.6 },
+                { transform: 'scale(1)', filter: 'brightness(1)' }
+            ], { duration: 450, easing: 'ease-out' });
+            Sound.sfx('fish');
+        }
+
+        // Satu ikan hilang seperti nyawa berkurang (yang paling dekat garis merah)
+        function loseFish() {
+            const alive = tankFish.filter(f => !f.dying);
+            const ready = alive.filter(f => !f.pending);
+            const pool = ready.length ? ready : alive;
+            if (!pool.length) return;
+            const target = pool.reduce((a, b) => (b.x > a.x ? b : a));
+            target.dying = true;
+            fishCount = Math.max(0, fishCount - 1);
+            updateStats();
+
+            const eff = effectsLayer.getBoundingClientRect();
+            const r = target.el.getBoundingClientRect();
+            floatText(r.left - eff.left, r.top - eff.top - 6, '-1 🐠', '#ff8fa8');
+
+            target.body.animate([
+                { transform: 'scale(1)', opacity: 1, filter: 'none' },
+                { transform: 'scale(1.4) rotate(-12deg)', opacity: 1, filter: 'drop-shadow(0 0 10px #ff6b8b) saturate(2)', offset: 0.25 },
+                { transform: 'translateY(-30px) scale(0.2) rotate(25deg)', opacity: 0, filter: 'drop-shadow(0 0 10px #ff6b8b)' }
+            ], { duration: 750, easing: 'ease-out', fill: 'forwards' }).onfinish = () => {
+                target.el.remove();
+                const i = tankFish.indexOf(target);
+                if (i >= 0) tankFish.splice(i, 1);
+            };
+        }
+
+        // Ikan baru terbang menuju akuarium
+        function flyFishToTank(f, fromX, fromY, done) {
+            if (!tankFish.includes(f)) return;
+            const eff = effectsLayer.getBoundingClientRect();
+            const area = aquariumContainer.getBoundingClientRect();
+            const tx = area.left + f.x - eff.left;
+            const ty = area.top + f.y - eff.top;
+
+            const el = document.createElement('div');
+            el.className = 'absolute';
+            el.style.left = '0';
+            el.style.top = '0';
+            el.style.filter = 'drop-shadow(0 0 10px rgba(125,255,217,0.8))';
+            el.innerHTML = f.svg;
+            el.style.transform = `translate(${fromX}px, ${fromY}px) scale(0.6)`;
+            el.style.transition = 'transform 0.7s cubic-bezier(0.45, 0, 0.75, 0.45)';
+            effectsLayer.appendChild(el);
+
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                el.style.transform = `translate(${tx}px, ${ty}px) scale(1)`;
+            }));
+            setTimeout(() => { el.remove(); done(); }, 700);
+        }
+
+        // Tambah ikan (nyawa) dengan animasi terbang dari titik tertentu
+        function awardFish(count, fromX, fromY) {
+            fishCount += count;
+            updateStats();
+            for (let i = 0; i < count; i++) {
+                const f = addFishToTank(true);
+                setTimeout(() => flyFishToTank(f, fromX, fromY, () => revealFish(f)), i * 220);
+            }
+        }
+
+        // Loop gerak ikan (berenang kiri-kanan, berbalik arah dengan mulus)
+        let lastFishT = performance.now();
+        function fishLoop(now) {
+            const dt = Math.min(0.05, (now - lastFishT) / 1000);
+            lastFishT = now;
+            if (gameState === 'PAUSED') { requestAnimationFrame(fishLoop); return; }
+            const maxX = Math.max(0, tankW - FISH_SIZE);
+
+            for (const f of tankFish) {
+                if (f.pending || f.dying) continue;
+
+                f.x += f.vx * dt;
+                if (f.x <= 0) { f.x = 0; f.vx = Math.abs(f.vx); }
+                else if (f.x >= maxX) { f.x = maxX; f.vx = -Math.abs(f.vx); }
+
+                f.turnT -= dt;
+                if (f.turnT <= 0) {
+                    f.turnT = 3 + Math.random() * 6;
+                    if (Math.random() < 0.4) f.vx = -f.vx;
+                    f.targetY = randFishY();
+                }
+                f.y += (f.targetY - f.y) * Math.min(1, dt * 0.6);
+
+                const wantFlip = f.vx > 0 ? -1 : 1;
+                f.flip += (wantFlip - f.flip) * Math.min(1, dt * 9);
+
+                const sec = now / 1000;
+                const bob = Math.sin(sec * 1.6 + f.phase) * 5;
+                const rot = Math.sin(sec * 5 + f.phase) * 3;
+                f.el.style.transform = `translate(${f.x.toFixed(1)}px, ${(f.y + bob).toFixed(1)}px) scaleX(${f.flip.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
+            }
+            requestAnimationFrame(fishLoop);
+        }
+        requestAnimationFrame(fishLoop);
+
+        // ================================================================
+        //  KATA, HIU, DAN TANTANGAN
+        // ================================================================
+        const rev = w => Array.from(w).reverse().join('');
+
+        function pickWord(opts) {
+            opts = opts || {};
+            const bank = wordBanks[lang] || wordBanks.id;
+            const used = new Set([...sharks.map(s => s.current), ...items.map(i => i.word)]);
+            const ok = w => !used.has(w) && w.length >= (opts.minLen || 0) && w.length <= (opts.maxLen || 99) && (!opts.noPalindrome || rev(w) !== w);
+            let pool = bank.filter(ok);
+            if (!pool.length) pool = bank.filter(w => !used.has(w));
+            if (!pool.length) pool = bank;
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function pickSharkType(opts) {
+            const d = sharksDefeated;
+            if (opts.wave) return (d >= 3 && Math.random() < 0.25) ? 'fast' : 'normal';
+            if (d >= nextBossAt && !sharks.some(s => s.type === 'boss')) { nextBossAt = d + 10; return 'boss'; }
+            const pFast = d >= 3 ? 0.16 : 0;
+            const pRev = d >= 4 ? 0.14 : 0;
+            const pArmor = d >= 5 ? 0.14 : 0;
+            const r = Math.random();
+            if (r < pFast) return 'fast';
+            if (r < pFast + pRev) return 'reverse';
+            if (r < pFast + pRev + pArmor) return 'armor';
+            return 'normal';
+        }
+
+        function renderWord(s, typed) {
+            const info = SHARK_TYPES[s.type];
+            const tag = info.tag ? `<span class="tag">${info.tag}</span>` : '';
+            const pips = s.maxHp > 1 ? `<span class="pips">${'●'.repeat(s.hp)}${'○'.repeat(s.maxHp - s.hp)}</span>` : '';
+            let w;
+            if (s.type === 'reverse') w = rev(s.current);
+            else if (typed && s.current.startsWith(typed)) w = `<span class="typed">${typed}</span>${s.current.slice(typed.length)}`;
+            else w = s.current;
+            s.wordEl.innerHTML = `${tag}<span>${w}</span>${pips}`;
+        }
+
+        function renderTyped() {
+            const v = typingInput.value.toLowerCase();
+            sharks.forEach(s => renderWord(s, v));
+            items.forEach(i => {
+                i.wordEl.innerHTML = (v && i.word.startsWith(v)) ? `<span class="typed">${v}</span>${i.word.slice(v.length)}` : i.word;
+            });
+        }
+
+        function spawnGap() {
+            return Math.max(1800, 3200 - sharksDefeated * 60) + Math.random() * 2000;
+        }
+
+        function spawnShark(opts) {
+            opts = opts || {};
+            const type = pickSharkType(opts);
+            const info = SHARK_TYPES[type];
+            const word = pickWord({ minLen: info.minLen, maxLen: info.maxLen, noPalindrome: type === 'reverse' });
+
+            const cw = sharksContainer.clientWidth || 800;
+            const ch = sharksContainer.clientHeight || 300;
+            // Kecepatan mengikuti lebar layar & naik pelan seiring skor
+            const ramp = 0.85 + Math.min(0.55, sharksDefeated * 0.04);
+            const speed = (Math.random() * 1.1 + 0.75) * ramp * (Math.max(cw, 500) / 900) * info.speedMul * (opts.wave ? 0.9 : 1);
+
+            const el = document.createElement('div');
+            el.className = 'absolute top-0 left-0';
+            el.style.willChange = 'transform';
+            el.innerHTML = `
+                <div class="shark-inner flex flex-col items-center">
+                    <div class="shark-word t-${type} px-4 py-1.5 rounded-2xl mb-1 text-lg md:text-xl font-semibold text-center"></div>
+                    <div class="shark-graphic animate-shark-galak" style="animation-delay:-${(Math.random() * 0.4).toFixed(2)}s">
+                        ${sharkSvg(info.pal, info.size)}
+                    </div>
+                </div>
+            `;
+            sharksContainer.appendChild(el);
+
+            const w = el.offsetWidth;
+            const h = el.offsetHeight;
+            const y = Math.max(4, Math.random() * (ch - h - 8) + 4);
+
+            const shark = {
+                id: Date.now() + Math.random(),
+                type: type,
+                hp: info.hp,
+                maxHp: info.hp,
+                current: word,
+                x: cw,
+                y: y,
+                w: w,
+                h: h,
+                speed: speed,
+                nearDist: Math.max(240, cw * 0.2),
+                element: el,
+                wordEl: el.querySelector('.shark-word'),
+                graphicEl: el.querySelector('.shark-graphic'),
+                near: false,
+                isDying: false
+            };
+            el.style.transform = `translate3d(${shark.x}px, ${shark.y}px, 0)`;
+            sharks.push(shark);
+            renderWord(shark, '');
+
+            if (type === 'boss') {
+                showBanner(t('bossBanner'), '#ffd86b');
+                Sound.sfx('wave');
+            }
+        }
+
+        function spawnItem() {
+            const types = ['freeze', 'wave'];
+            if (!shield) types.push('shield');
+            const type = types[Math.floor(Math.random() * types.length)];
+            const info = ITEM_TYPES[type];
+            const word = pickWord({ maxLen: 5 });
+
+            const cw = sharksContainer.clientWidth || 800;
+            const ch = sharksContainer.clientHeight || 300;
+
+            const el = document.createElement('div');
+            el.className = 'absolute top-0 left-0';
+            el.style.willChange = 'transform';
+            el.innerHTML = `
+                <div class="flex flex-col items-center gap-1">
+                    <div class="item-orb" style="--c:${info.color}">${info.icon}</div>
+                    <div class="item-word" style="--c:${info.color}">${word}</div>
+                </div>`;
+            sharksContainer.appendChild(el);
+
+            const w = el.offsetWidth;
+            const h = el.offsetHeight;
+            const baseY = 40 + Math.random() * Math.max(10, ch - h - 100);
+
+            items.push({
+                id: Date.now() + Math.random(),
+                type: type,
+                word: word,
+                x: cw,
+                baseY: baseY,
+                y: baseY,
+                w: w,
+                h: h,
+                speed: (0.55 + Math.random() * 0.25) * (Math.max(cw, 500) / 900),
+                phase: Math.random() * 6.28,
+                element: el,
+                wordEl: el.querySelector('.item-word')
+            });
+            el.style.transform = `translate3d(${cw}px, ${baseY}px, 0)`;
+            showToast(t('toastItem'), info.color);
+            Sound.sfx('item');
+            nextItemAt = gameTime + 22000 + Math.random() * 12000;
+        }
+
+        function startWave() {
+            nextWaveAt += 8;
+            const n = Math.min(5, 3 + Math.floor(sharksDefeated / 16));
+            for (let i = 0; i < n; i++) spawnQueue.push({ at: gameTime + 1800 + i * 1000 });
+            nextSpawnAt = Math.max(nextSpawnAt, gameTime + 1800 + n * 1000 + 1500);
+            showBanner(t('waveBanner'), '#6be3ff');
+            Sound.sfx('wave');
+        }
+
+        // ---------- Misi tantangan ----------
+        function startMission() {
+            const pool = ['streak', 'timed', 'long', 'close'];
+            if (sharksDefeated >= 5) pool.push('special');
+            const type = pool[Math.floor(Math.random() * pool.length)];
+            let goal = 3, secs = 0;
+            if (type === 'streak') goal = 4 + Math.floor(Math.random() * 3);
+            if (type === 'timed') { goal = 3 + Math.floor(Math.random() * 2); secs = 28 + (goal - 3) * 4; }
+            if (type === 'long') goal = 2 + Math.floor(Math.random() * 2);
+            if (type === 'close') goal = 2;
+            if (type === 'special') goal = 2;
+            mission = {
+                type: type, goal: goal, progress: 0, secs: secs,
+                deadline: secs ? gameTime + secs * 1000 : 0,
+                rewardScore: type === 'close' ? 150 : 100
+            };
+            renderMission();
+            showToast(t('toastMission'), '#ffc58f');
+            Sound.sfx('item');
+        }
+
+        function renderMission() {
+            if (!mission) { missionChip.style.display = 'none'; return; }
+            const m = mission;
+            missionChip.style.display = 'flex';
+            missionText.textContent = '🎯 ' + tf('m_' + m.type, { n: m.goal, s: m.secs });
+            missionProg.textContent = m.progress + '/' + m.goal;
+            missionReward.textContent = t('reward');
+            if (m.deadline) {
+                const left = Math.max(0, m.deadline - gameTime);
+                missionBarWrap.style.display = 'block';
+                missionBar.style.width = Math.min(100, left / (m.secs * 1000) * 100) + '%';
+                missionTime.textContent = '⏱ ' + Math.ceil(left / 1000) + 's';
+            } else {
+                missionBarWrap.style.display = 'none';
+                missionTime.textContent = '';
+            }
+            lastMissionRender = gameTime;
+        }
+
+        function completeMission() {
+            const m = mission;
+            mission = null;
+            nextMissionAt = gameTime + 7000 + Math.random() * 5000;
+            score += m.rewardScore;
+            missionsDone++;
+            const w = effectsLayer.clientWidth || 800;
+            awardFish(1, w / 2 - 24, 30);
+            const healed = healLife();
+            updateStats();
+            renderMission();
+            showBanner(t(healed ? 'missionDoneLife' : 'missionDone'), '#ffc58f');
+            Sound.sfx('mission');
+        }
+
+        function failMission() {
+            mission = null;
+            nextMissionAt = gameTime + 8000 + Math.random() * 4000;
+            renderMission();
+            showToast(t('missionFail'), '#ff8fa8');
+            Sound.sfx('wrong');
+        }
+
+        function missionOnKill(shark, typedLen) {
+            if (!mission) return;
+            const m = mission;
+            if (m.type === 'streak' || m.type === 'timed') m.progress++;
+            else if (m.type === 'long' && typedLen >= 5) m.progress++;
+            else if (m.type === 'close' && shark.near) m.progress++;
+            else if (m.type === 'special' && shark.type !== 'normal') m.progress++;
+            if (m.progress >= m.goal) completeMission(); else renderMission();
+        }
+
+        // ---------- Nyawa ----------
+        function heartsText() {
+            return '❤️'.repeat(Math.max(0, lives)) + '🤍'.repeat(Math.max(0, MAX_LIVES - lives));
+        }
+        function healLife() {
+            if (lives >= MAX_LIVES) return false;
+            lives++;
+            updateStats();
+            statLives.parentElement.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 350 });
+            return true;
+        }
+
+        // ---------- Combo ----------
+        function comboBump() {
+            statCombo.textContent = 'x' + combo;
+            comboPill.style.display = combo >= 2 ? 'flex' : 'none';
+            if (combo >= 2) comboPill.animate([{ transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 220 });
+        }
+        function registerCorrect(len) {
+            correctKeysTyped += len;
+            combo++;
+            if (combo > bestCombo) bestCombo = combo;
+            comboBump();
+            if (combo % 10 === 0) {
+                score += 100;
+                showToast(tf('toastCombo', { n: combo }), '#ff8fc8');
+                updateStats();
+            }
+        }
+        function breakCombo() {
+            combo = 0;
+            comboBump();
+        }
+
+        // ---------- Kata ajaib ----------
+        function collectItem(item) {
+            items = items.filter(i => i !== item);
+            item.element.animate([
+                { transform: `translate3d(${item.x}px, ${item.y}px, 0) scale(1)`, opacity: 1 },
+                { transform: `translate3d(${item.x}px, ${item.y}px, 0) scale(1.8)`, opacity: 0 }
+            ], { duration: 350, easing: 'ease-out' }).onfinish = () => item.element.remove();
+
+            score += 15;
+            updateStats();
+            floatText(item.x + item.w / 2 - 16, item.y, '+15', '#ffc58f');
+
+            const cw = sharksContainer.clientWidth || 800;
+            if (item.type === 'freeze') {
+                freezeUntil = gameTime + 4500;
+                showToast(t('toastFreeze'), '#9fe8ff');
+                Sound.sfx('freeze');
+            } else if (item.type === 'wave') {
+                sharks.forEach(s => {
+                    s.x = Math.min(cw, s.x + cw * 0.35);
+                    if (s.x > s.nearDist && s.near) {
+                        s.near = false;
+                        s.wordEl.classList.remove('bubble-danger');
+                        s.graphicEl.classList.remove('shark-enraged');
+                    }
+                    s.element.style.transform = `translate3d(${s.x}px, ${s.y}px, 0)`;
+                });
+                waveSweep();
+                showToast(t('toastWave'), '#7dffd9');
+                Sound.sfx('wave');
+            } else if (item.type === 'shield') {
+                shield = true;
+                tank.classList.add('shielded');
+                showToast(t('toastShield'), '#c9b8ff');
+                Sound.sfx('item');
+            }
+        }
+
+        function applyAnimPause() {
+            const stop = gameState === 'PAUSED' || frozenVisual;
+            sharksContainer.querySelectorAll('svg').forEach(svg => {
+                try { if (stop) svg.pauseAnimations(); else svg.unpauseAnimations(); } catch (e) {}
+            });
+        }
+
+        // ================================================================
+        //  ALUR GAME
+        // ================================================================
+        function resetRun() {
+            score = 0;
+            lives = START_LIVES;
+            fishCount = START_FISH;
+            sharksDefeated = 0;
+            sharks = [];
+            items = [];
+            spawnQueue = [];
+            mission = null;
+            shield = false;
+            freezeUntil = 0;
+            frozenVisual = false;
+            combo = 0; bestCombo = 0; missionsDone = 0;
+            gameTime = 0;
+            correctKeysTyped = 0;
+            nextSpawnAt = 1400;
+            nextMissionAt = 9000;
+            nextItemAt = 26000;
+            nextWaveAt = 8;
+            nextBossAt = 10;
+
+            sharksContainer.innerHTML = '';
+            sharksContainer.classList.remove('frozen');
+            effectsLayer.innerHTML = '';
+            toastLayer.innerHTML = '';
+            tank.classList.remove('shielded');
+            aquariumContainer.innerHTML = '';
+            tankFish.length = 0;
+            measureTank();
+            missionChip.style.display = 'none';
+            comboPill.style.display = 'none';
+            statCombo.textContent = 'x0';
+            statWpm.textContent = '0';
+            typingInput.value = '';
+            updateStats();
+        }
+
+        function startGame() {
+            // Layar penuh dipanggil langsung dari klik pemain (syarat browser)
+            if (!fsRequested) { fsRequested = true; enterFullscreen(); }
+            Sound.unlock();
+
+            hideEl(startScreen);
+            hideEl(gameOverScreen);
+            hideEl(pauseScreen);
+            document.body.classList.remove('is-paused');
+
+            resetRun();
+            for (let i = 0; i < START_FISH; i++) addFishToTank(false);
+
+            gameState = 'PLAYING';
+            lastTick = performance.now();
+            targetSharkInfo.textContent = t('infoIdle');
+            typingInput.disabled = false;
+            typingInput.focus();
+            btnPause.disabled = false;
+
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(updateGame, 1000 / 60);
+
+            Sound.stopMusic(0);
+            Sound.startMusic();
+            Sound.sfx('start');
+        }
+
+        function updateGame() {
+            if (gameState !== 'PLAYING') return;
+
+            const nowMs = performance.now();
+            const dt = Math.min(50, nowMs - lastTick);
+            lastTick = nowMs;
+            gameTime += dt;
+            const k = dt / 16.667;
+
+            const frozen = gameTime < freezeUntil;
+            if (frozen !== frozenVisual) {
+                frozenVisual = frozen;
+                sharksContainer.classList.toggle('frozen', frozen);
+                applyAnimPause();
+            }
+
+            // --- Munculnya hiu ---
+            if (frozen) {
+                nextSpawnAt += dt;
+                spawnQueue.forEach(q => { q.at += dt; });
+                if (mission && mission.deadline) mission.deadline += dt;
+            } else {
+                if (gameTime >= nextSpawnAt) {
+                    spawnShark();
+                    nextSpawnAt = gameTime + spawnGap();
+                }
+                for (let i = spawnQueue.length - 1; i >= 0; i--) {
+                    if (gameTime >= spawnQueue[i].at) {
+                        spawnQueue.splice(i, 1);
+                        spawnShark({ wave: true });
+                    }
+                }
+            }
+
+            // --- Gerak hiu ---
+            for (const shark of [...sharks]) {
+                if (shark.isDying) continue;
+
+                if (!frozen) {
+                    shark.x -= shark.speed * k;
+                    shark.element.style.transform = `translate3d(${shark.x}px, ${shark.y}px, 0)`;
+                }
+
+                if (!shark.near && shark.x < shark.nearDist) {
+                    shark.near = true;
+                    shark.wordEl.classList.add('bubble-danger');
+                    shark.graphicEl.classList.add('shark-enraged');
+                    Sound.sfx('warn');
+                }
+
+                // Hiu menyentuh garis merah
+                if (shark.x <= -6) {
+                    sharkBites(shark);
+                    if (gameState !== 'PLAYING') return;
+                }
+            }
+
+            // --- Kata ajaib ---
+            for (const item of [...items]) {
+                item.x -= item.speed * k;
+                item.y = item.baseY + Math.sin(gameTime / 600 + item.phase) * 18;
+                item.element.style.transform = `translate3d(${item.x}px, ${item.y}px, 0)`;
+                if (item.x < -item.w - 10) {
+                    item.element.remove();
+                    items = items.filter(i => i !== item);
+                }
+            }
+            if (items.length === 0 && sharksDefeated >= 2 && gameTime >= nextItemAt) spawnItem();
+
+            // --- Misi ---
+            if (!mission) {
+                if (sharksDefeated >= 2 && gameTime >= nextMissionAt) startMission();
+            } else if (mission.deadline && gameTime > mission.deadline) {
+                failMission();
+            } else if (gameTime - lastMissionRender > 250) {
+                renderMission();
+            }
+
+            updateRealtimeWpm();
+        }
+
+        function sharkBites(shark) {
+            sharks = sharks.filter(s => s !== shark);
+            const cy = shark.y + shark.h / 2;
+            shark.element.remove();
+            breakCombo();
+
+            // Perisai menahan satu gigitan
+            if (shield) {
+                shield = false;
+                tank.classList.remove('shielded');
+                Sound.sfx('shieldpop');
+                showToast(t('toastShieldPop'), '#c9b8ff');
+                hitFlash.animate([{ opacity: 0.15 }, { opacity: 0 }], { duration: 400 });
+                return;
+            }
+
+            lives--;
+            updateStats();
+            statLives.parentElement.animate([
+                { transform: 'translateX(0)' }, { transform: 'translateX(-5px)' },
+                { transform: 'translateX(5px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }
+            ], { duration: 350 });
+            floatText(10, cy - 40, '-1 ❤️', '#ff8fa8');
+            Sound.sfx('bite');
+            biteEffect(cy);
+            loseFish();
+
+            if (lives <= 0) endGame();
+        }
+
+        // Tekan Enter untuk mencocokkan kata pada hiu atau kata ajaib mana pun di layar
+        typingInput.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            if (gameState !== 'PLAYING') return;
+
+            const typedValue = typingInput.value.trim().toLowerCase();
+            if (!typedValue) return;
+
+            const shark = sharks.find(s => !s.isDying && s.current === typedValue);
+            const item = shark ? null : items.find(i => i.word === typedValue);
+
+            if (shark) {
+                registerCorrect(typedValue.length);
+                if (shark.hp > 1) hitShark(shark); else killShark(shark, typedValue.length);
+                typingInput.value = '';
+            } else if (item) {
+                registerCorrect(typedValue.length);
+                collectItem(item);
+                targetSharkInfo.textContent = t('infoItem');
+                typingInput.value = '';
+            } else {
+                Sound.sfx('wrong');
+                typingInput.style.borderColor = 'rgba(255,107,139,0.95)';
+                setTimeout(() => { typingInput.style.borderColor = ''; typingInput.dispatchEvent(new Event('focus')); }, 180);
+                typingInput.value = '';
+                breakCombo();
+                if (mission && mission.type === 'streak' && mission.progress > 0) { mission.progress = 0; renderMission(); }
+                targetSharkInfo.textContent = t('infoMiss');
+            }
+            renderTyped();
+        });
+
+        // Sorot huruf yang sudah benar
+        typingInput.addEventListener('input', renderTyped);
+
+        // Hiu baja / raja hiu: kena tapi belum tumbang, ganti ke kata berikutnya
+        function hitShark(shark) {
+            shark.hp--;
+            shark.current = pickWord({ minLen: SHARK_TYPES[shark.type].minLen, maxLen: SHARK_TYPES[shark.type].maxLen });
+            renderWord(shark, '');
+
+            const cw = sharksContainer.clientWidth || 800;
+            shark.x = Math.min(cw, shark.x + 70);
+            shark.element.style.transform = `translate3d(${shark.x}px, ${shark.y}px, 0)`;
+            if (shark.x > shark.nearDist && shark.near) {
+                shark.near = false;
+                shark.wordEl.classList.remove('bubble-danger');
+                shark.graphicEl.classList.remove('shark-enraged');
+            }
+
+            shark.element.classList.remove('shark-hit');
+            void shark.element.offsetWidth;
+            shark.element.classList.add('shark-hit');
+
+            score += 10;
+            updateStats();
+            floatText(shark.x + shark.w / 2 - 12, shark.y, '+10', '#b9a6ff');
+            Sound.sfx('hit');
+            targetSharkInfo.textContent = t('infoArmor');
+        }
+
+        function killShark(shark, typedLen) {
+            const info = SHARK_TYPES[shark.type];
+            shark.isDying = true;
+            sharks = sharks.filter(s => s.id !== shark.id);
+
+            const gain = info.score + Math.min(combo, 15) * 2;
+            score += gain;
+            sharksDefeated++;
+            Sound.sfx('correct');
+            Sound.setIntensity(sharksDefeated);
+
+            const cx = shark.x + shark.w / 2;
+            const cy = shark.y + shark.h / 2;
+
+            shark.wordEl.classList.add('opacity-40');
+            shark.element.querySelector('.shark-inner').classList.add('shark-dying');
+            setTimeout(() => shark.element.remove(), 420);
+
+            floatText(cx - 16, cy - 20, '+' + gain, '#ffc58f');
+
+            // Ikan baru terbang dari hiu menuju akuarium, lalu muncul dan berenang
+            awardFish(info.rewardFish || 1, cx - 24, cy - 24);
+            updateStats();
+            targetSharkInfo.textContent = t('infoHit');
+
+            if (shark.type === 'boss') {
+                const healed = healLife();
+                showBanner(t('bossDown') + (healed ? ' +1 ❤️' : ''), '#ffd86b');
+                Sound.sfx('mission');
+            }
+
+            missionOnKill(shark, typedLen);
+            if (sharksDefeated >= nextWaveAt) startWave();
+        }
+
+        function updateStats() {
+            statLives.textContent = heartsText();
+            statFish.textContent = fishCount;
+            tankCount.textContent = fishCount;
+            statScore.textContent = score;
+        }
+
+        function updateRealtimeWpm() {
+            const minutes = gameTime / 60000;
+            if (minutes > 0.02) {
+                const wpm = Math.round((correctKeysTyped / 5) / minutes);
+                statWpm.textContent = isNaN(wpm) ? 0 : wpm;
+            }
+        }
+
+        function endGame() {
+            gameState = 'GAMEOVER';
+            clearInterval(gameInterval);
+            typingInput.disabled = true;
+            btnPause.disabled = true;
+            Sound.stopMusic(0.6);
+            setTimeout(() => Sound.sfx('gameover'), 350);
+
+            const minutes = gameTime / 60000;
+            const finalWpmVal = minutes > 0 ? Math.round((correctKeysTyped / 5) / minutes) : 0;
+
+            if (score > highscore) {
+                highscore = score;
+                try { localStorage.setItem('shark_short_highscore', highscore); } catch (e) {}
+            }
+
+            finalScore.textContent = score;
+            finalDefeated.textContent = sharksDefeated;
+            finalWpm.textContent = finalWpmVal + ' WPM';
+            finalHighScore.textContent = highscore;
+            finalCombo.textContent = bestCombo;
+            finalMissions.textContent = missionsDone;
+            targetSharkInfo.textContent = t('infoIdle');
+            missionChip.style.display = 'none';
+
+            // Beri waktu agar ikan terakhir terlihat hilang dulu
+            setTimeout(() => {
+                if (gameState === 'GAMEOVER') showEl(gameOverScreen);
+            }, 900);
+        }
+
+        // ================================================================
+        //  PAUSE / LANJUT / ULANGI / KELUAR
+        // ================================================================
+        function pauseGame() {
+            if (gameState !== 'PLAYING') return;
+            gameState = 'PAUSED';
+            document.body.classList.add('is-paused');
+            typingInput.disabled = true;
+            applyAnimPause();
+            if (Sound.ctx) Sound.ctx.suspend();
+            pauseFish.textContent = fishCount;
+            pauseLives.textContent = heartsText();
+            pauseScore.textContent = score;
+            showEl(pauseScreen);
+            btnPause.blur();
+        }
+
+        function resumeGame() {
+            if (gameState !== 'PAUSED') return;
+            hideEl(pauseScreen);
+            document.body.classList.remove('is-paused');
+            gameState = 'PLAYING';
+            lastTick = performance.now();
+            typingInput.disabled = false;
+            typingInput.focus();
+            applyAnimPause();
+            if (Sound.ctx) Sound.ctx.resume();
+        }
+
+        function restartFromPause() {
+            hideEl(pauseScreen);
+            document.body.classList.remove('is-paused');
+            startGame();
+        }
+
+        // Keluar: kembali ke menu awal (browser tidak mengizinkan halaman menutup dirinya sendiri)
+        function exitToMenu() {
+            hideEl(pauseScreen);
+            hideEl(gameOverScreen);
+            document.body.classList.remove('is-paused');
+            if (Sound.ctx) Sound.ctx.resume();
+            gameState = 'IDLE';
+            clearInterval(gameInterval);
+            Sound.stopMusic(0.4);
+            typingInput.disabled = true;
+            btnPause.disabled = true;
+            resetRun();
+            addFishToTank(false);
+            targetSharkInfo.textContent = t('infoIdle');
+            showEl(startScreen);
+            fsRequested = false;
+            exitFullscreen();
+        }
+
+        // Esc untuk jeda / lanjut
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            if (gameState === 'PLAYING') pauseGame();
+            else if (gameState === 'PAUSED') resumeGame();
+        });
+
+        // Pindah tab = otomatis dijeda, supaya ikan tidak dimakan diam-diam
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (gameState === 'PLAYING') pauseGame();
+                else if (Sound.ctx) Sound.ctx.suspend();
+            } else if (gameState !== 'PAUSED' && Sound.ctx) {
+                Sound.ctx.resume();
+            }
+        });
+
+        // ================================================================
+        //  AWAL
+        // ================================================================
+        resetRun();
+        addFishToTank(false); // ikan hiasan di menu awal
+        applyLang();
+    </script>
+</body>
+</html>

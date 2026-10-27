@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arcade Game Center - Menu Utama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+      }
+      .font-bubble {
+        font-family: "Fredoka", cursive;
+      }
+      .game-card {
+        transition: all 0.3s ease;
+      }
+      .game-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body class="w-screen h-screen flex flex-col justify-between overflow-x-hidden select-none bg-gradient-to-br from-slate-950 via-slate-900 to-zinc-950">
+    <!-- Header / Navigasi -->
+    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 z-20 flex justify-between items-center shadow-lg">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg text-2xl">🎮</div>
+        <div>
+          <h1 class="font-bubble text-lg md:text-xl font-bold tracking-wider text-white">MINI GAME CENTER</h1>
+          <p class="text-xs text-slate-400">Pilih game favoritmu dan mainkan sekarang!</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Konten Utama: Pilihan Menu Game -->
+    <main class="w-full flex-1 flex flex-col items-center justify-center p-6 z-10 max-w-5xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="font-bubble text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 mb-3">Mau Main Game Apa Hari Ini?</h2>
+        <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto leading-relaxed">Pilih salah satu game di bawah ini untuk memulai petualangan seru atau melatih kecepatan mengetik Anda!</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
+        <!-- Pilihan Game 1: Hiu & Ikan (Mengetik Cepat) -->
+        <div class="game-card bg-slate-900/90 border border-cyan-500/30 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group">
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition"></div>
+          <div>
+            <div class="w-14 h-14 rounded-2xl bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-3xl mb-4 shadow-inner">🦈</div>
+            <h3 class="font-bubble text-xl font-bold text-cyan-300 mb-2">Penyelamat Ikan (Hiu)</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">Latih kecepatan mengetikmu! Ketik kata-kata pada hiu yang datang menyerang untuk menyelamatkan ikan-ikan di akuariummu.</p>
+          </div>
+          <a
+            href="./menu/hiu.html"
+            class="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-2xl text-xs md:text-sm text-center shadow-lg shadow-cyan-600/30 transition flex items-center justify-center space-x-2"
+          >
+            <span>🚀 Mainkan typing test</span>
+          </a>
+        </div>
+
+        <!-- Pilihan Game 2: Sawit Empire (Simulasi Bisnis) -->
+        <div class="game-card bg-slate-900/90 border border-emerald-500/30 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group">
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition"></div>
+          <div>
+            <div class="w-14 h-14 rounded-2xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-3xl mb-4 shadow-inner">🌴</div>
+            <h3 class="font-bubble text-xl font-bold text-emerald-300 mb-2">Sawit Empire</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">Game simulasi perkebunan dan pabrik sawit ala Idle Miner. Tanam bibit, pekerjakan mandor, olah TBS jadi CPO, dan jadilah taipan sukses!</p>
+          </div>
+          <a
+            href="./menu/sawit_empire.html"
+            class="w-full py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold rounded-2xl text-xs md:text-sm text-center shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2"
+          >
+            <span>🚀 Mainkan Sawit Empire</span>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-900">© 2026 latara. All rights reserved. Dibuat dengan ❤️ oleh latara.</footer>
+    </footer>
+  </body>
+</html>
