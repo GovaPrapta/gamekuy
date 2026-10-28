@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBG Simulator - Makan Bergizi Gratis Nusantara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #080f1e; color: #f8fafc; }
+        .font-bubble { font-family: 'Fredoka', cursive; }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.7); }
+        }
+        .pulse-card { animation: pulseGlow 2.5s infinite ease-in-out; }
+        @keyframes floatUp {
+            0% { transform: translateY(0px) scale(1); opacity: 1; }
+            100% { transform: translateY(-45px) scale(1.2); opacity: 0; }
+        }
+        .floating-text { animation: floatUp 1s ease-out forwards; pointer-events: none; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.6); }
+
+        /* ====== SCENE DAPUR (KITCHEN LINE) ====== */
+        #kitchenScene {
+            position: relative; width: 100%; height: 185px; overflow: hidden;
+            border-radius: 1rem; border: 1px solid rgba(16,185,129,.25);
+            background: linear-gradient(to bottom, #1e293b 0%, #334155 60%, #475569 100%);
+        }
+        .k-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: linear-gradient(to bottom, #475569, #1e293b); border-top: 3px solid #10b981; }
+        .k-belt { position: absolute; left: 2%; right: 2%; bottom: 43px; height: 8px; border-radius: 4px; background: repeating-linear-gradient(90deg, #0f172a 0 12px, #334155 12px 24px); }
+        #kitchenScene.running .k-belt { animation: beltMove .5s linear infinite; }
+        @keyframes beltMove { from { background-position: 0 0; } to { background-position: 24px 0; } }
+        
+        .kstation { position: absolute; bottom: 51px; width: 62px; text-align: center; }
+        .kstation .kicon { font-size: 38px; line-height: 1; display: inline-block; }
+        .kstation small { display: block; font-size: 9px; font-weight: 800; color: #fff; background: rgba(15,23,42,.85); border-radius: 9999px; padding: 2px 4px; margin-top: 2px; white-space: nowrap; }
+        .kstation.active .kicon { animation: machineShake .15s infinite; }
+        .kstation.active small { background: #10b981; color: #0f172a; }
+        @keyframes machineShake { 0% { transform: translate(-1px,0) rotate(-2deg); } 50% { transform: translate(1px,-1px) rotate(2deg); } 100% { transform: translate(-1px,1px) rotate(-2deg); } }
+        .kstation .steam { position: absolute; top: -12px; left: 22px; font-size: 18px; opacity: 0; pointer-events: none; }
+        .kstation.active .steam { animation: steamUp 1s infinite; }
+        @keyframes steamUp { 0% { transform: translateY(8px) scale(.7); opacity: 0; } 30% { opacity: .9; } 100% { transform: translateY(-22px) scale(1.3); opacity: 0; } }
+
+        /* ====== SCENE DISTRIBUSI & MOBIL BGN ====== */
+        #deliveryScene {
+            position: relative; width: 100%; height: 185px; overflow: hidden;
+            border-radius: 1rem; border: 1px solid rgba(59,130,246,.25);
+            background: linear-gradient(to bottom, #38bdf8 0%, #7dd3fc 60%, #bbf7d0 100%);
+        }
+        .d-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: linear-gradient(to bottom, #15803d, #166534); border-top: 4px solid #4ade80; }
+        .d-path { position: absolute; left: 0; right: 0; bottom: 6px; height: 0; border-top: 2px dashed rgba(254,243,199,.4); }
+        .d-school { position: absolute; bottom: 32px; width: 68px; text-align: center; font-size: 42px; line-height: 1; }
+        .d-school small { display: block; font-size: 10px; font-weight: 800; color: #fff; background: rgba(15,23,42,.85); border-radius: 9999px; padding: 2px 4px; margin-top: 2px; }
+
+        /* ====== SPRITE KOKI & MOBIL BGN ====== */
+        .human { position: absolute; bottom: 6px; width: 26px; height: 46px; will-change: left; z-index: 5; }
+        .human .flip { position: absolute; inset: 0; }
+        .h-head { position: absolute; top: 0; left: 7px; width: 12px; height: 12px; border-radius: 50%; background: #f3c99b; border: 1px solid #c08a5b; }
+        .h-hat { position: absolute; top: -5px; left: 4px; width: 18px; height: 9px; border-radius: 8px 8px 2px 2px; background: #f8fafc; border: 1px solid #cbd5e1; }
+        .h-body { position: absolute; top: 12px; left: 6px; width: 14px; height: 17px; border-radius: 4px; background: #10b981; }
+        .h-arm { position: absolute; top: 14px; left: 10px; width: 5px; height: 15px; border-radius: 3px; background: #10b981; filter: brightness(.8); transform-origin: 50% 2px; }
+        .h-leg { position: absolute; top: 28px; width: 6px; height: 16px; border-radius: 3px; background: #1e293b; transform-origin: 50% 2px; }
+        .h-leg.l { left: 6px; } .h-leg.r { left: 14px; }
+        .h-basket { position: absolute; top: -20px; left: 1px; font-size: 18px; display: none; }
+        .h-name { position: absolute; top: -16px; left: -8px; width: 42px; text-align: center; font-size: 8px; font-weight: 800; color: #0f172a; background: rgba(255,255,255,.9); border-radius: 6px; }
+        .human.carrying .h-basket { display: block; }
+        .human.carrying .h-name { display: none; }
+        .human.walking .h-leg.l { animation: stride .4s infinite ease-in-out; }
+        .human.walking .h-leg.r { animation: stride .4s infinite ease-in-out reverse; }
+        .human.walking .h-arm { animation: stride .4s infinite ease-in-out reverse; }
+        .human.walking .flip { animation: bobWalk .2s infinite alternate ease-in-out; }
+        .human.working .h-arm { animation: chop .3s infinite alternate ease-in-out; }
+        @keyframes stride { 0%,100% { transform: rotate(-35deg); } 50% { transform: rotate(35deg); } }
+        @keyframes bobWalk { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+        @keyframes chop { from { transform: rotate(-140deg); } to { transform: rotate(-20deg); } }
+
+        /* Mobil BGN (Badan Gizi Nasional) Sprite */
+        .bgn-car { position: absolute; bottom: 8px; width: 52px; height: 28px; will-change: left; z-index: 6; transition: transform .2s; }
+        .car-body { position: absolute; bottom: 6px; width: 52px; height: 18px; background: #dc2626; border-radius: 6px 14px 4px 4px; border: 2px solid #b91c1c; }
+        .car-roof { position: absolute; bottom: 20px; left: 12px; width: 28px; height: 10px; background: #ef4444; border-radius: 8px 8px 0 0; }
+        .car-label { position: absolute; bottom: 10px; left: 10px; font-size: 7px; font-weight: 900; color: #fff; background: #1e3a8a; padding: 1px 3px; border-radius: 3px; }
+        .car-wheel-l, .car-wheel-r { position: absolute; bottom: 2px; width: 10px; height: 10px; background: #0f172a; border-radius: 50%; border: 2px solid #cbd5e1; }
+        .car-wheel-l { left: 8px; } .car-wheel-r { right: 8px; }
+    </style>
+</head>
+<body class="w-screen h-screen flex flex-col justify-between overflow-hidden select-none bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950">
+
+    <!-- Modal Event Tantangan Viral (Tren 2026) -->
+    <div id="eventModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/50 rounded-3xl p-6 max-w-md w-full text-center shadow-2xl">
+            <div id="eventIcon" class="text-5xl mb-3">⚡</div>
+            <h3 id="eventTitle" class="font-bubble text-xl font-bold text-amber-400 mb-2">Tantangan Viral MBG</h3>
+            <p id="eventDescription" class="text-xs text-slate-300 mb-6 leading-relaxed">Deskripsi kejadian atau sidak di sini...</p>
+            <div id="eventOptions" class="grid grid-cols-1 gap-2.5"></div>
+        </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-emerald-500/20 px-4 py-3 z-20 flex flex-wrap justify-between items-center shadow-xl">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30 text-2xl">🍱</div>
+            <div>
+                <h1 class="font-bubble text-lg md:text-xl font-bold tracking-wider text-emerald-400">MBG SIMULATOR</h1>
+                <p class="text-xs text-slate-400">SPPG: <span id="playerNameDisplay" class="text-emerald-300 font-medium">SPPG Nusantara 01</span></p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2 md:space-x-4 text-xs md:text-sm font-semibold mt-2 sm:mt-0">
+            <div class="bg-slate-800/90 px-3.5 py-2 rounded-xl border border-emerald-500/30 flex items-center space-x-2 shadow-md">
+                <span class="text-base">💰</span>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Dana Operasional (BGN)</div>
+                    <div id="statMoney" class="text-emerald-400 text-sm md:text-base font-bold">Rp 10.000.000</div>
+                </div>
+            </div>
+            <div class="bg-slate-800/90 px-3.5 py-2 rounded-xl border border-amber-500/30 flex items-center space-x-2 shadow-md">
+                <span class="text-base">🌾</span>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Bahan Segar</div>
+                    <div id="statRaw" class="text-amber-400 text-sm md:text-base font-bold">0 Kg</div>
+                </div>
+            </div>
+            <div class="bg-slate-800/90 px-3.5 py-2 rounded-xl border border-cyan-500/30 flex items-center space-x-2 shadow-md">
+                <span class="text-base">🍱</span>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Porsi Siap</div>
+                    <div id="statBoxes" class="text-cyan-400 text-sm md:text-base font-bold">0 Porsi</div>
+                </div>
+            </div>
+            <div class="hidden md:flex bg-slate-800/90 px-3.5 py-2 rounded-xl border border-purple-500/30 items-center space-x-2 shadow-md">
+                <span class="text-base">⭐</span>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Reputasi</div>
+                    <div id="statRep" class="text-purple-400 text-base font-bold">100% Prima</div>
+                </div>
+            </div>
+            <div class="bg-slate-800/90 px-3.5 py-2 rounded-xl border border-rose-500/30 flex items-center space-x-2 shadow-md">
+                <span class="text-base">📜</span>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Tenggat SLHS</div>
+                    <div id="statSLHS" class="text-rose-400 text-sm md:text-base font-bold">8:00</div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1.5">
+                <button onclick="openRules()" title="Aturan" class="w-9 h-9 rounded-xl bg-slate-800 border border-sky-500/30 hover:bg-slate-700">📖</button>
+                <button id="btnMusic" onclick="toggleMusic()" title="Musik" class="w-9 h-9 rounded-xl bg-slate-800 border border-emerald-500/30 hover:bg-slate-700">🎵</button>
+                <button id="btnSfx" onclick="toggleSfx()" title="Efek suara" class="w-9 h-9 rounded-xl bg-slate-800 border border-amber-500/30 hover:bg-slate-700">🔊</button>
+            </div>
+        </div>
+    </header>
+    <div id="suspendBar" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg"></div>
+
+    <!-- Area Konten Utama -->
+    <main class="w-full flex-1 p-4 md:p-6 overflow-y-auto grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto z-10">
+
+        <!-- Kolom Kiri & Tengah -->
+        <div class="lg:col-span-2 flex flex-col space-y-6">
+
+            <!-- BAGIAN 1: DAPUR MBG (KITCHEN LINE) -->
+            <div class="bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 border border-emerald-500/20 shadow-2xl relative overflow-hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">🍳</span>
+                        <h2 class="font-bubble text-lg md:text-xl font-bold text-emerald-300">Dapur SPPG (Satuan Pelayanan Pemenuhan Gizi)</h2>
+                    </div>
+                    <div class="text-xs bg-emerald-950/80 text-emerald-300 px-3 py-1 rounded-xl border border-emerald-500/30 flex items-center space-x-2">
+                        <span>👩‍🍳 Koki Aktif: <span id="statActiveChefs" class="font-bold text-cyan-400">1</span></span>
+                    </div>
+                </div>
+
+                <!-- Lini Simulasi Memasak -->
+                <div id="kitchenScene" class="mb-4">
+                    <div class="absolute top-2 left-3 text-[10px] font-extrabold tracking-widest text-emerald-300/85">LINI MASAK SPPG: STANDAR HIGIENIS & SLHS</div>
+                    <div class="k-belt"></div>
+                    <div class="k-floor"></div>
+                    <div id="ks-gudang" class="kstation" style="left:3%"><div class="kicon">📦</div><small id="kGudangLbl">Bahan 0Kg</small></div>
+                    <div id="ks-cuci" class="kstation" style="left:24%"><div class="kicon">🚰</div><small>Pencucian</small></div>
+                    <div id="ks-masak" class="kstation" style="left:46%"><div class="steam">💨</div><div class="kicon">🍲</div><small>Memasak</small></div>
+                    <div id="ks-packing" class="kstation" style="left:68%"><div class="kicon">🍱</div><small>Boxing</small></div>
+                    <div id="ks-ready" class="kstation" style="left:88%"><div class="kicon">✅</div><small id="kReadyLbl">Siap 0</small></div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <button onclick="buyRawMaterials()" class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 text-xs md:text-sm transition flex items-center space-x-2">
+                        <span>🛒 Belanja Bahan Mentah (Rp <span id="rawPrice">150.000</span>)</span>
+                    </button>
+                    <button onclick="manualCook()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 text-xs md:text-sm transition flex items-center space-x-2">
+                        <span>🔥 Masak Cepat 1 Batch</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BAGIAN 2: ARMADA MOBIL BGN & SEKOLAH -->
+            <div class="bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 border border-sky-500/20 shadow-2xl relative overflow-hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">🚚</span>
+                        <h2 class="font-bubble text-lg md:text-xl font-bold text-sky-300">Armada Distribusi SPPG & Sekolah Penerima</h2>
+                    </div>
+                    <div class="text-xs bg-sky-950/80 text-sky-300 px-3 py-1 rounded-xl border border-sky-500/30">
+                        <span>🚗 Mobil Aktif: <span id="statActiveCars" class="font-bold text-amber-400">1</span></span>
+                    </div>
+                </div>
+
+                <!-- Lini Pengiriman Mobil BGN -->
+                <div id="deliveryScene" class="mb-4">
+                    <div class="absolute top-2 left-3 text-[10px] font-extrabold tracking-widest text-slate-800">JALUR DISTRIBUSI MBG: SPPG → SEKOLAH</div>
+                    <div class="d-ground"></div>
+                    <div class="d-path"></div>
+                    <div id="dStore" class="d-school" style="left:3%; font-size:34px;">🏬<small>Dapur Utama</small></div>
+                </div>
+
+                <div id="schoolGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <button onclick="sendDeliveryBatch()" class="px-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 text-xs md:text-sm transition flex items-center space-x-2">
+                        <span>🚀 Kirim Mobil ke Sekolah</span>
+                    </button>
+                    <button onclick="expandSchool()" class="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 text-xs md:text-sm transition flex items-center space-x-2">
+                        <span>🏫 Tambah Sekolah (Rp <span id="schoolPrice">2.000.000</span>)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan: Upgrade & Manajemen -->
+        <div class="flex flex-col space-y-6">
+            <!-- Manajemen Staf (Koki & Mobil BGN) -->
+            <div class="bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 border border-cyan-500/20 shadow-2xl">
+                <div class="flex items-center space-x-2 mb-4">
+                    <span class="text-xl">👥</span>
+                    <h2 class="font-bubble text-base md:text-lg font-bold text-cyan-300">Tim & Kendaraan SPPG</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-sm text-emerald-300">Rekrut Koki</div>
+                            <div class="text-[11px] text-slate-400">Masak otomatis</div>
+                        </div>
+                        <button onclick="hireChef()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow">
+                            Rekrut (Rp <span id="chefPrice">800.000</span>)
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-sm text-sky-300">Tambah Mobil Distribusi</div>
+                            <div class="text-[11px] text-slate-400">Distribusi otomatis</div>
+                        </div>
+                        <button onclick="hireCar()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition shadow">
+                            Beli (Rp <span id="carPrice">1.500.000</span>)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Riset Gizi & Standar BGN -->
+            <div class="bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 border border-purple-500/20 shadow-2xl">
+                <div class="flex items-center space-x-2 mb-4">
+                    <span class="text-xl">🥗</span>
+                    <h2 class="font-bubble text-base md:text-lg font-bold text-purple-300">Standar Gizi (Acuan BGN)</h2>
+                </div>
+                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 flex flex-col space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-purple-300">Menu 4 Sehat Sempurna</span>
+                        <span id="menuLevel" class="text-xs bg-purple-950 text-purple-300 px-2 py-0.5 rounded">Lv. 1</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        Meningkatkan subsidi negara per kotak porsi serta kuota memasak otomatis.
+                    </p>
+                    <button onclick="upgradeMenu()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition shadow">
+                        Upgrade (Rp <span id="menuUpgradeCost">2.500.000</span>)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Keamanan Pangan & SLHS -->
+            <div class="bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 border border-rose-500/30 shadow-2xl">
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="text-xl">🛡️</span>
+                    <h2 class="font-bubble text-base md:text-lg font-bold text-rose-300">Keamanan Pangan &amp; SLHS</h2>
+                </div>
+                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-3">
+                    <div>
+                        <div class="flex justify-between text-[11px] font-semibold mb-1"><span class="text-slate-300">Skor Higiene Dapur</span><span id="sfHygiene" class="text-emerald-300">65</span></div>
+                        <div class="w-full bg-slate-900 rounded-full h-2 border border-slate-700 overflow-hidden"><div id="sfBar" class="h-full bg-amber-500 transition-all" style="width:65%"></div></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
+                        <div class="bg-slate-900/80 rounded-xl p-2"><div class="text-slate-400">Kartu Kuning</div><div id="sfStrikes" class="text-amber-400 font-bold text-sm">0/3</div></div>
+                        <div class="bg-slate-900/80 rounded-xl p-2"><div class="text-slate-400">Siswa Korban</div><div id="sfVictims" class="text-rose-400 font-bold text-sm">0</div></div>
+                        <div class="bg-slate-900/80 rounded-xl p-2"><div class="text-slate-400">Kerugian</div><div id="sfLoss" class="text-rose-400 font-bold text-sm">Rp 0 jt</div></div>
+                    </div>
+                    <div id="sfSLHS" class="text-[11px] font-semibold text-slate-300"></div>
+                    <button onclick="trainHygiene()" class="w-full py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs transition shadow">🧼 Pelatihan Higiene Juru Masak (Rp <span id="trainPrice">1.000.000</span>)</button>
+                    <button onclick="getSLHS()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow">📜 Urus SLHS (Rp <span id="slhsPrice">3.000.000</span>)</button>
+                    <div class="text-[10px] text-slate-500 leading-relaxed">Tips: tambah sekolah terlalu cepat tanpa koki memadai menaikkan risiko. BGN menyarankan layanan bertahap.</div>
+                    <div id="sfLog" class="text-[10px] text-slate-400 space-y-1 max-h-24 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Aturan -->
+    <div id="rulesModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[55] hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-sky-500/40 rounded-3xl p-6 max-w-lg w-full shadow-2xl max-h-[88vh] overflow-y-auto">
+            <h3 class="font-bubble text-xl font-bold text-sky-300 mb-3 text-center">📖 Aturan Main</h3>
+            <ol class="text-xs text-slate-300 space-y-2.5 leading-relaxed list-decimal pl-5">
+                <li><b class="text-emerald-300">Tujuan:</b> layani sebanyak mungkin sekolah tanpa insiden keracunan dan raih <b>SLHS</b> sebelum tenggat 8 menit.</li>
+                <li><b class="text-emerald-300">Alur kerja:</b> belanja bahan → masak (koki otomatis atau tombol Masak Cepat) → kirim ke sekolah → BGN membayar dana per porsi.</li>
+                <li><b class="text-emerald-300">Higiene:</b> skor turun 1 poin tiap 15 detik. Pelatihan juru masak menambah +15. SLHS hanya bisa diurus jika skor minimal 60.</li>
+                <li><b class="text-amber-300">Risiko keracunan</b> naik jika higiene rendah, jumlah sekolah lebih dari 2× jumlah koki, memakai bahan tak terverifikasi, mengirim makanan terlambat, atau mengabaikan keluhan. SLHS memangkas risiko separuhnya.</li>
+                <li><b class="text-rose-300">Jika terjadi insiden:</b> SPPG disuspend, sampel diperiksa lab bersama Dinkes, dan Anda dapat Kartu Kuning. Pilih transparan (menanggung biaya berobat) atau menutupi (murah, tapi 50% ketahuan dan hukumannya lebih berat).</li>
+                <li><b class="text-rose-300">Kalah jika:</b> 3 Kartu Kuning (Kepala SPPG dicopot), reputasi 0%, atau tenggat SLHS terlewat (dapur ditutup permanen).</li>
+                <li><b class="text-sky-300">Event</b> datang tiap 35 detik. Waktu berhenti selama jendela terbuka. Saat disuspend, tombol masak, belanja, dan kirim terkunci, tapi Anda tetap bisa melatih staf dan mengurus SLHS.</li>
+                <li><b class="text-sky-300">Suara:</b> 🎵 musik dan 🔊 efek suara bisa dimatikan di pojok kanan atas.</li>
+            </ol>
+            <button onclick="closeRules()" class="mt-5 w-full py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold rounded-2xl">Mengerti!</button>
+        </div>
+    </div>
+
+    <!-- Intro Modal -->
+    <div id="introModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex flex-col justify-center items-center p-6 text-center">
+        <div class="max-w-md bg-slate-900 border border-emerald-500/40 rounded-3xl p-8 shadow-2xl relative">
+            <div class="text-5xl mb-3">🚗🍱🌾</div>
+            <h2 class="font-bubble text-2xl md:text-3xl font-bold text-emerald-400 mb-2">MBG Simulator (Badan Gizi Nasional)</h2>
+            <p class="text-slate-300 text-xs md:text-sm mb-6 leading-relaxed">
+                Anda Kepala SPPG (Satuan Pelayanan Pemenuhan Gizi) di bawah Badan Gizi Nasional (BGN). Masak dan kirim MBG ke sekolah, tapi jaga keamanan pangan: raih SLHS sebelum tenggat, hindari keracunan, dan jangan sampai kena Kartu Kuning.<br><span class="text-[10px] text-slate-500">Simulasi edukasi — nama sekolah &amp; kejadian fiktif, terinspirasi isu keamanan pangan program MBG.</span>
+            </p>
+            <div class="mb-4 text-left">
+                <label class="block text-xs font-bold text-emerald-300 mb-1">Nama SPPG Anda:</label>
+                <input type="text" id="inputPlayerName" value="SPPG Nusantara 01"
+                    class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 text-white px-4 py-3 rounded-xl outline-none text-sm font-semibold">
+            </div>
+            <button onclick="startGame()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/30 transition">
+                Mulai Bertugas 🚀
+            </button>
+            <button onclick="openRules()" class="w-full mt-2 py-2.5 bg-slate-800 border border-sky-500/30 text-sky-300 font-bold rounded-2xl text-sm">📖 Baca Aturan Main</button>
+        </div>
+    </div>
+
+    <script>
+        let game = {
+            name: "SPPG Nusantara 01",
+            money: 10000000,
+            rawMaterials: 120,
+            readyBoxes: 0,
+            reputation: 100,
+            hygiene: 65, slhs: false, slhsLeft: 480, strikes: 0, victims: 0, totalLoss: 0,
+            suspend: 0, riskBoost: 0, over: false, tick: 0, log: [],
+            trainPrice: 1000000, slhsPrice: 3000000,
+            chefs: 1,
+            chefPrice: 800000,
+            cars: 1,
+            carPrice: 1500000,
+            rawPrice: 150000,
+            menuLevel: 1,
+            menuUpgradeCost: 2500000,
+            schoolPrice: 2000000,
+            schools: [
+                { id: 1, name: "SDN Nusantara 01", served: 0, target: 50 },
+                { id: 2, name: "SMPN 5 Harapan Bangsa", served: 0, target: 80 }
+            ]
+        };
+
+        const shirtColors = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6'];
+
+        /* ================= INISIALISASI ================= */
+        function initGame() {
+            for (let i = 0; i < game.chefs; i++) addChefSprite();
+            for (let i = 0; i < game.cars; i++) addCarSprite();
+            renderSchools();
+            syncKitchenScene();
+            syncDeliveryScene();
+            updateStats();
+            setInterval(gameTick, 1000);
+            requestAnimationFrame(animLoop);
+            // Trigger tantangan viral berkala
+            setInterval(triggerViralEvent, 35000);
+        }
+
+        function startGame() {
+            startMusic();
+            const inputVal = document.getElementById('inputPlayerName').value.trim();
+            if (inputVal) game.name = inputVal;
+            document.getElementById('playerNameDisplay').textContent = game.name;
+            document.getElementById('introModal').classList.add('hidden');
+            updateStats();
+        }
+
+        function gameTick() {
+            if (!isPaused()) {
+                if (game.suspend > 0) game.suspend--;
+                if (!game.slhs && --game.slhsLeft <= 0) {
+                    gameOver('🔒', 'SPPG Ditutup Permanen', 'Tenggat SLHS terlewat. Tanpa Sertifikat Laik Higiene Sanitasi, dapur tidak boleh beroperasi.');
+                }
+                if (++game.tick % 15 === 0) game.hygiene = Math.max(0, game.hygiene - 1);
+                if (game.riskBoost > 0) game.riskBoost = Math.max(0, game.riskBoost - 0.002);
+            }
+            updateStats();
+        }
+
+        /* ================= ISU KEAMANAN PANGAN MBG ================= */
+        const viralEvents = [
+            { icon: "👔", title: "🚨 Sidak BGN & Dinkes",
+              desc: "Tim BGN bersama Dinas Kesehatan datang mendadak memeriksa SLHS, kebersihan dapur, dan mengambil sampel makanan.",
+              opts: [
+                { label: "Tunjukkan dapur & dokumen apa adanya", action: () => {
+                    if (game.hygiene >= 70 || game.slhs) { game.reputation = Math.min(100, game.reputation + 10); addLog('Sidak BGN: lolos, dapur dinilai higienis'); }
+                    else penalize({ rep: 15, strikes: 1, suspend: 8, log: 'Sidak BGN: temuan kebersihan, Kartu Kuning!' }); } },
+                { label: "Bersihkan kilat sebelum tim masuk (-Rp 500K, higiene +8)", action: () => { lose(500000); game.hygiene = Math.min(100, game.hygiene + 8); } } ] },
+            { icon: "📹", title: "📱 Viral: Lauk Berbau Basi",
+              desc: "Video siswa yang menemukan lauk berbau basi dan ulat di kotak makan beredar luas di media sosial.",
+              opts: [
+                { label: "Minta maaf, tarik & ganti porsi (-Rp 750K)", action: () => { lose(750000); game.reputation = Math.min(100, game.reputation + 5); addLog('Klarifikasi terbuka & porsi diganti'); } },
+                { label: "Bantah, sebut itu hoaks", action: () => { game.reputation = Math.max(0, game.reputation - 15); game.riskBoost += 0.05; addLog('Bantahan memicu sorotan media'); } } ] },
+            { icon: "🐔", title: "🛒 Tawaran Bahan Baku Murah",
+              desc: "Pemasok luar menawarkan ayam dan sayur sangat murah tanpa sertifikat atau verifikasi. Bahan baku tak terawasi pernah memicu kartu kuning bagi SPPG lain.",
+              opts: [
+                { label: "Terima (hemat Rp 1,2 jt, risiko naik)", action: () => { game.money += 1200000; game.riskBoost += 0.08; addLog('Bahan baku tak terverifikasi dipakai'); } },
+                { label: "Tolak, beli dari pemasok terverifikasi (-Rp 400K)", action: () => { lose(400000); game.hygiene = Math.min(100, game.hygiene + 3); } } ] },
+            { icon: "🚧", title: "🚚 Jalan Rusak: Makanan Terlambat",
+              desc: "Mobil terjebak jalan rusak. Makanan matang menunggu lebih dari 4 jam, padahal jeda masak-makan yang terlalu lama meningkatkan risiko basi.",
+              opts: [
+                { label: "Masak ulang & kirim cepat (-Rp 400K)", action: () => { lose(400000); game.readyBoxes += 10; } },
+                { label: "Tetap kirim saja", action: () => { game.riskBoost += 0.06; game.reputation = Math.max(0, game.reputation - 3); } } ] },
+            { icon: "🤢", title: "👩‍👧 Keluhan Mual dari Wali Murid",
+              desc: "Beberapa siswa mengeluh mual dan pusing setelah makan MBG kemarin. Belum ada laporan resmi.",
+              opts: [
+                { label: "Investigasi internal & uji lab sampel (-Rp 600K)", action: () => { lose(600000); game.riskBoost = 0; game.hygiene = Math.min(100, game.hygiene + 5); addLog('Uji lab sampel dilakukan, SOP diperketat'); } },
+                { label: "Anggap hal biasa", action: () => { game.riskBoost += 0.1; game.reputation = Math.max(0, game.reputation - 5); } } ] }
+        ];
+
+        function triggerViralEvent() {
+            if (isPaused()) return;
+            showEvent(viralEvents[Math.floor(Math.random() * viralEvents.length)]);
+        }
+
+        function showEvent(ev) {
+            sfx(ev.icon === '🚑' ? 'alert' : 'notify');
+            document.getElementById('eventIcon').textContent = ev.icon;
+            document.getElementById('eventTitle').textContent = ev.title;
+            document.getElementById('eventDescription').textContent = ev.desc;
+            const box = document.getElementById('eventOptions');
+            box.innerHTML = '';
+            ev.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full py-2.5 bg-slate-800 hover:bg-emerald-700 border border-emerald-500/30 text-white font-bold rounded-xl text-xs transition shadow";
+                btn.textContent = opt.label;
+                btn.onclick = () => {
+                    opt.action();
+                    if (!game.over) document.getElementById('eventModal').classList.add('hidden');
+                    updateStats();
+                };
+                box.appendChild(btn);
+            });
+            document.getElementById('eventModal').classList.remove('hidden');
+        }
+
+        /* ===== Mekanik: risiko, sanksi, SLHS ===== */
+        function isPaused() {
+            return game.over || !document.getElementById('introModal').classList.contains('hidden') || !document.getElementById('eventModal').classList.contains('hidden') || !document.getElementById('rulesModal').classList.contains('hidden');
+        }
+        function blocked() {
+            if (game.suspend > 0) { toast('⛔ SPPG disuspend BGN, tunggu investigasi selesai'); return true; }
+            return false;
+        }
+        function toast(msg) {
+            sfx('error');
+            const t = document.createElement('div');
+            t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-slate-800 border border-amber-500/50 text-amber-200 text-xs font-bold px-4 py-2 rounded-xl shadow-xl';
+            t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+        }
+        function rp(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
+        function lose(a) { game.money = Math.max(0, game.money - a); game.totalLoss += a; }
+        function addLog(msg) {
+            game.log.unshift(msg); game.log = game.log.slice(0, 5);
+            document.getElementById('sfLog').innerHTML = game.log.map(l => `<div>• ${l}</div>`).join('');
+        }
+
+        function afterDelivery(sch, n, subsidy) {
+            const overload = Math.max(0, game.schools.length - game.chefs * 2) * 0.03;
+            let risk = (100 - game.hygiene) / 100 * 0.25 + overload + game.riskBoost;
+            if (game.slhs) risk *= 0.5;
+            if (Math.random() >= risk) return;
+            const v = Math.max(8, Math.round(n * (0.3 + Math.random() * 0.5)));
+            const fatal = v >= 30;
+            showEvent({
+                icon: '🚑',
+                title: fatal ? '🚨 KEJADIAN FATAL: Keracunan Massal' : '⚠️ Siswa Diduga Keracunan',
+                desc: `${v} siswa ${sch.name} mual, muntah, dan dilarikan ke puskesmas usai menyantap MBG dari dapur Anda. Menurut aturan BGN, SPPG langsung disuspend, sampel makanan diperiksa lab bersama Dinkes, dan Kepala SPPG bisa dicopot. Apa respons Anda?`,
+                opts: [
+                    { label: `Transparan: tanggung biaya berobat ${rp(v * 300000)}, tarik makanan, lapor BGN`, action: () =>
+                        penalize({ victims: v, cost: v * 300000 + subsidy, rep: 15, strikes: 1, suspend: fatal ? 25 : 15, clear: true, log: `${v} siswa ${sch.name} keracunan. SPPG disuspend, biaya berobat ditanggung.` }) },
+                    { label: 'Salahkan jajanan luar, kecilkan laporan (murah, berisiko ketahuan)', action: () => {
+                        const caught = Math.random() < 0.5;
+                        penalize({ victims: v, cost: v * 100000 + subsidy + (caught ? 2000000 : 0), rep: caught ? 40 : 10, strikes: caught ? 2 : 1, suspend: caught ? 30 : 12, clear: true,
+                            log: caught ? `Upaya menutupi kasus ${sch.name} terbongkar! Kartu Kuning ganda.` : `Kasus ${sch.name} ditutup-tutupi, belum terungkap.` });
+                    } }
+                ]
+            });
+        }
+
+        function penalize(p) {
+            game.victims += p.victims || 0; lose(p.cost || 0);
+            game.reputation = Math.max(0, game.reputation - (p.rep || 0));
+            game.strikes += p.strikes || 0;
+            game.suspend = Math.max(game.suspend, p.suspend || 0);
+            if (p.clear) game.readyBoxes = 0;
+            if (p.log) addLog(p.log);
+            if (game.strikes >= 3) gameOver('🟨', 'Kepala SPPG Dicopot', 'Tiga Kartu Kuning terkumpul. BGN mencopot Anda dan menutup dapur untuk evaluasi.');
+            else if (game.reputation <= 0) gameOver('📉', 'Kemitraan Diputus', 'Kepercayaan sekolah dan masyarakat habis. Mitra menghentikan kerja sama dengan SPPG Anda.');
+        }
+
+        function gameOver(icon, title, why) {
+            if (game.over) return;
+            game.over = true;
+            showEvent({ icon, title,
+                desc: `${why} Ringkasan: ${game.victims} siswa terdampak, kerugian ${rp(game.totalLoss)}, ${game.strikes} Kartu Kuning. Pelajaran: higiene, SLHS, bahan baku terverifikasi, dan layanan bertahap adalah kunci MBG yang aman.`,
+                opts: [{ label: '🔄 Main Lagi', action: () => location.reload() }] });
+            sfx('over');
+        }
+
+        function trainHygiene() {
+            if (game.money < game.trainPrice) return toast('Dana tidak cukup');
+            game.money -= game.trainPrice; game.hygiene = Math.min(100, game.hygiene + 15);
+            game.trainPrice = Math.round(game.trainPrice * 1.3);
+            addLog('Pelatihan higiene & SOP juru masak selesai'); updateStats();
+        }
+        function getSLHS() {
+            if (game.slhs) return;
+            if (game.hygiene < 60) return toast('Skor higiene minimal 60 untuk lolos SLHS, latih juru masak dulu');
+            if (game.money < game.slhsPrice) return toast('Dana tidak cukup');
+            game.money -= game.slhsPrice; game.slhs = true;
+            addLog('SLHS terbit! Risiko keracunan turun separuh'); updateStats();
+        }
+
+        function updateSafetyUI() {
+            const $ = id => document.getElementById(id), h = Math.round(game.hygiene);
+            $('sfHygiene').textContent = h;
+            $('sfBar').style.width = h + '%';
+            $('sfBar').className = 'h-full transition-all ' + (h >= 70 ? 'bg-emerald-500' : h >= 50 ? 'bg-amber-500' : 'bg-rose-500');
+            $('sfStrikes').textContent = game.strikes + '/3';
+            $('sfVictims').textContent = game.victims;
+            $('sfLoss').textContent = 'Rp ' + (game.totalLoss / 1000000).toFixed(1) + ' jt';
+            $('sfSLHS').textContent = game.slhs ? '✅ SLHS terbit: dapur laik operasi' : '❌ Belum ber-SLHS: tanpa SLHS saat tenggat, dapur ditutup permanen';
+            $('trainPrice').textContent = game.trainPrice.toLocaleString('id-ID');
+            $('slhsPrice').textContent = game.slhsPrice.toLocaleString('id-ID');
+            const m = Math.floor(game.slhsLeft / 60), sc = game.slhsLeft % 60;
+            $('statSLHS').textContent = game.slhs ? 'Terbit ✅' : m + ':' + String(sc).padStart(2, '0');
+            $('suspendBar').classList.toggle('hidden', game.suspend <= 0);
+            $('suspendBar').textContent = `⛔ SPPG DISUSPEND: investigasi lab bersama Dinkes ${game.suspend} dtk`;
+        }
+
+        /* ================= SCENE DAPUR ================= */
+        function kitchenW() { return document.getElementById('kitchenScene').clientWidth; }
+        const kStationsPos = { gudang: 0.03, cuci: 0.24, masak: 0.46, packing: 0.68, ready: 0.88 };
+        function kX(key) { return kitchenW() * kStationsPos[key]; }
+
+        const chefSprites = [];
+        function addChefSprite() {
+            const idx = chefSprites.length;
+            const el = document.createElement('div');
+            el.className = 'human';
+            el.style.setProperty('--shirt', shirtColors[idx % shirtColors.length]);
+            el.innerHTML = `
+                <div class="flip">
+                    <div class="h-basket">🍲</div>
+                    <div class="h-name">Koki ${idx + 1}</div>
+                    <div class="h-leg l"></div><div class="h-leg r"></div>
+                    <div class="h-body"></div><div class="h-arm"></div>
+                    <div class="h-head"></div><div class="h-hat"></div>
+                </div>`;
+            document.getElementById('kitchenScene').appendChild(el);
+            chefSprites.push({ idx, el, x: Math.max(10, kX('ready') - 30 - idx * 25), dir: 1, state: 'idle', timer: 0.3 + idx * 0.4, carry: 0 });
+        }
+
+        function syncKitchenScene() {
+            document.getElementById('kGudangLbl').textContent = `Bahan ${game.rawMaterials}Kg`;
+            document.getElementById('kReadyLbl').textContent = `Siap ${game.readyBoxes}`;
+        }
+
+        function updateChef(c, dt) {
+            if (game.suspend > 0) { c.el.classList.remove('walking', 'working'); return; }
+            let walking = false, working = false;
+            const speed = 75 + game.menuLevel * 10;
+            const targetX = c.state === 'idle' ? kX('gudang') : c.state === 'toCuci' ? kX('cuci') : c.state === 'toMasak' ? kX('masak') : c.state === 'toPacking' ? kX('packing') : kX('ready');
+
+            switch(c.state) {
+                case 'idle':
+                    c.timer -= dt;
+                    if (c.timer <= 0 && game.rawMaterials >= 5) c.state = 'toCuci';
+                    break;
+                case 'toCuci':
+                    if (moveW(c, targetX, speed, dt)) { c.state = 'workCuci'; c.timer = 1.0; } else walking = true;
+                    break;
+                case 'workCuci':
+                    working = true; c.timer -= dt; if (c.timer <= 0) c.state = 'toMasak';
+                    break;
+                case 'toMasak':
+                    if (moveW(c, kX('masak'), speed, dt)) { c.state = 'workMasak'; c.timer = 1.4; } else walking = true;
+                    break;
+                case 'workMasak':
+                    working = true; c.timer -= dt;
+                    if (c.timer <= 0) {
+                        if (game.rawMaterials >= 5) {
+                            game.rawMaterials -= 5;
+                            c.carry = 10 * game.menuLevel;
+                            c.state = 'toPacking';
+                        } else { c.state = 'idle'; c.timer = 1; }
+                    }
+                    break;
+                case 'toPacking':
+                    if (moveW(c, kX('packing'), speed, dt)) { c.state = 'workPack'; c.timer = 1.0; } else walking = true;
+                    break;
+                case 'workPack':
+                    working = true; c.timer -= dt; if (c.timer <= 0) c.state = 'toReady';
+                    break;
+                case 'toReady':
+                    if (moveW(c, kX('ready'), speed, dt)) {
+                        game.readyBoxes += c.carry;
+                        spawnFloatText(c.x, '+' + c.carry + ' 🍱', 'kitchenScene');
+                        c.carry = 0; c.state = 'idle'; c.timer = 0.5;
+                        updateStats(); syncKitchenScene();
+                    } else walking = true;
+                    break;
+            }
+            c.el.style.left = c.x + 'px';
+            c.el.classList.toggle('walking', walking);
+            c.el.classList.toggle('working', working);
+            c.el.classList.toggle('carrying', c.carry > 0);
+            c.el.style.transform = c.dir < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+        }
+
+        function moveW(w, tx, speed, dt) {
+            const d = tx - w.x;
+            if (Math.abs(d) < 1.5) return true;
+            w.dir = d > 0 ? 1 : -1;
+            w.x += w.dir * Math.min(speed * dt, Math.abs(d));
+            return false;
+        }
+
+        /* ================= SCENE MOBIL BGN ================= */
+        function deliveryW() { return document.getElementById('deliveryScene').clientWidth; }
+        function dStoreX() { return 20; }
+        function schoolX(i) {
+            const total = Math.max(1, game.schools.length);
+            const usable = deliveryW() - 130;
+            return 90 + i * (usable / Math.max(1, total));
+        }
+
+        const carSprites = [];
+        function addCarSprite() {
+            const idx = carSprites.length;
+            const el = document.createElement('div');
+            el.className = 'bgn-car';
+            el.innerHTML = `
+                <div class="car-body"></div>
+                <div class="car-roof"></div>
+                <div class="car-label">SPPG</div>
+                <div class="car-wheel-l"></div>
+                <div class="car-wheel-r"></div>`;
+            document.getElementById('deliveryScene').appendChild(el);
+            carSprites.push({ idx, el, x: dStoreX() + idx * 24, dir: 1, state: 'idle', timer: 0.6 + idx * 0.4, schoolTarget: 0, carryBoxes: 0 });
+        }
+
+        function syncDeliveryScene() {
+            const scene = document.getElementById('deliveryScene');
+            scene.querySelectorAll('.d-school-node').forEach(n => n.remove());
+            game.schools.forEach((sch, i) => {
+                const node = document.createElement('div');
+                node.className = 'd-school d-school-node';
+                node.style.left = schoolX(i) + 'px';
+                node.innerHTML = `🏫<small>${sch.name.split(' ')[0]} (${sch.served}/${sch.target})</small>`;
+                scene.appendChild(node);
+            });
+        }
+
+        function updateCar(cr, dt) {
+            if (game.suspend > 0) return;
+            const speed = 100 + game.menuLevel * 10;
+            switch(cr.state) {
+                case 'idle':
+                    cr.timer -= dt;
+                    if (cr.timer <= 0 && game.readyBoxes >= 25) {
+                        const targetIdx = game.schools.findIndex(s => s.served < s.target);
+                        if (targetIdx >= 0) {
+                            cr.schoolTarget = targetIdx;
+                            const loadAmt = Math.min(game.readyBoxes, 40);
+                            game.readyBoxes -= loadAmt;
+                            cr.carryBoxes = loadAmt;
+                            cr.state = 'toSchool';
+                            updateStats(); syncKitchenScene();
+                        } else cr.timer = 2;
+                    }
+                    break;
+                case 'toSchool':
+                    if (moveW(cr, schoolX(cr.schoolTarget), speed, dt)) { cr.state = 'delivering'; cr.timer = 1.0; }
+                    break;
+                case 'delivering':
+                    cr.timer -= dt;
+                    if (cr.timer <= 0) {
+                        const sch = game.schools[cr.schoolTarget];
+                        sch.served = Math.min(sch.target, sch.served + cr.carryBoxes);
+                        const subsidy = cr.carryBoxes * (16000 + game.menuLevel * 2000);
+                        game.money += subsidy;
+                        spawnFloatText(cr.x, '+Rp ' + (subsidy/1000).toFixed(0) + 'K', 'deliveryScene');
+                        if (sch.served >= sch.target) sch.served = 0;
+                        const n = cr.carryBoxes; cr.carryBoxes = 0; cr.state = 'toHome'; afterDelivery(sch, n, subsidy);
+                        renderSchools(); syncDeliveryScene(); updateStats();
+                    }
+                    break;
+                case 'toHome':
+                    if (moveW(cr, dStoreX(), speed, dt)) { cr.state = 'idle'; cr.timer = 1.0; }
+                    break;
+            }
+            cr.el.style.left = cr.x + 'px';
+            cr.el.style.transform = cr.dir < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+        }
+
+        function spawnFloatText(x, text, sceneId) {
+            if (text.startsWith('+Rp')) sfx('coin');
+            const span = document.createElement('div');
+            span.className = 'floating-text absolute text-xs font-extrabold text-emerald-300 z-10';
+            span.style.left = Math.max(0, x - 10) + 'px'; span.style.bottom = '55px';
+            span.textContent = text;
+            document.getElementById(sceneId).appendChild(span);
+            setTimeout(() => span.remove(), 1000);
+        }
+
+        let lastTs = 0;
+        function animLoop(ts) {
+            const dt = Math.min(0.05, (ts - lastTs) / 1000 || 0);
+            lastTs = ts;
+            if (isPaused()) { requestAnimationFrame(animLoop); return; }
+            while (chefSprites.length < game.chefs) addChefSprite();
+            while (carSprites.length < game.cars) addCarSprite();
+            chefSprites.forEach(c => updateChef(c, dt));
+            carSprites.forEach(cr => updateCar(cr, dt));
+            requestAnimationFrame(animLoop);
+        }
+
+        window.addEventListener('resize', () => { syncKitchenScene(); syncDeliveryScene(); });
+
+        /* ================= RENDER SEKOLAH ================= */
+        function renderSchools() {
+            const grid = document.getElementById('schoolGrid');
+            grid.innerHTML = '';
+            game.schools.forEach((sch) => {
+                const pct = Math.round((sch.served / sch.target) * 100);
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-2xl border bg-slate-800/80 border-slate-700 flex flex-col justify-between shadow-lg`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-slate-300 font-bold">${sch.name}</span>
+                        <span class="text-xl">🏫</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400 mb-2">Target Harian: ${sch.target} Siswa</div>
+                    <div>
+                        <div class="flex justify-between text-[10px] mb-1 font-semibold text-sky-300">
+                            <span>Distribusi SPPG</span><span>${sch.served}/${sch.target} Porsi</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-700">
+                            <div class="bg-gradient-to-r from-emerald-500 to-sky-400 h-full transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ================= AKSI PEMAIN (TANPA MODAL POP-UP SUKSES) ================= */
+        function buyRawMaterials() {
+            if (blocked()) return;
+            if (game.money >= game.rawPrice) {
+                game.money -= game.rawPrice;
+                game.rawMaterials += 50;
+                updateStats(); syncKitchenScene();
+            }
+        }
+
+        function manualCook() {
+            if (blocked()) return;
+            if (game.rawMaterials >= 10) {
+                game.rawMaterials -= 10;
+                const boxes = 20 * game.menuLevel;
+                game.readyBoxes += boxes;
+                updateStats(); syncKitchenScene();
+            }
+        }
+
+        function sendDeliveryBatch() {
+            if (blocked()) return;
+            if (game.readyBoxes >= 30) {
+                game.readyBoxes -= 30;
+                const subsidy = 30 * (16000 + game.menuLevel * 2000);
+                game.money += subsidy;
+                const sch = game.schools[0];
+                sch.served = Math.min(sch.target, sch.served + 30);
+                afterDelivery(sch, 30, subsidy);
+                if (sch.served >= sch.target) sch.served = 0;
+                renderSchools(); syncDeliveryScene(); updateStats(); syncKitchenScene();
+            }
+        }
+
+        function expandSchool() {
+            if (game.money >= game.schoolPrice) {
+                game.money -= game.schoolPrice;
+                const newId = game.schools.length + 1;
+                game.schools.push({ id: newId, name: `SDN Harapan ${newId}`, served: 0, target: 50 + newId * 15 });
+                game.schoolPrice = Math.round(game.schoolPrice * 1.5);
+                renderSchools(); syncDeliveryScene(); updateStats();
+            }
+        }
+
+        function hireChef() {
+            if (game.money >= game.chefPrice) {
+                game.money -= game.chefPrice;
+                game.chefs++;
+                game.chefPrice = Math.round(game.chefPrice * 1.4);
+                addChefSprite(); updateStats();
+            }
+        }
+
+        function hireCar() {
+            if (game.money >= game.carPrice) {
+                game.money -= game.carPrice;
+                game.cars++;
+                game.carPrice = Math.round(game.carPrice * 1.4);
+                addCarSprite(); updateStats();
+            }
+        }
+
+        function upgradeMenu() {
+            if (game.money >= game.menuUpgradeCost) {
+                game.money -= game.menuUpgradeCost;
+                game.menuLevel++;
+                game.menuUpgradeCost = Math.round(game.menuUpgradeCost * 1.8);
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('statMoney').textContent = "Rp " + game.money.toLocaleString('id-ID');
+            document.getElementById('statRaw').textContent = game.rawMaterials + " Kg";
+            document.getElementById('statBoxes').textContent = game.readyBoxes + " Porsi";
+            document.getElementById('statActiveChefs').textContent = game.chefs;
+            document.getElementById('statActiveCars').textContent = game.cars;
+            document.getElementById('chefPrice').textContent = game.chefPrice.toLocaleString('id-ID');
+            document.getElementById('carPrice').textContent = game.carPrice.toLocaleString('id-ID');
+            document.getElementById('rawPrice').textContent = game.rawPrice.toLocaleString('id-ID');
+            document.getElementById('schoolPrice').textContent = game.schoolPrice.toLocaleString('id-ID');
+            document.getElementById('menuLevel').textContent = "Lv. " + game.menuLevel;
+            document.getElementById('menuUpgradeCost').textContent = game.menuUpgradeCost.toLocaleString('id-ID');
+            document.getElementById('statRep').textContent = game.reputation + "% Prima";
+            updateSafetyUI();
+        }
+
+        /* ================= AUDIO: MUSIK & EFEK SUARA (Web Audio, tanpa file) ================= */
+        const A = { ctx: null, music: true, sfx: true, step: 0, next: 0, timer: null };
+        const midi = n => 440 * Math.pow(2, (n - 69) / 12);
+        function ac() {
+            if (!A.ctx) {
+                A.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                A.master = A.ctx.createGain(); A.master.gain.value = 0.6; A.master.connect(A.ctx.destination);
+                A.mus = A.ctx.createGain(); A.mus.gain.value = 0.16; A.mus.connect(A.master);
+            }
+            if (A.ctx.state === 'suspended') A.ctx.resume();
+            return A.ctx;
+        }
+        function tone(n, t0, d, type, vol, dest) {
+            const c = A.ctx, o = c.createOscillator(), g = c.createGain();
+            o.type = type; o.frequency.setValueAtTime(midi(n), t0);
+            g.gain.setValueAtTime(0.0001, t0);
+            g.gain.exponentialRampToValueAtTime(vol, t0 + 0.015);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+            o.connect(g); g.connect(dest || A.master); o.start(t0); o.stop(t0 + d + 0.05);
+        }
+        const SFX = {   // [nada midi, jeda, durasi, gelombang]
+            buy:     [[84, 0, .12, 'square'], [91, .09, .22, 'square']],
+            coin:    [[88, 0, .1, 'triangle'], [95, .07, .2, 'triangle']],
+            hire:    [[72, 0, .12, 'triangle'], [76, .09, .12, 'triangle'], [79, .18, .12, 'triangle'], [84, .27, .3, 'triangle']],
+            notify:  [[81, 0, .16, 'sine'], [76, .16, .3, 'sine']],
+            alert:   [[69, 0, .2, 'sawtooth'], [62, .22, .2, 'sawtooth'], [69, .44, .2, 'sawtooth'], [62, .66, .35, 'sawtooth']],
+            error:   [[48, 0, .18, 'square'], [44, .12, .26, 'square']],
+            success: [[72, 0, .12, 'triangle'], [76, .1, .12, 'triangle'], [79, .2, .12, 'triangle'], [84, .3, .5, 'triangle']],
+            cook:    [[55, 0, .07, 'square'], [58, .07, .07, 'square'], [62, .14, .1, 'square']],
+            ship:    [[67, 0, .1, 'sawtooth'], [72, .1, .18, 'sawtooth']],
+            over:    [[67, 0, .3, 'sawtooth'], [62, .3, .3, 'sawtooth'], [58, .6, .3, 'sawtooth'], [50, .9, .7, 'sawtooth']]
+        };
+        function sfx(k) {
+            if (!A.sfx || !SFX[k]) return;
+            try { ac(); const t = A.ctx.currentTime + 0.01; SFX[k].forEach(([n, o, d, w]) => tone(n, t + o, d, w, 0.28)); } catch (e) {}
+        }
+        const MUS = {
+            happy: { mel: [72,0,76,0,79,76,0,74, 72,0,76,0,81,79,0,0], bas: [48,0,0,0,53,0,0,0, 55,0,0,0,48,0,0,0], w: 'triangle', dt: .3 },
+            tense: { mel: [69,0,72,0,76,0,75,0, 69,0,72,0,71,0,68,0], bas: [45,0,45,0,45,0,45,0, 41,0,41,0,40,0,40,0], w: 'sawtooth', dt: .24 }
+        };
+        function musicTick() {
+            if (!A.music || !A.ctx || game.over) return;
+            while (A.next < A.ctx.currentTime + 0.4) {
+                const m = (game.suspend > 0 || (!game.slhs && game.slhsLeft < 60)) ? MUS.tense : MUS.happy, i = A.step % 16;
+                if (m.mel[i]) tone(m.mel[i], A.next, m.dt * 1.7, m.w, 0.5, A.mus);
+                if (m.bas[i]) tone(m.bas[i], A.next, m.dt * 2.2, 'sine', 0.9, A.mus);
+                A.step++; A.next += m.dt;
+            }
+        }
+        function startMusic() {
+            try { ac(); A.next = A.ctx.currentTime + 0.1; if (!A.timer) A.timer = setInterval(musicTick, 100); } catch (e) {}
+        }
+        function audioUI() {
+            document.getElementById('btnMusic').style.opacity = A.music ? 1 : 0.4;
+            document.getElementById('btnSfx').style.opacity = A.sfx ? 1 : 0.4;
+        }
+        function toggleMusic() { A.music = !A.music; if (A.music) startMusic(); audioUI(); }
+        function toggleSfx() { A.sfx = !A.sfx; audioUI(); sfx('notify'); }
+        function openRules() { document.getElementById('rulesModal').classList.remove('hidden'); sfx('notify'); }
+        function closeRules() { document.getElementById('rulesModal').classList.add('hidden'); }
+
+        // Bungkus aksi pemain: bunyi sesuai hasil (uang berkurang = pembelian berhasil)
+        [['buyRawMaterials', 'buy'], ['upgradeMenu', 'buy'], ['expandSchool', 'buy'], ['trainHygiene', 'buy'],
+         ['hireChef', 'hire'], ['hireCar', 'hire']].forEach(([fn, k]) => {
+            const o = window[fn];
+            window[fn] = function () { const m = game.money; o(); if (game.money < m) sfx(k); };
+        });
+        (() => {
+            const g = window.getSLHS; window.getSLHS = function () { const had = game.slhs; g(); if (!had && game.slhs) sfx('success'); };
+            const c = window.manualCook; window.manualCook = function () { const r = game.rawMaterials; c(); if (game.rawMaterials < r) sfx('cook'); };
+            const d = window.sendDeliveryBatch; window.sendDeliveryBatch = function () { const b = game.readyBoxes; d(); if (game.readyBoxes < b) sfx('ship'); };
+        })();
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>

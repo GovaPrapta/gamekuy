@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" />
     <style>
+      html {
+        min-height: 100%;
+      }
       body {
         font-family: "Plus Jakarta Sans", sans-serif;
         background: #0f172a;
@@ -16,70 +19,103 @@
         font-family: "Fredoka", cursive;
       }
       .game-card {
-        transition: all 0.3s ease;
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease,
+          border-color 0.25s ease;
       }
       .game-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
+        transform: translateY(-6px);
+        box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+      }
+      .game-card:focus-within {
+        outline: 2px solid rgba(103, 232, 249, 0.8);
+        outline-offset: 4px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .game-card {
+          transition: none;
+        }
+        .game-card:hover {
+          transform: none;
+        }
       }
     </style>
   </head>
-  <body class="w-screen h-screen flex flex-col justify-between overflow-x-hidden select-none bg-gradient-to-br from-slate-950 via-slate-900 to-zinc-950">
+  <body class="min-h-screen flex flex-col overflow-x-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-zinc-950">
     <!-- Header / Navigasi -->
-    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 z-20 flex justify-between items-center shadow-lg">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg text-2xl">🎮</div>
-        <div>
+    <header class="sticky top-0 z-20 w-full border-b border-white/10 bg-slate-950/75 px-5 py-4 shadow-lg backdrop-blur-xl sm:px-8">
+      <div class="mx-auto flex max-w-6xl items-center gap-3">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-2xl shadow-lg shadow-blue-900/40">🎮</div>
+        <div class="min-w-0">
           <h1 class="font-bubble text-lg md:text-xl font-bold tracking-wider text-white">MINI GAME CENTER</h1>
-          <p class="text-xs text-slate-400">Pilih game favoritmu dan mainkan sekarang!</p>
+          <p class="text-xs text-slate-400">Pilih game favoritmu, lalu mulai bermain!</p>
         </div>
       </div>
     </header>
 
     <!-- Konten Utama: Pilihan Menu Game -->
-    <main class="w-full flex-1 flex flex-col items-center justify-center p-6 z-10 max-w-5xl mx-auto">
-      <div class="text-center mb-10">
-        <h2 class="font-bubble text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 mb-3">Mau Main Game Apa Hari Ini?</h2>
-        <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto leading-relaxed">Pilih salah satu game di bawah ini untuk memulai petualangan seru atau melatih kecepatan mengetik Anda!</p>
+    <main class="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 py-14 sm:px-8 sm:py-16">
+      <div class="mb-10 text-center sm:mb-12">
+        <p class="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-cyan-300">Arcade pilihanmu</p>
+        <h2 class="font-bubble mb-4 text-3xl font-bold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 sm:text-4xl md:text-5xl">Mau Main Game Apa Hari Ini?</h2>
+        <p class="mx-auto max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base">Pilih petualanganmu: selamatkan ikan, bangun kerajaan sawit, atau kelola simulasi MBG.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
+      <div class="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Pilihan Game 1: Hiu & Ikan (Mengetik Cepat) -->
-        <div class="game-card bg-slate-900/90 border border-cyan-500/30 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group">
-          <div class="absolute -right-10 -top-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition"></div>
+        <article class="game-card group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-cyan-400/20 bg-slate-900/75 p-6 shadow-xl shadow-black/20 backdrop-blur-sm hover:border-cyan-300/50 sm:p-7">
+          <div aria-hidden="true" class="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-cyan-500/10 blur-3xl transition group-hover:bg-cyan-400/20"></div>
           <div>
-            <div class="w-14 h-14 rounded-2xl bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-3xl mb-4 shadow-inner">🦈</div>
-            <h3 class="font-bubble text-xl font-bold text-cyan-300 mb-2">Penyelamat Ikan (Hiu)</h3>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">Latih kecepatan mengetikmu! Ketik kata-kata pada hiu yang datang menyerang untuk menyelamatkan ikan-ikan di akuariummu.</p>
+            <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-950/80 text-3xl shadow-inner">🦈</div>
+            <h3 class="font-bubble mb-2 text-xl font-bold text-cyan-200">Penyelamat Ikan</h3>
+            <p class="mb-7 text-sm leading-relaxed text-slate-400">Latih kecepatan mengetikmu dan selamatkan ikan-ikan dari hiu yang datang menyerang.</p>
           </div>
           <a
             href="./menu/hiu.html"
-            class="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-2xl text-xs md:text-sm text-center shadow-lg shadow-cyan-600/30 transition flex items-center justify-center space-x-2"
+            class="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-950/40 transition hover:from-cyan-500 hover:to-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
           >
-            <span>🚀 Mainkan typing test</span>
+            <span>🚀 Mainkan game</span>
           </a>
-        </div>
+        </article>
 
         <!-- Pilihan Game 2: Sawit Empire (Simulasi Bisnis) -->
-        <div class="game-card bg-slate-900/90 border border-emerald-500/30 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group">
-          <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition"></div>
+        <article
+          class="game-card group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-emerald-400/20 bg-slate-900/75 p-6 shadow-xl shadow-black/20 backdrop-blur-sm hover:border-emerald-300/50 sm:p-7"
+        >
+          <div aria-hidden="true" class="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-emerald-500/10 blur-3xl transition group-hover:bg-emerald-400/20"></div>
           <div>
-            <div class="w-14 h-14 rounded-2xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-3xl mb-4 shadow-inner">🌴</div>
-            <h3 class="font-bubble text-xl font-bold text-emerald-300 mb-2">Sawit Empire</h3>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">Game simulasi perkebunan dan pabrik sawit ala Idle Miner. Tanam bibit, pekerjakan mandor, olah TBS jadi CPO, dan jadilah taipan sukses!</p>
+            <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-400/30 bg-emerald-950/80 text-3xl shadow-inner">🌴</div>
+            <h3 class="font-bubble mb-2 text-xl font-bold text-emerald-200">Sawit Empire</h3>
+            <p class="mb-7 text-sm leading-relaxed text-slate-400">Bangun perkebunan dan pabrik sawit. Tanam bibit, pekerjakan mandor, lalu kembangkan bisnismu!</p>
           </div>
           <a
             href="./menu/sawit_empire.html"
-            class="w-full py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold rounded-2xl text-xs md:text-sm text-center shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2"
+            class="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-950/40 transition hover:from-emerald-500 hover:to-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300"
           >
-            <span>🚀 Mainkan Sawit Empire</span>
+            <span>🚀 Mainkan game</span>
           </a>
-        </div>
+        </article>
+
+        <!-- Pilihan Game 3: mbg -->
+        <article class="game-card group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-amber-400/20 bg-slate-900/75 p-6 shadow-xl shadow-black/20 backdrop-blur-sm hover:border-amber-300/50 sm:p-7">
+          <div aria-hidden="true" class="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-amber-500/10 blur-3xl transition group-hover:bg-amber-400/20"></div>
+          <div>
+            <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-950/60 text-3xl shadow-inner">🏢</div>
+            <h3 class="font-bubble mb-2 text-xl font-bold text-amber-200">MBG Simulator</h3>
+            <p class="mb-7 text-sm leading-relaxed text-slate-400">Jadilah bos BGN dan rasakan serunya mengelola simulasi MBG.</p>
+          </div>
+          <a
+            href="./menu/mbg_simulator.html"
+            class="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-amber-950/40 transition hover:from-amber-500 hover:to-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
+          >
+            <span>🚀 Mainkan game</span>
+          </a>
+        </article>
       </div>
     </main>
 
     <!-- Footer -->
-    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-900">© 2026 latara. All rights reserved. Dibuat dengan ❤️ oleh latara.</footer>
-    </footer>
+    <footer class="w-full border-t border-white/5 px-5 py-5 text-center text-xs text-slate-500">© 2026 latara. All rights reserved. Dibuat dengan ❤️ oleh latara.</footer>
   </body>
 </html>
