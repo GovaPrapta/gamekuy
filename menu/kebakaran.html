@@ -1,0 +1,2083 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Siaga Karhutla: Penjaga Rimba Nusantara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #14170f;
+        color: #ece7da;
+      }
+      .font-bubble {
+        font-family: "Fredoka", cursive;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(28, 25, 23, 0.5);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(168, 120, 70, 0.4);
+        border-radius: 9999px;
+      }
+
+      /* ===== Kartu sektor ===== */
+      .sector-card {
+        transition:
+          border-color 0.6s,
+          background-color 0.6s;
+      }
+      @keyframes emberPulse {
+        0%,
+        100% {
+          box-shadow: inset 0 0 0 1px rgba(185, 70, 30, 0.35);
+        }
+        50% {
+          box-shadow: inset 0 0 22px rgba(185, 70, 30, 0.35);
+        }
+      }
+      .fire-card {
+        animation: emberPulse 2.2s infinite ease-in-out;
+      }
+
+      /* ===== Adegan ===== */
+      .scene {
+        position: relative;
+        height: 128px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: linear-gradient(#6f98a0, #b9cdc0 72%);
+      }
+      .haze {
+        position: absolute;
+        inset: 0;
+        background: #5a4630;
+        opacity: 0;
+        transition: opacity 1.6s;
+        pointer-events: none;
+        z-index: 8;
+      }
+      .scene[data-fire="1"] .haze {
+        opacity: 0.16;
+      }
+      .scene[data-fire="2"] .haze {
+        opacity: 0.32;
+      }
+      .scene[data-fire="3"] .haze {
+        opacity: 0.5;
+      }
+      .ground {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 20px;
+        background: linear-gradient(#55663a 0 5px, #3d3226 5px);
+        z-index: 2;
+        transition: filter 1.5s;
+      }
+      .scene[data-fire="3"] .ground {
+        filter: brightness(0.55) saturate(0.6);
+      }
+      .scene[data-fire="2"] .ground {
+        filter: brightness(0.8);
+      }
+
+      .cloud {
+        position: absolute;
+        width: 74px;
+        height: 18px;
+        border-radius: 20px;
+        background: rgba(247, 243, 232, 0.8);
+        left: -90px;
+        animation: drift linear infinite;
+        z-index: 1;
+      }
+      .cloud::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        top: -9px;
+        width: 34px;
+        height: 20px;
+        border-radius: 50%;
+        background: inherit;
+      }
+      @keyframes drift {
+        to {
+          left: 105%;
+        }
+      }
+
+      .tree {
+        position: absolute;
+        bottom: 15px;
+        width: 30px;
+        height: 56px;
+        transform-origin: 50% 100%;
+        animation: sway 4.5s ease-in-out infinite;
+        z-index: 3;
+      }
+      .tree svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .canopy {
+        fill: #3f6b3f;
+        transition: fill 1.6s;
+      }
+      .trunk {
+        fill: #6b4a2b;
+        transition: fill 1.6s;
+      }
+      .scene[data-fire="1"] .canopy {
+        fill: #566b3a;
+      }
+      .scene[data-fire="2"] .canopy {
+        fill: #7a6a30;
+      }
+      .scene[data-fire="3"] .canopy {
+        fill: #2f2a25;
+      }
+      .scene[data-fire="3"] .trunk {
+        fill: #241b14;
+      }
+      @keyframes sway {
+        0%,
+        100% {
+          transform: rotate(-1.4deg);
+        }
+        50% {
+          transform: rotate(1.4deg);
+        }
+      }
+      .tree.being-cut {
+        animation: treeCut 0.22s linear infinite;
+      }
+      @keyframes treeCut {
+        0%,
+        100% {
+          transform: rotate(-1.8deg);
+        }
+        50% {
+          transform: rotate(1.8deg);
+        }
+      }
+      .tree.fall {
+        animation: treeFall 1.3s ease-in forwards;
+      }
+      @keyframes treeFall {
+        0% {
+          transform: rotate(0);
+          opacity: 1;
+        }
+        70% {
+          transform: rotate(80deg);
+          opacity: 1;
+        }
+        100% {
+          transform: rotate(90deg) translateX(8px);
+          opacity: 0;
+        }
+      }
+      .tree.regrow {
+        animation: regrow 1.2s ease-out;
+      }
+      @keyframes regrow {
+        from {
+          transform: scaleY(0.1);
+          opacity: 0.2;
+        }
+        to {
+          transform: scaleY(1);
+          opacity: 1;
+        }
+      }
+
+      /* Api */
+      .fx-fire {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+      }
+      .flame {
+        position: absolute;
+        bottom: 14px;
+        transform-origin: 50% 100%;
+        animation: flicker 0.7s ease-in-out infinite alternate;
+      }
+      @keyframes flicker {
+        0% {
+          transform: scale(1, 1) skewX(0deg);
+        }
+        50% {
+          transform: scale(0.9, 1.1) skewX(4deg);
+        }
+        100% {
+          transform: scale(1.07, 0.94) skewX(-4deg);
+        }
+      }
+      .smoke {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(66, 61, 56, 0.6);
+        filter: blur(5px);
+        animation: smokeUp 3.2s ease-out infinite;
+        opacity: 0;
+      }
+      @keyframes smokeUp {
+        0% {
+          transform: translate(0, 0) scale(0.5);
+          opacity: 0;
+        }
+        15% {
+          opacity: 0.65;
+        }
+        100% {
+          transform: translate(14px, -95px) scale(2.3);
+          opacity: 0;
+        }
+      }
+      .steam {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: rgba(232, 232, 228, 0.7);
+        filter: blur(5px);
+        animation: steamUp 1.5s ease-out forwards;
+      }
+      @keyframes steamUp {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(-60px) scale(1.8);
+          opacity: 0;
+        }
+      }
+
+      /* Efek aksi */
+      .fx-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 7;
+        pointer-events: none;
+      }
+      .heli {
+        position: absolute;
+        width: 84px;
+        height: 56px;
+        animation: heliFly 2.4s ease-in-out forwards;
+      }
+      @keyframes heliFly {
+        0% {
+          left: -30%;
+          top: 24px;
+        }
+        30% {
+          left: 40%;
+          top: 10px;
+        }
+        70% {
+          left: 40%;
+          top: 10px;
+        }
+        100% {
+          left: 115%;
+          top: 20px;
+        }
+      }
+      .rotor {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: rotor 0.1s linear infinite;
+      }
+      @keyframes rotor {
+        0%,
+        100% {
+          transform: scaleX(1);
+        }
+        50% {
+          transform: scaleX(0.25);
+        }
+      }
+      .drop {
+        position: absolute;
+        width: 5px;
+        height: 9px;
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        background: #8fb8d6;
+        animation: dropFall 0.65s ease-in forwards;
+      }
+      @keyframes dropFall {
+        from {
+          transform: translateY(0);
+          opacity: 0.95;
+        }
+        to {
+          transform: translateY(78px);
+          opacity: 0.25;
+        }
+      }
+      .spray {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #a6c8e0;
+        animation: spray 0.7s ease-out forwards;
+      }
+      @keyframes spray {
+        0% {
+          transform: translate(0, 0);
+          opacity: 1;
+        }
+        50% {
+          transform: translate(calc(var(--dx) * 0.55), var(--up));
+          opacity: 0.95;
+        }
+        100% {
+          transform: translate(var(--dx), var(--dy));
+          opacity: 0.2;
+        }
+      }
+      .slide-in {
+        animation: slideIn 0.4s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(-30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      .runner {
+        position: absolute;
+        bottom: 15px;
+        animation: runTo 1.3s linear forwards;
+      }
+      @keyframes runTo {
+        from {
+          left: 96%;
+        }
+        to {
+          left: 20%;
+        }
+      }
+      .runner svg {
+        animation: bob 0.22s ease-in-out infinite alternate;
+      }
+      @keyframes bob {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-3px);
+        }
+      }
+      .scan-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 12px;
+        top: -12px;
+        background: linear-gradient(transparent, rgba(150, 195, 185, 0.45), transparent);
+        animation: scan 1.3s linear forwards;
+      }
+      @keyframes scan {
+        to {
+          top: 128px;
+        }
+      }
+
+      /* Preman tanah */
+      .thug {
+        position: absolute;
+        right: 4%;
+        bottom: 15px;
+        z-index: 4;
+      }
+      .runner-r {
+        animation: runRight 1.3s linear forwards;
+      }
+      @keyframes runRight {
+        from {
+          left: 4%;
+        }
+        to {
+          left: 80%;
+        }
+      }
+
+      /* Penebang liar */
+      .suspect {
+        position: absolute;
+        left: 3%;
+        bottom: 15px;
+        width: 60px;
+        height: 38px;
+        z-index: 4;
+      }
+      .saw {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        animation: sawing 0.12s linear infinite alternate;
+      }
+      @keyframes sawing {
+        from {
+          transform: translateX(-1px);
+        }
+        to {
+          transform: translateX(2px);
+        }
+      }
+      .dust {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: #d8b878;
+        animation: dust 0.55s linear infinite;
+      }
+      @keyframes dust {
+        from {
+          transform: translate(0, 0);
+          opacity: 1;
+        }
+        to {
+          transform: translate(14px, -14px);
+          opacity: 0;
+        }
+      }
+      .caught {
+        animation: shakeCaught 0.25s linear 3;
+      }
+      @keyframes shakeCaught {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(2px);
+        }
+      }
+      .tag {
+        position: absolute;
+        font-size: 10px;
+        font-weight: 800;
+        background: #f1e6c4;
+        color: #3a2a14;
+        padding: 1px 6px;
+        border-radius: 6px;
+        z-index: 9;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-40px) scale(1.15);
+          opacity: 0;
+        }
+      }
+      .floating-text {
+        animation: floatUp 1.1s ease-out forwards;
+        pointer-events: none;
+      }
+      @keyframes bump {
+        0% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(1.35);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .bump {
+        animation: bump 0.45s ease-out;
+      }
+    </style>
+  </head>
+  <body class="w-screen h-screen flex flex-col justify-between overflow-hidden select-none bg-gradient-to-br from-stone-950 via-zinc-950 to-green-950">
+    <!-- Kabut asap global sesuai ISPU -->
+    <div id="smogOverlay" class="fixed inset-0 pointer-events-none z-[15] transition-opacity duration-1000" style="background: #7a6a50; opacity: 0"></div>
+
+    <header class="w-full bg-stone-900/90 backdrop-blur-md border-b border-stone-700/60 px-4 py-3 z-20 flex flex-wrap justify-between items-center shadow-xl">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-green-800 to-amber-700 flex items-center justify-center shadow text-2xl">🌲🔥</div>
+        <div>
+          <h1 class="font-bubble text-lg md:text-xl font-bold tracking-wider text-amber-200">SIAGA KARHUTLA</h1>
+          <p class="text-xs text-stone-400">Komando: <span id="playerNameDisplay" class="text-green-300 font-medium">Satgas Nasional</span></p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 md:space-x-3 text-xs md:text-sm font-semibold mt-2 sm:mt-0">
+        <div class="bg-stone-800/90 px-3 py-2 rounded-xl border border-stone-700 flex items-center space-x-2">
+          <span class="text-base">💰</span>
+          <div>
+            <div class="text-[9px] text-stone-400 uppercase tracking-wider">Dana Darurat</div>
+            <div id="statMoney" class="text-green-300 text-xs md:text-sm font-bold">Rp 25.000.000</div>
+          </div>
+        </div>
+        <div class="bg-stone-800/90 px-3 py-2 rounded-xl border border-stone-700 flex items-center space-x-2">
+          <span class="text-base">🌡️</span>
+          <div>
+            <div class="text-[9px] text-stone-400 uppercase tracking-wider">Cuaca (El Nino)</div>
+            <div id="statWeather" class="text-amber-300 text-xs md:text-sm font-bold">Kering (Indeks 2.4)</div>
+          </div>
+        </div>
+        <div class="bg-stone-800/90 px-3 py-2 rounded-xl border border-stone-700 flex items-center space-x-2">
+          <span class="text-base">🌁</span>
+          <div>
+            <div class="text-[9px] text-stone-400 uppercase tracking-wider">Kualitas Udara ISPU</div>
+            <div id="statIspu" class="text-green-300 text-xs md:text-sm font-bold">Baik (35)</div>
+          </div>
+        </div>
+        <div class="flex space-x-1.5">
+          <button id="btnMusic" onclick="SND.toggleMusic()" title="Musik latar" class="w-9 h-9 rounded-xl bg-stone-800/90 border border-stone-700 text-base hover:bg-stone-700 transition">🎵</button>
+          <button id="btnSfx" onclick="SND.toggleSfx()" title="Efek suara" class="w-9 h-9 rounded-xl bg-stone-800/90 border border-stone-700 text-base hover:bg-stone-700 transition">🔊</button>
+        </div>
+        <div class="bg-stone-800/90 px-3 py-2 rounded-xl border border-stone-700 min-w-[140px]">
+          <div class="text-[9px] text-stone-400 uppercase tracking-wider flex justify-between gap-3">
+            <span>📅 Hari ke-<span id="statDay">1</span></span>
+            <span>Bebas Api <span id="statStreak">0</span>/5</span>
+          </div>
+          <div class="h-2 mt-1.5 rounded-full bg-stone-700 overflow-hidden">
+            <div id="streakBar" class="h-full bg-green-600 transition-all duration-700" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="flex bg-stone-800/90 px-3 py-2 rounded-xl border border-stone-700 items-center space-x-2">
+          <span class="text-base">⭐</span>
+          <div>
+            <div class="text-[9px] text-stone-400 uppercase tracking-wider">Reputasi Satgas</div>
+            <div id="statRep" class="text-sky-300 text-xs md:text-sm font-bold">100% (Prima)</div>
+          </div>
+        </div>
+        <a href="../index.html" data-i18n-title="homeTitle" data-i18n-aria-label="homeTitle" title="Kembali ke halaman utama" aria-label="Kembali ke halaman utama" class="icon-btn flex items-center gap-1.5 whitespace-nowrap">
+          🏠<span class="hidden md:inline" data-i18n="homeBtn">Kembali</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="w-full flex-1 p-4 md:p-6 overflow-y-auto grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto z-10">
+      <div class="lg:col-span-2 flex flex-col space-y-6">
+        <div class="bg-stone-900/80 backdrop-blur-md rounded-3xl p-5 border border-stone-700/60 shadow-2xl relative overflow-hidden">
+          <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center space-x-2">
+              <span class="text-xl">🗺️</span>
+              <h2 class="font-bubble text-lg md:text-xl font-bold text-amber-200">Peta Pemantauan Sektor Rawan Karhutla</h2>
+            </div>
+            <div class="text-xs bg-stone-800 text-amber-200 px-3 py-1 rounded-xl border border-stone-600 flex items-center space-x-2">
+              <span>🔥 Hotspot Aktif: <span id="activeHotspotCount" class="font-bold text-orange-300">0</span></span>
+            </div>
+          </div>
+
+          <div id="sectorGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4"></div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-700 text-xs">
+            <div class="text-stone-400 flex items-center space-x-4">
+              <span>🚁 Heli Siaga: <strong id="statHeli" class="text-sky-300">1</strong></span>
+              <span>🚒 Tim Manggala Agni: <strong id="statTeam" class="text-green-300">2</strong></span>
+              <span>👮 Polhut/Patroli: <strong id="statPatrol" class="text-amber-300">1</strong></span>
+            </div>
+            <button onclick="dispatchSatelliteScan()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-stone-100 font-bold rounded-xl shadow transition flex items-center space-x-1.5">
+              <span>📡 Pantau Satelit BRIN/BMKG (Rp 500K)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-stone-900/80 backdrop-blur-md rounded-3xl p-5 border border-stone-700/60 shadow-2xl">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-xl">🕵️‍♂️</span>
+              <h2 class="font-bubble text-base md:text-lg font-bold text-amber-200">Intelijen & Operasi Penangkapan Oknum Pembakar</h2>
+            </div>
+            <span class="text-xs text-stone-400">Cegah Land Clearing Ilegal</span>
+          </div>
+          <div id="intelContainer" class="space-y-2.5 max-h-40 overflow-y-auto pr-1">
+            <div class="p-3 bg-stone-800/80 rounded-2xl border border-stone-700 text-xs text-stone-300 flex justify-between items-center">
+              <span>Memantau aktivitas mencurigakan di lahan gambut... Satelit siaga.</span>
+              <span class="text-[10px] text-stone-500 font-semibold">Sistem Siaga</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col space-y-6">
+        <div class="bg-stone-900/80 backdrop-blur-md rounded-3xl p-5 border border-stone-700/60 shadow-2xl">
+          <div class="flex items-center space-x-2 mb-4">
+            <span class="text-xl">🚒</span>
+            <h2 class="font-bubble text-base md:text-lg font-bold text-amber-200">Pusat Pengadaan & Logistik</h2>
+          </div>
+
+          <div class="space-y-3">
+            <div class="bg-stone-800/80 p-3.5 rounded-2xl border border-stone-700 flex justify-between items-center">
+              <div>
+                <div class="font-bold text-sm text-green-300">Tim Manggala Agni</div>
+                <div class="text-[11px] text-stone-400">Padamkan api darat di sektor</div>
+              </div>
+              <button onclick="hireTeam()" class="px-3.5 py-2 bg-green-700 hover:bg-green-600 text-white font-bold rounded-xl text-xs transition shadow">Rekrut (Rp <span id="teamPrice">3.000.000</span>)</button>
+            </div>
+
+            <div class="bg-stone-800/80 p-3.5 rounded-2xl border border-stone-700 flex justify-between items-center">
+              <div>
+                <div class="font-bold text-sm text-sky-300">Helikopter Water Bombing</div>
+                <div class="text-[11px] text-stone-400">Padamkan api besar di udara</div>
+              </div>
+              <button onclick="hireHeli()" class="px-3.5 py-2 bg-sky-800 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition shadow">Tambah (Rp <span id="heliPrice">7.500.000</span>)</button>
+            </div>
+
+            <div class="bg-stone-800/80 p-3.5 rounded-2xl border border-stone-700 flex justify-between items-center">
+              <div>
+                <div class="font-bold text-sm text-amber-300">Tim Polhut Patroli</div>
+                <div class="text-[11px] text-stone-400">Tangkap penebang & pembakar lahan</div>
+              </div>
+              <button onclick="hirePatrol()" class="px-3.5 py-2 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded-xl text-xs transition shadow">Tambah (Rp <span id="patrolPrice">4.500.000</span>)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-stone-900/80 backdrop-blur-md rounded-3xl p-5 border border-stone-700/60 shadow-2xl">
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="text-xl">📜</span>
+            <h2 class="font-bubble text-base md:text-lg font-bold text-amber-200">Kebijakan & Sosialisasi Desa</h2>
+          </div>
+          <div class="bg-stone-800/80 p-4 rounded-2xl border border-stone-700 flex flex-col space-y-2.5">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-sm text-stone-100">Maklumat Larangan Bakar</span>
+              <span id="policyLevel" class="text-xs bg-stone-700 text-amber-200 px-2 py-0.5 rounded">Lv. 1</span>
+            </div>
+            <p class="text-[11px] text-stone-400 leading-relaxed">Mengurangi frekuensi oknum pembakar lahan ilegal dan meningkatkan kesadaran warga setempat.</p>
+            <button onclick="upgradePolicy()" class="w-full py-2 bg-stone-600 hover:bg-stone-500 text-white font-bold rounded-xl text-xs transition shadow">Sosialisasi (Rp <span id="policyCost">5.000.000</span>)</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal Intro -->
+    <div id="introModal" class="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-50 flex flex-col justify-center items-center p-6 text-center">
+      <div class="max-w-md bg-stone-900 border border-stone-700 rounded-3xl p-8 shadow-2xl relative">
+        <div class="text-5xl mb-3">🌲🔥🚁</div>
+        <h2 class="font-bubble text-2xl md:text-3xl font-bold text-amber-200 mb-2">Siaga Karhutla Nusantara</h2>
+        <p class="text-stone-300 text-xs md:text-sm mb-6 leading-relaxed">
+          Musim kemarau ekstrem (El Nino) melanda. Titik api bermunculan akibat cuaca kering dan ulah oknum penebang serta pembakar lahan ilegal. Pimpin Satgas Nasional, kerahkan Manggala Agni, helikopter water bombing, dan tangkap para
+          oknum demi langit Nusantara yang biru!<br /><br /><strong class="text-amber-200">Target: 5 hari berturut-turut tanpa satu pun titik api (1 hari = 20 detik).</strong> Waspadai skandal korupsi, uang tutup mulut, preman tanah, dan
+          cuaca ekstrem. Api yang dibiarkan lama menggerus reputasi, dan <strong class="text-red-300">reputasi di bawah 20% = Satgas dibubarkan.</strong>
+        </p>
+        <div class="mb-4 text-left">
+          <label class="block text-xs font-bold text-amber-200 mb-1">Nama Komandan Satgas:</label>
+          <input type="text" id="inputPlayerName" value="Komandan Satgas Riau-Kalteng" class="w-full bg-stone-950 border border-stone-700 focus:border-amber-600 text-white px-4 py-3 rounded-xl outline-none text-sm font-semibold" />
+        </div>
+        <button onclick="startGame()" class="w-full py-3.5 bg-gradient-to-r from-green-800 to-amber-700 hover:from-green-700 text-white font-bold rounded-2xl shadow transition">Mulai Operasi Siaga 🚀</button>
+      </div>
+    </div>
+
+    <!-- Modal Tantangan Mendadak -->
+    <div id="eventModal" class="hidden fixed inset-0 bg-stone-950/85 backdrop-blur-sm z-[60] flex flex-col justify-center items-center p-6">
+      <div class="max-w-md w-full bg-stone-900 border border-amber-700/50 rounded-3xl p-7 shadow-2xl">
+        <div class="text-[11px] font-bold text-amber-500 uppercase tracking-wider mb-2">⚠️ Tantangan Mendadak (waktu dijeda)</div>
+        <div class="flex items-center gap-3 mb-3">
+          <span id="evIcon" class="text-4xl"></span>
+          <h2 id="evTitle" class="font-bubble text-xl font-bold text-amber-200"></h2>
+        </div>
+        <p id="evDesc" class="text-sm text-stone-300 leading-relaxed mb-5"></p>
+        <div id="evOptions" class="space-y-2.5"></div>
+      </div>
+    </div>
+
+    <!-- Modal Akhir Permainan -->
+    <div id="endModal" class="hidden fixed inset-0 bg-stone-950/92 backdrop-blur-md z-[70] flex flex-col justify-center items-center p-6 text-center">
+      <div class="max-w-md w-full bg-stone-900 border border-stone-700 rounded-3xl p-8 shadow-2xl">
+        <div id="endIcon" class="text-5xl mb-3"></div>
+        <h2 id="endTitle" class="font-bubble text-2xl md:text-3xl font-bold text-amber-200 mb-2"></h2>
+        <p id="endDesc" class="text-stone-300 text-sm leading-relaxed mb-4"></p>
+        <div id="endStats" class="text-xs text-stone-400 mb-6 space-y-1"></div>
+        <button onclick="location.reload()" class="w-full py-3.5 bg-gradient-to-r from-green-800 to-amber-700 hover:from-green-700 text-white font-bold rounded-2xl shadow transition">Main Lagi 🔄</button>
+      </div>
+    </div>
+
+    <div
+      id="floatingToast"
+      class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-stone-900 border border-stone-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs md:text-sm"
+    >
+      <span id="toastIcon" class="text-xl">✅</span>
+      <div id="toastMessage">Pemberitahuan berhasil</div>
+    </div>
+
+    <script>
+      let game = {
+        name: "Satgas Riau-Kalteng",
+        money: 25000000,
+        weatherIndex: 2.4,
+        ispu: 35,
+        reputation: 100,
+        teams: 2,
+        teamPrice: 3000000,
+        helis: 1,
+        heliPrice: 7500000,
+        patrols: 1,
+        patrolPrice: 4500000,
+        policyLevel: 1,
+        policyCost: 5000000,
+        day: 1,
+        tick: 0,
+        dayLen: 20,
+        goalDays: 5,
+        streak: 0,
+        paused: false,
+        ended: false,
+        nextEvent: 22,
+        spawnMult: 1,
+        spawnMultTicks: 0,
+        loseTicks: 0,
+        sectors: [
+          { id: 1, name: "Provinsi Riau (Dumai/Bengkalis)", risk: "Tinggi", fireLevel: 0, suspect: false, suspectTimer: 0 },
+          { id: 2, name: "Sumatera Selatan (Ogan Komering Ilir)", risk: "Sangat Tinggi", fireLevel: 0, suspect: false, suspectTimer: 0 },
+          { id: 3, name: "Kalimantan Tengah (Pulang Pisau/Kapuas)", risk: "Tinggi", fireLevel: 0, suspect: false, suspectTimer: 0 },
+          { id: 4, name: "Jambi (Kabupaten Muaro Jambi)", risk: "Sedang", fireLevel: 0, suspect: false, suspectTimer: 0 },
+        ],
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      function mk(cls, html, style) {
+        const d = document.createElement("div");
+        d.className = cls;
+        if (html) d.innerHTML = html;
+        if (style) d.style.cssText = style;
+        return d;
+      }
+
+      function showToast(msg, icon = "✅") {
+        const toast = $("floatingToast");
+        $("toastIcon").textContent = icon;
+        if (icon === "⚠️") SND.error();
+        $("toastMessage").textContent = msg;
+        toast.classList.remove("translate-y-20", "opacity-0");
+        setTimeout(() => toast.classList.add("translate-y-20", "opacity-0"), 3000);
+      }
+
+      /* ================= AUDIO (disintesis, tanpa file) ================= */
+      const SND = {
+        ctx: null,
+        master: null,
+        musicBus: null,
+        sfxBus: null,
+        noiseBuf: null,
+        fireGain: null,
+        wind: null,
+        musicOn: true,
+        sfxOn: true,
+        musicTimer: null,
+        step: 0,
+        danger: false,
+
+        init() {
+          if (this.ctx) {
+            this.ctx.resume();
+            return;
+          }
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return;
+          const c = (this.ctx = new AC());
+          this.master = c.createGain();
+          this.master.gain.value = 0.9;
+          this.master.connect(c.destination);
+          this.musicBus = c.createGain();
+          this.musicBus.gain.value = this.musicOn ? 0.5 : 0;
+          this.musicBus.connect(this.master);
+          this.sfxBus = c.createGain();
+          this.sfxBus.gain.value = this.sfxOn ? 0.8 : 0;
+          this.sfxBus.connect(this.master);
+          const len = c.sampleRate * 2,
+            buf = c.createBuffer(1, len, c.sampleRate),
+            d = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+          this.noiseBuf = buf;
+          // Suara api ambient (volume mengikuti jumlah api)
+          const fs = this.noiseSrc(),
+            fl = c.createBiquadFilter();
+          fl.type = "lowpass";
+          fl.frequency.value = 1100;
+          this.fireGain = c.createGain();
+          this.fireGain.gain.value = 0;
+          fs.connect(fl);
+          fl.connect(this.fireGain);
+          this.fireGain.connect(this.sfxBus);
+          fs.start();
+          document.addEventListener("click", (e) => {
+            if (e.target.closest("button:not([disabled])")) this.click();
+          });
+          document.addEventListener("visibilitychange", () => {
+            document.hidden ? c.suspend() : c.resume();
+          });
+        },
+        noiseSrc() {
+          const s = this.ctx.createBufferSource();
+          s.buffer = this.noiseBuf;
+          s.loop = true;
+          return s;
+        },
+
+        tone(f, dur, o = {}) {
+          if (!this.ctx) return;
+          const { type = "sine", vol = 0.2, at = 0, to = null, bus = null, attack = 0.005 } = o;
+          const c = this.ctx,
+            t = c.currentTime + at,
+            osc = c.createOscillator(),
+            g = c.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(f, t);
+          if (to) osc.frequency.exponentialRampToValueAtTime(to, t + dur);
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.linearRampToValueAtTime(vol, t + attack);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          osc.connect(g);
+          g.connect(bus || this.sfxBus);
+          osc.start(t);
+          osc.stop(t + dur + 0.05);
+        },
+        noise(dur, o = {}) {
+          if (!this.ctx) return;
+          const { ft = "bandpass", f = 1000, to = null, q = 1, vol = 0.2, at = 0, attack = 0.01, bus = null } = o;
+          const c = this.ctx,
+            t = c.currentTime + at,
+            s = this.noiseSrc(),
+            fl = c.createBiquadFilter(),
+            g = c.createGain();
+          fl.type = ft;
+          fl.Q.value = q;
+          fl.frequency.setValueAtTime(f, t);
+          if (to) fl.frequency.exponentialRampToValueAtTime(to, t + dur);
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.linearRampToValueAtTime(vol, t + attack);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          s.connect(fl);
+          fl.connect(g);
+          g.connect(bus || this.sfxBus);
+          s.start(t, Math.random());
+          s.stop(t + dur + 0.05);
+        },
+
+        /* ---- Efek suara ---- */
+        click() {
+          this.tone(900, 0.05, { type: "square", vol: 0.035 });
+        },
+        coin() {
+          this.tone(988, 0.1, { type: "triangle", vol: 0.15 });
+          this.tone(1319, 0.28, { type: "triangle", vol: 0.15, at: 0.09 });
+        },
+        buy() {
+          this.tone(523, 0.1, { type: "triangle", vol: 0.14 });
+          this.tone(784, 0.22, { type: "triangle", vol: 0.14, at: 0.08 });
+        },
+        error() {
+          this.tone(170, 0.25, { type: "sawtooth", vol: 0.1, to: 110 });
+        },
+        ignite() {
+          this.noise(0.8, { ft: "lowpass", f: 500, to: 2600, vol: 0.2, attack: 0.08 });
+        },
+        alarm() {
+          for (let i = 0; i < 4; i++) this.tone(i % 2 ? 660 : 880, 0.2, { type: "square", vol: 0.06, at: i * 0.28 });
+        },
+        crackle(l = 0.5) {
+          const n = 1 + Math.floor(Math.random() * 3);
+          for (let i = 0; i < n; i++) this.noise(0.04, { ft: "highpass", f: 2500 + Math.random() * 2500, vol: 0.05 + 0.12 * l, at: Math.random() * 0.9 });
+        },
+        heli(dur = 2.4) {
+          if (!this.ctx) return;
+          const c = this.ctx,
+            t = c.currentTime;
+          const out = c.createGain();
+          out.gain.setValueAtTime(0.0001, t);
+          out.gain.linearRampToValueAtTime(0.9, t + 0.6);
+          out.gain.setValueAtTime(0.9, t + dur - 0.7);
+          out.gain.linearRampToValueAtTime(0.0001, t + dur);
+          out.connect(this.sfxBus);
+          const o = c.createOscillator();
+          o.type = "sawtooth";
+          o.frequency.value = 52;
+          const lp = c.createBiquadFilter();
+          lp.type = "lowpass";
+          lp.frequency.value = 320;
+          const g = c.createGain();
+          g.gain.value = 0.18;
+          const lfo = c.createOscillator();
+          lfo.frequency.value = 15;
+          const lg = c.createGain();
+          lg.gain.value = 0.16;
+          lfo.connect(lg);
+          lg.connect(g.gain);
+          o.connect(lp);
+          lp.connect(g);
+          g.connect(out);
+          const n = this.noiseSrc(),
+            bp = c.createBiquadFilter(),
+            ng = c.createGain();
+          bp.type = "bandpass";
+          bp.frequency.value = 700;
+          ng.gain.value = 0.06;
+          n.connect(bp);
+          bp.connect(ng);
+          ng.connect(out);
+          [o, lfo, n].forEach((x) => {
+            x.start(t);
+            x.stop(t + dur + 0.1);
+          });
+        },
+        spray(dur = 1.4) {
+          this.noise(dur, { ft: "bandpass", f: 3000, q: 0.6, vol: 0.14, attack: 0.15 });
+        },
+        steam() {
+          this.noise(1.2, { ft: "highpass", f: 3500, vol: 0.1, attack: 0.1 });
+        },
+        chainsaw(v = 1) {
+          this.tone(90, 1.2, { type: "sawtooth", vol: 0.07 * v, to: 150, attack: 0.15 });
+          this.tone(180, 1.2, { type: "sawtooth", vol: 0.035 * v, to: 300, attack: 0.15 });
+          this.noise(1.2, { f: 1500, vol: 0.05 * v, attack: 0.15 });
+        },
+        treeFall() {
+          this.tone(220, 0.8, { type: "sawtooth", vol: 0.05, to: 110 });
+          this.noise(0.5, { ft: "lowpass", f: 500, vol: 0.3, at: 0.9 });
+          this.tone(70, 0.4, { vol: 0.3, to: 40, at: 0.9 });
+        },
+        run() {
+          for (let i = 0; i < 6; i++) this.noise(0.05, { ft: "lowpass", f: 400, vol: 0.1, at: i * 0.2 });
+        },
+        whistle() {
+          this.tone(2200, 0.22, { vol: 0.08, to: 2600 });
+          this.tone(2200, 0.22, { vol: 0.08, to: 2600, at: 0.28 });
+        },
+        scan() {
+          this.tone(400, 1.2, { vol: 0.07, to: 1400 });
+          this.tone(1400, 0.08, { vol: 0.05, at: 1.25 });
+        },
+        bell() {
+          this.tone(660, 1.3, { vol: 0.08 });
+          this.tone(990, 1.3, { vol: 0.04 });
+        },
+        event() {
+          this.tone(392, 0.25, { type: "triangle", vol: 0.14 });
+          this.tone(330, 0.25, { type: "triangle", vol: 0.14, at: 0.22 });
+          this.tone(262, 0.55, { type: "triangle", vol: 0.14, at: 0.44 });
+        },
+        win() {
+          [523, 659, 784, 1047, 1319].forEach((f, i) => this.tone(f, 0.7, { type: "triangle", vol: 0.16, at: i * 0.15 }));
+          [523, 659, 784].forEach((f) => this.tone(f, 1.8, { type: "triangle", vol: 0.1, at: 0.8 }));
+        },
+        lose() {
+          [440, 392, 330, 262, 196].forEach((f, i) => this.tone(f, 0.7, { type: "sawtooth", vol: 0.08, at: i * 0.3 }));
+          this.tone(55, 2.5, { vol: 0.2, at: 1.2 });
+        },
+
+        /* ---- Pembaruan tiap detik ---- */
+        update(g) {
+          if (!this.ctx) return;
+          const fires = g.sectors.filter((s) => s.fireLevel > 0).length;
+          const total = g.sectors.reduce((a, s) => a + s.fireLevel, 0);
+          this.fireGain.gain.setTargetAtTime(Math.min(0.18, total * 0.03), this.ctx.currentTime, 0.6);
+          this.danger = fires >= 2 || g.ispu > 100;
+          if (fires && Math.random() < 0.9) this.crackle(Math.min(1, total / 4));
+          if (g.sectors.some((s) => s.suspect) && g.tick % 7 === 0) this.chainsaw(0.7);
+        },
+
+        /* ---- Musik ambient generatif ---- */
+        pad(f, dur, vol) {
+          const c = this.ctx,
+            t = c.currentTime;
+          const o = c.createOscillator(),
+            o2 = c.createOscillator(),
+            lp = c.createBiquadFilter(),
+            g = c.createGain();
+          o.type = "triangle";
+          o.frequency.value = f;
+          o2.type = "sine";
+          o2.frequency.value = f * 1.004;
+          lp.type = "lowpass";
+          lp.frequency.value = 900;
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.linearRampToValueAtTime(vol, t + 1.5);
+          g.gain.setValueAtTime(vol, t + dur - 1.6);
+          g.gain.linearRampToValueAtTime(0.0001, t + dur);
+          o.connect(lp);
+          o2.connect(lp);
+          lp.connect(g);
+          g.connect(this.musicBus);
+          o.start(t);
+          o2.start(t);
+          o.stop(t + dur + 0.1);
+          o2.stop(t + dur + 0.1);
+        },
+        musicTick() {
+          if (!this.ctx) return;
+          const chords = [
+            [220, 261.63, 329.63],
+            [174.61, 220, 261.63],
+            [261.63, 329.63, 392],
+            [196, 246.94, 293.66],
+          ];
+          const ch = chords[this.step++ % 4];
+          ch.forEach((f) => this.pad(f, 5.2, this.danger ? 0.05 : 0.07));
+          this.pad(ch[0] / 2, 5.2, 0.08);
+          const pent = [440, 523.25, 587.33, 659.25, 783.99, 880];
+          const n = this.danger ? 2 : 4;
+          for (let i = 0; i < n; i++) {
+            this.tone(pent[Math.floor(Math.random() * pent.length)], 1.4, { vol: 0.05, at: i * (3.6 / n) + Math.random() * 0.5, bus: this.musicBus, attack: 0.02 });
+          }
+          if (this.danger) {
+            // Suasana tegang: dengung rendah dan denyut
+            this.tone(55, 4, { vol: 0.14, bus: this.musicBus, attack: 1 });
+            this.pad(233.08, 5.2, 0.035);
+            for (let i = 0; i < 8; i++) this.tone(62, 0.28, { vol: 0.2, to: 36, at: i * 0.5, bus: this.musicBus });
+          } else if (Math.random() < 0.8) {
+            // Kicau burung saat hutan aman
+            for (let k = 0; k < 2; k++) {
+              this.tone(2500 + Math.random() * 500, 0.09, { vol: 0.025, to: 3400, at: 0.5 + Math.random() * 3 + k * 0.15, bus: this.musicBus });
+            }
+          }
+        },
+        startMusic() {
+          if (!this.ctx || this.musicTimer) return;
+          const c = this.ctx;
+          const w = this.noiseSrc(),
+            bp = c.createBiquadFilter(),
+            g = c.createGain(),
+            lfo = c.createOscillator(),
+            lg = c.createGain();
+          bp.type = "bandpass";
+          bp.frequency.value = 450;
+          bp.Q.value = 0.4;
+          g.gain.value = 0.05;
+          lfo.frequency.value = 0.12;
+          lg.gain.value = 0.03;
+          lfo.connect(lg);
+          lg.connect(g.gain);
+          w.connect(bp);
+          bp.connect(g);
+          g.connect(this.musicBus);
+          w.start();
+          lfo.start();
+          this.wind = { w, lfo };
+          this.musicTick();
+          this.musicTimer = setInterval(() => this.musicTick(), 4000);
+        },
+        stopMusic() {
+          clearInterval(this.musicTimer);
+          this.musicTimer = null;
+          if (!this.ctx) return;
+          this.musicBus.gain.setTargetAtTime(0, this.ctx.currentTime, 0.4);
+          try {
+            this.wind.w.stop();
+            this.wind.lfo.stop();
+          } catch (e) {}
+          this.fireGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.3);
+        },
+
+        toggleMusic() {
+          this.musicOn = !this.musicOn;
+          if (this.ctx && this.musicTimer) this.musicBus.gain.setTargetAtTime(this.musicOn ? 0.5 : 0, this.ctx.currentTime, 0.1);
+          $("btnMusic").style.opacity = this.musicOn ? 1 : 0.35;
+        },
+        toggleSfx() {
+          this.sfxOn = !this.sfxOn;
+          if (this.ctx) this.sfxBus.gain.setTargetAtTime(this.sfxOn ? 0.8 : 0, this.ctx.currentTime, 0.1);
+          $("btnSfx").style.opacity = this.sfxOn ? 1 : 0.35;
+        },
+      };
+
+      /* ================= SVG ASET ================= */
+      const treeSVG = () => `<svg viewBox="0 0 30 56"><rect class="trunk" x="13" y="40" width="4" height="16"/>
+            <polygon class="canopy" points="15,22 29,46 1,46"/><polygon class="canopy" points="15,12 28,34 2,34"/><polygon class="canopy" points="15,2 26,22 4,22"/></svg>`;
+
+      const flameSVG = () => `<svg viewBox="0 0 30 44" width="100%" style="display:block">
+            <path d="M15 1C18 11 28 17 27 30 26 39 21 43 15 43 9 43 4 39 3 30 2 22 9 20 11 11 12 7 13 4 15 1Z" fill="#b8431b"/>
+            <path d="M15 16C17 22 22 25 21 32 20 38 18 41 15 41 12 41 9 38 9 32 9 27 13 25 13 20 14 18 14 17 15 16Z" fill="#e59a35"/>
+            <path d="M15 28C16 31 18 32 17.5 36 17 39 16 40 15 40 14 40 13 39 12.5 36 12 32 14 31 15 28Z" fill="#f0d07a"/></svg>`;
+
+      const personSVG = (body, hat, w = 22, h = 36) => `<svg viewBox="0 0 24 40" width="${w}" height="${h}">
+            <circle cx="12" cy="8" r="4.5" fill="#d9b38c"/><path d="M6 8 a6 5.5 0 0 1 12 0z" fill="${hat}"/>
+            <rect x="7" y="13" width="10" height="14" rx="3" fill="${body}"/>
+            <rect x="7.5" y="27" width="3.5" height="12" fill="#2f3a4a"/><rect x="13" y="27" width="3.5" height="12" fill="#2f3a4a"/>
+            <rect x="16" y="15" width="6" height="3" rx="1.5" fill="${body}"/></svg>`;
+
+      const sawSVG = () => `<svg viewBox="0 0 30 12" width="28" height="11">
+            <rect x="0" y="1" width="12" height="10" rx="2" fill="#b4531f"/><rect x="12" y="4" width="17" height="4" rx="1" fill="#9aa0a6"/>
+            <path d="M12 4h17M12 8h17" stroke="#5c6168" stroke-dasharray="1.5 1.5"/></svg>`;
+
+      const heliSVG = () => `<svg viewBox="0 0 90 62" width="84" height="58">
+            <ellipse class="rotor" cx="40" cy="10" rx="38" ry="2" fill="#2e2e2e"/>
+            <rect x="38.5" y="10" width="3" height="7" fill="#3a3a3a"/>
+            <rect x="56" y="22" width="30" height="5" rx="2" fill="#a8532e"/>
+            <ellipse cx="40" cy="26" rx="23" ry="11" fill="#bb5a35"/>
+            <path d="M28 20 Q38 14 52 22 L50 30 L28 30Z" fill="#a9c3cf"/>
+            <rect x="22" y="38" width="38" height="2.5" rx="1" fill="#3a3a3a"/>
+            <path d="M30 36v3M50 36v3" stroke="#3a3a3a" stroke-width="2"/>
+            <line x1="40" y1="40" x2="40" y2="50" stroke="#555" stroke-width="1.2"/>
+            <path d="M33 50 h14 l-2 10 h-10z" fill="#5b6b78"/></svg>`;
+
+      /* ================= ADEGAN SEKTOR ================= */
+      const firePos = [38, 52, 66, 46, 74, 58, 30];
+      const treePos = [17, 32, 48, 64, 80];
+
+      function buildScene(sec) {
+        const trees = treePos.map((p, i) => `<div class="tree ${i === 0 ? "tree0" : ""}" style="left:${p}%;animation-delay:${-i * 0.9}s">${treeSVG()}</div>`).join("");
+        return `<div class="scene" id="scene-${sec.id}" data-fire="0">
+                <div class="cloud" style="top:10px;animation-duration:70s;animation-delay:${-sec.id * 12}s"></div>
+                <div class="cloud" style="top:34px;transform:scale(.7);animation-duration:95s;animation-delay:${-sec.id * 25}s"></div>
+                <div class="ground"></div>
+                ${trees}
+                <div class="fx-fire" id="fire-${sec.id}"></div>
+                <div class="suspect" id="sus-${sec.id}" style="display:none">
+                    ${personSVG("#8a5a2b", "#6d6d6d")}
+                    <div class="saw">${sawSVG()}</div>
+                    <span class="dust" style="left:56px;top:22px"></span>
+                    <span class="dust" style="left:56px;top:22px;animation-delay:.18s"></span>
+                    <span class="dust" style="left:56px;top:22px;animation-delay:.36s"></span>
+                </div>
+                <div class="thug" id="thug-${sec.id}" style="display:none">
+                    ${personSVG("#2f2f33", "#7a1f1f")}
+                    <span class="tag" style="left:-16px;top:-14px;background:#d8c7a0">Preman</span>
+                </div>
+                <div class="fx-layer" id="fx-${sec.id}"></div>
+                <div class="haze"></div>
+            </div>`;
+      }
+
+      function fireLvl(f) {
+        return f <= 0 ? 0 : f < 1.5 ? 1 : f < 3 ? 2 : 3;
+      }
+
+      function renderFire(sec, lvl) {
+        const el = $("fire-" + sec.id);
+        el.innerHTML = "";
+        if (lvl === 0) return;
+        const count = [0, 3, 5, 7][lvl];
+        const size = [0, 18, 26, 34][lvl];
+        for (let i = 0; i < count; i++) {
+          const left = firePos[i];
+          const f = mk("flame", flameSVG(), `left:${left}%;width:${size}px;margin-left:-${size / 2}px;animation-delay:${-Math.random() * 0.7}s;animation-duration:${0.55 + Math.random() * 0.4}s`);
+          el.appendChild(f);
+          if (i % 2 === 0) {
+            el.appendChild(mk("smoke", "", `left:${left}%;bottom:${34 + lvl * 6}px;margin-left:-14px;animation-delay:${-Math.random() * 3}s`));
+          }
+        }
+      }
+
+      function playSteam(sec) {
+        SND.steam();
+        const fx = $("fx-" + sec.id);
+        for (let i = 0; i < 5; i++) {
+          const s = mk("steam", "", `left:${40 + i * 7}%;bottom:30px;animation-delay:${i * 0.12}s`);
+          fx.appendChild(s);
+          setTimeout(() => s.remove(), 1900);
+        }
+      }
+
+      function floatText(secId, text) {
+        SND.coin();
+        const fx = $("fx-" + secId);
+        const t = mk("floating-text", text, "position:absolute;left:36%;top:38%;color:#efe0a6;font-weight:800;font-size:13px;text-shadow:0 1px 3px #000;z-index:10");
+        fx.appendChild(t);
+        setTimeout(() => t.remove(), 1200);
+      }
+
+      /* ===== Animasi aksi ===== */
+      function playHeli(sec, cb) {
+        SND.heli(2.4);
+        const fx = $("fx-" + sec.id);
+        const heli = mk("heli", heliSVG());
+        fx.appendChild(heli);
+        setTimeout(() => {
+          const iv = setInterval(() => {
+            const d = mk("drop", "", `left:calc(40% + ${34 + Math.random() * 14}px);top:${50 + Math.random() * 8}px`);
+            fx.appendChild(d);
+            setTimeout(() => d.remove(), 700);
+          }, 60);
+          setTimeout(() => clearInterval(iv), 900);
+        }, 750);
+        setTimeout(() => {
+          heli.remove();
+          cb();
+        }, 2400);
+      }
+
+      function playTeam(sec, cb) {
+        SND.spray(1.4);
+        const fx = $("fx-" + sec.id);
+        const crew = mk("slide-in", personSVG("#b4531f", "#c9a227") + personSVG("#b4531f", "#c9a227"), "position:absolute;left:18%;bottom:15px;display:flex;gap:2px");
+        fx.appendChild(crew);
+        const iv = setInterval(() => {
+          const dx = 80 + Math.random() * 60;
+          const s = mk("spray", "", `left:calc(18% + 48px);bottom:36px;--dx:${dx}px;--up:${-(14 + Math.random() * 16)}px;--dy:${8 + Math.random() * 16}px`);
+          fx.appendChild(s);
+          setTimeout(() => s.remove(), 750);
+        }, 45);
+        setTimeout(() => clearInterval(iv), 1300);
+        setTimeout(() => {
+          crew.remove();
+          cb();
+        }, 1600);
+      }
+
+      function playPatrol(sec, cb) {
+        SND.run();
+        setTimeout(() => SND.whistle(), 1250);
+        const fx = $("fx-" + sec.id);
+        const run = mk("runner", personSVG("#4d5d3a", "#3a4a2a"));
+        fx.appendChild(run);
+        setTimeout(() => {
+          const sus = $("sus-" + sec.id);
+          sus.classList.add("caught");
+          const tag = mk("tag", "Berhenti! Polhut!", "left:6%;top:42px");
+          fx.appendChild(tag);
+          setTimeout(() => {
+            tag.remove();
+            sus.classList.remove("caught");
+          }, 800);
+        }, 1300);
+        setTimeout(() => {
+          run.remove();
+          cb();
+        }, 1800);
+      }
+
+      function playFell(sec) {
+        SND.treeFall();
+        const tree = document.querySelector(`#scene-${sec.id} .tree0`);
+        if (!tree) return;
+        tree.classList.add("fall");
+        setTimeout(() => {
+          tree.classList.remove("fall");
+          tree.classList.add("regrow");
+          setTimeout(() => tree.classList.remove("regrow"), 1300);
+        }, 1900);
+      }
+
+      function playScan() {
+        SND.scan();
+        game.sectors.forEach((s) => {
+          const fx = $("fx-" + s.id);
+          const l = mk("scan-line");
+          fx.appendChild(l);
+          setTimeout(() => l.remove(), 1400);
+        });
+      }
+
+      /* ================= INISIALISASI ================= */
+      function initSectors() {
+        const grid = $("sectorGrid");
+        grid.innerHTML = "";
+        game.sectors.forEach((sec) => {
+          sec._lvl = -1;
+          sec._actKey = "";
+          sec._badge = "";
+          sec.busy = false;
+          const card = mk("sector-card p-4 rounded-2xl border bg-stone-800/80 border-stone-700 flex flex-col space-y-3 shadow-xl");
+          card.id = "card-" + sec.id;
+          card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <h3 class="font-bold text-xs md:text-sm text-stone-100">${sec.name}</h3>
+                            <span class="text-[10px] text-stone-400">Risiko Gambut: ${sec.risk}</span>
+                        </div>
+                        <div id="badge-${sec.id}" class="flex flex-wrap gap-1 justify-end"></div>
+                    </div>
+                    ${buildScene(sec)}
+                    <div id="act-${sec.id}" class="flex flex-wrap items-center gap-2"></div>`;
+          grid.appendChild(card);
+        });
+      }
+
+      function startGame() {
+        SND.init();
+        SND.startMusic();
+        const inputVal = $("inputPlayerName").value.trim();
+        if (inputVal) game.name = inputVal;
+        $("playerNameDisplay").textContent = game.name;
+        $("introModal").classList.add("hidden");
+        initSectors();
+        renderSectors();
+        updateStats();
+        setInterval(gameLoop, 1000);
+      }
+
+      /* ================= GAME LOOP ================= */
+      function gameLoop() {
+        if (game.paused || game.ended) return;
+        game.sectors.forEach((sec) => {
+          if (sec.fireLevel === 0 && Math.random() < (0.008 * (game.weatherIndex / 2) * game.spawnMult * (sec.thugs ? 3 : 1)) / (1 + 0.5 * (game.policyLevel - 1))) {
+            sec.fireLevel = Math.floor(Math.random() * 2) + 1;
+            addIntelLog(`🔥 Hotspot terdeteksi di sektor ${sec.name}! Segera kerahkan tim pemadam.`);
+          } else if (sec.fireLevel > 0) {
+            sec.fireLevel = Math.min(3, sec.fireLevel + 0.2);
+          }
+
+          if (!sec.suspect && sec.fireLevel < 2 && Math.random() < (0.005 * game.spawnMult * (sec.thugs ? 3 : 1)) / game.policyLevel) {
+            sec.suspect = true;
+            sec.suspectTimer = 45;
+            addIntelLog(`🪓 Laporan Intelijen: Penebang/pembakar lahan terlihat beraksi di ${sec.name}! Kirim Tim Polhut.`);
+          } else if (sec.suspect && !sec.busy) {
+            sec.suspectTimer--;
+            if (sec.suspectTimer <= 0) {
+              sec.suspect = false;
+              sec.fireLevel = 3;
+              game.reputation = Math.max(0, game.reputation - 10);
+              playFell(sec);
+              addIntelLog(`💥 Gawat! Oknum menebang lalu membakar lahan di ${sec.name}! ISPU memburuk.`);
+              showToast(`Lahan di ${sec.name} terbakar akibat oknum!`, "⚠️");
+            }
+          }
+        });
+
+        let totalFire = game.sectors.reduce((acc, s) => acc + s.fireLevel, 0);
+        game.ispu = Math.round(35 + totalFire * 32);
+        if (game.ispu > 150) game.reputation = Math.max(0, game.reputation - 1);
+
+        checkProgress();
+
+        renderSectors();
+        updateStats();
+      }
+
+      /* ================= RENDER SEKTOR ================= */
+      function updateSector(sec) {
+        const lvl = fireLvl(sec.fireLevel);
+        const scene = $("scene-" + sec.id);
+        if (!scene) return;
+
+        if (sec._lvl !== lvl) {
+          if (sec._lvl > 0 && lvl === 0) playSteam(sec);
+          else if (sec._lvl >= 0 && lvl > sec._lvl) {
+            if (lvl === 3) SND.alarm();
+            else if (sec._lvl === 0) SND.ignite();
+          }
+          sec._lvl = lvl;
+          scene.dataset.fire = lvl;
+          renderFire(sec, lvl);
+        }
+
+        $("sus-" + sec.id).style.display = sec.suspect ? "block" : "none";
+        $("thug-" + sec.id).style.display = sec.thugs ? "block" : "none";
+        const tree0 = scene.querySelector(".tree0");
+        if (!tree0.classList.contains("fall") && !tree0.classList.contains("regrow")) {
+          tree0.classList.toggle("being-cut", sec.suspect);
+        }
+
+        let badge =
+          lvl === 0
+            ? `<span class="px-2 py-0.5 bg-green-950 text-green-300 rounded text-[10px] font-bold">Aman</span>`
+            : lvl === 3
+              ? `<span class="px-2 py-0.5 bg-red-950 text-red-300 rounded text-[10px] font-bold">🔥 KEBAKARAN BESAR</span>`
+              : `<span class="px-2 py-0.5 bg-amber-950 text-amber-300 rounded text-[10px] font-bold">⚠️ Hotspot (Lv.${Math.round(sec.fireLevel)})</span>`;
+        if (sec.suspect) badge += `<span class="px-2 py-0.5 bg-stone-700 text-amber-200 rounded text-[10px] font-bold">🪓 Oknum (${sec.suspectTimer}s)</span>`;
+        if (sec.thugs) badge += `<span class="px-2 py-0.5 bg-red-950 text-red-300 rounded text-[10px] font-bold">🥷 Preman Tanah</span>`;
+        if (badge !== sec._badge) {
+          sec._badge = badge;
+          $("badge-" + sec.id).innerHTML = badge;
+        }
+
+        const actKey = `${lvl}|${sec.suspect}|${sec.busy}|${!!sec.thugs}`;
+        if (actKey !== sec._actKey) {
+          sec._actKey = actKey;
+          const card = $("card-" + sec.id);
+          card.classList.toggle("fire-card", lvl >= 3);
+          card.style.borderColor = lvl >= 3 ? "rgba(185,70,30,.6)" : lvl > 0 ? "rgba(180,130,40,.5)" : "";
+          const dis = sec.busy ? 'disabled style="opacity:.5;cursor:wait"' : "";
+          let btns = "";
+          if (lvl >= 3) btns += `<button ${dis} onclick="extinguishFire(${sec.id}, 'heli')" class="px-2.5 py-1.5 bg-sky-800 hover:bg-sky-700 text-white font-bold rounded-xl text-[11px] transition shadow">🚁 Water Bombing</button>`;
+          if (lvl >= 1) btns += `<button ${dis} onclick="extinguishFire(${sec.id}, 'team')" class="px-2.5 py-1.5 bg-green-700 hover:bg-green-600 text-white font-bold rounded-xl text-[11px] transition shadow">🚒 Padamkan Tim</button>`;
+          if (sec.suspect) btns += `<button ${dis} onclick="arrestSuspect(${sec.id})" class="px-2.5 py-1.5 bg-amber-700 hover:bg-amber-600 text-white font-extrabold rounded-xl text-[11px] transition shadow">👮 Tangkap Oknum</button>`;
+          if (sec.thugs) btns += `<button ${dis} onclick="raidThugs(${sec.id})" class="px-2.5 py-1.5 bg-stone-600 hover:bg-stone-500 text-white font-bold rounded-xl text-[11px] transition shadow">🚔 Gerebek Preman (Rp 3 Jt)</button>`;
+          if (!btns) btns = `<span class="text-stone-500 text-[11px]">Sektor Terkendali</span>`;
+          if (sec.busy) btns += `<span class="text-stone-400 text-[11px]">Operasi berlangsung...</span>`;
+          $("act-" + sec.id).innerHTML = btns;
+        }
+      }
+
+      function renderSectors() {
+        if (!$("card-1")) return;
+        game.sectors.forEach(updateSector);
+        $("activeHotspotCount").textContent = game.sectors.filter((s) => s.fireLevel > 0).length;
+      }
+
+      /* ================= AKSI ================= */
+      function extinguishFire(sectorId, unitType) {
+        const sec = game.sectors.find((s) => s.id === sectorId);
+        if (!sec || sec.fireLevel <= 0 || sec.busy) return;
+
+        if (unitType === "heli" && game.helis <= 0) {
+          showToast("Tidak ada Helikopter Water Bombing yang siaga!", "⚠️");
+          return;
+        }
+        if (unitType === "team" && game.teams <= 0) {
+          showToast("Tidak ada Tim Manggala Agni yang siaga!", "⚠️");
+          return;
+        }
+
+        sec.busy = true;
+        updateSector(sec);
+
+        const finish = () => {
+          sec.busy = false;
+          if (sec.fireLevel > 0) {
+            const reduction = unitType === "heli" ? 3 : 1.5;
+            sec.fireLevel = Math.max(0, sec.fireLevel - reduction);
+            if (sec.fireLevel === 0) {
+              game.money += 1500000;
+              game.reputation = Math.min(100, game.reputation + 3);
+              floatText(sec.id, "+Rp 1,5 Jt");
+              showToast(`Berhasil memadamkan api di ${sec.name}! Kas +Rp 1.5Jt`, "💧");
+              addIntelLog(`✅ Api di ${sec.name} berhasil dipadamkan sepenuhnya.`);
+            } else {
+              showToast(`Api di ${sec.name} mulai mereda...`, "🧯");
+            }
+          }
+          renderSectors();
+          updateStats();
+        };
+        (unitType === "heli" ? playHeli : playTeam)(sec, finish);
+      }
+
+      function playRaid(sec, cb) {
+        SND.run();
+        setTimeout(() => SND.whistle(), 1250);
+        const fx = $("fx-" + sec.id);
+        const run = mk("runner runner-r", personSVG("#4d5d3a", "#3a4a2a"));
+        fx.appendChild(run);
+        setTimeout(() => {
+          const tag = mk("tag", "Gerebek!", "right:12%;top:40px");
+          fx.appendChild(tag);
+          setTimeout(() => tag.remove(), 800);
+        }, 1300);
+        setTimeout(() => {
+          run.remove();
+          cb();
+        }, 1800);
+      }
+
+      function raidThugs(sectorId) {
+        const sec = game.sectors.find((s) => s.id === sectorId);
+        if (!sec || !sec.thugs || sec.busy) return;
+        if (game.patrols <= 0) {
+          showToast("Tidak ada Tim Polhut untuk menggerebek!", "⚠️");
+          return;
+        }
+        if (game.money < 3000000) {
+          showToast("Dana darurat tidak cukup (Rp 3 Jt).", "⚠️");
+          return;
+        }
+        game.money -= 3000000;
+        sec.busy = true;
+        updateSector(sec);
+        updateStats();
+        playRaid(sec, () => {
+          sec.busy = false;
+          if (Math.random() < 0.7) {
+            sec.thugs = false;
+            game.reputation = Math.min(100, game.reputation + 4);
+            showToast(`Preman tanah di ${sec.name} diringkus! Reputasi +4`, "🚔");
+            addIntelLog(`🚔 Gerebekan berhasil: preman tanah di ${sec.name} ditangkap.`);
+          } else {
+            game.reputation = Math.max(0, game.reputation - 3);
+            showToast("Gerebekan gagal, preman kabur dan kembali. Reputasi -3", "📉");
+            addIntelLog(`🥷 Gerebekan di ${sec.name} gagal. Preman masih berkuasa.`);
+          }
+          renderSectors();
+          updateStats();
+        });
+      }
+
+      function arrestSuspect(sectorId) {
+        const sec = game.sectors.find((s) => s.id === sectorId);
+        if (!sec || !sec.suspect || sec.busy) return;
+        if (game.patrols <= 0) {
+          showToast("Tim Polhut Patroli tidak tersedia untuk penangkapan!", "⚠️");
+          return;
+        }
+
+        sec.busy = true;
+        updateSector(sec);
+        playPatrol(sec, () => {
+          sec.busy = false;
+          if (sec.suspect) {
+            sec.suspect = false;
+            sec.suspectTimer = 0;
+            game.money += 4000000;
+            game.reputation = Math.min(100, game.reputation + 5);
+            floatText(sec.id, "+Rp 4 Jt");
+            showToast(`Oknum di ${sec.name} berhasil diringkus Polhut! Denda +Rp 4Jt`, "🚨");
+            addIntelLog(`👮 Berhasil menangkap oknum di ${sec.name}. Denda disetor ke kas negara.`);
+          }
+          renderSectors();
+          updateStats();
+        });
+      }
+
+      function dispatchSatelliteScan() {
+        if (game.money >= 500000) {
+          game.money -= 500000;
+          game.sectors.forEach((s) => {
+            if (s.fireLevel > 0) s.fireLevel = Math.max(0.5, s.fireLevel - 0.8);
+          });
+          playScan();
+          showToast("Satelit BRIN/BMKG sukses memindai titik api dini!", "📡");
+          addIntelLog("📡 Pemindaian satelit mendeteksi dini hotspot dan mempercepat respons Manggala Agni.");
+          renderSectors();
+          updateStats();
+        } else {
+          showToast("Dana darurat tidak mencukupi untuk pemindaian satelit.", "⚠️");
+        }
+      }
+
+      /* ================= PENGADAAN ================= */
+      function bumpEl(id) {
+        SND.buy();
+        const e = $(id);
+        e.classList.remove("bump");
+        void e.offsetWidth;
+        e.classList.add("bump");
+      }
+
+      function hireTeam() {
+        if (game.money >= game.teamPrice) {
+          game.money -= game.teamPrice;
+          game.teams++;
+          game.teamPrice = Math.round(game.teamPrice * 1.35);
+          showToast("Tim Manggala Agni baru direkrut!", "🚒");
+          updateStats();
+          bumpEl("statTeam");
+        } else showToast("Dana darurat kurang.", "⚠️");
+      }
+      function hireHeli() {
+        if (game.money >= game.heliPrice) {
+          game.money -= game.heliPrice;
+          game.helis++;
+          game.heliPrice = Math.round(game.heliPrice * 1.4);
+          showToast("Helikopter Water Bombing disiagakan!", "🚁");
+          updateStats();
+          bumpEl("statHeli");
+        } else showToast("Dana darurat kurang.", "⚠️");
+      }
+      function hirePatrol() {
+        if (game.money >= game.patrolPrice) {
+          game.money -= game.patrolPrice;
+          game.patrols++;
+          game.patrolPrice = Math.round(game.patrolPrice * 1.35);
+          showToast("Tim Polhut Patroli hutan bertambah!", "👮");
+          updateStats();
+          bumpEl("statPatrol");
+        } else showToast("Dana darurat kurang.", "⚠️");
+      }
+      function upgradePolicy() {
+        if (game.money >= game.policyCost) {
+          game.money -= game.policyCost;
+          game.policyLevel++;
+          game.policyCost = Math.round(game.policyCost * 1.7);
+          showToast(`Sosialisasi Desa Level ${game.policyLevel} diterapkan!`, "📜");
+          addIntelLog(`📜 Maklumat larangan bakar diperketat (Level ${game.policyLevel}). Oknum lebih jarang beraksi.`);
+          updateStats();
+          bumpEl("policyLevel");
+        } else showToast("Dana darurat kurang.", "⚠️");
+      }
+
+      /* ================= HARI, MENANG/KALAH, TANTANGAN ================= */
+      function checkProgress() {
+        game.tick++;
+        SND.update(game);
+        if (game.spawnMultTicks > 0 && --game.spawnMultTicks === 0) game.spawnMult = 1;
+
+        // Hari berganti
+        const newDay = 1 + Math.floor(game.tick / game.dayLen);
+        if (newDay !== game.day) {
+          game.day = newDay;
+          SND.bell();
+          game.weatherIndex = Math.min(3.2, Math.max(1.2, game.weatherIndex + (Math.random() - 0.55) * 0.2));
+          addIntelLog(`📅 Hari ke-${game.day} dimulai. Indeks cuaca ${game.weatherIndex.toFixed(1)}.`);
+        }
+
+        // Penalti reputasi: api lambat ditangani
+        game.sectors.forEach((s) => {
+          if (s.fireLevel > 0) {
+            s.fireAge = (s.fireAge || 0) + 1;
+            if (s.fireAge === 12) addIntelLog(`⏱️ Warga mengeluh: api di ${s.name} belum juga padam!`);
+            if (s.fireAge > 12 && s.fireAge % 6 === 0) {
+              game.reputation = Math.max(0, game.reputation - (s.fireLevel >= 3 ? 3 : 2));
+              showToast(`Reputasi turun: api di ${s.name} terlalu lama dibiarkan!`, "📉");
+            }
+          } else s.fireAge = 0;
+        });
+
+        // Preman tanah meresahkan warga
+        if (game.tick % 15 === 0 && game.sectors.some((s) => s.thugs)) {
+          game.reputation = Math.max(0, game.reputation - 1);
+          addIntelLog("🥷 Preman tanah meresahkan warga. Reputasi Satgas terkikis.");
+        }
+
+        // Skandal yang meledak
+        if (game.scandals && game.scandals.length) {
+          const due = game.scandals.filter((t) => game.tick >= t);
+          if (due.length) {
+            game.scandals = game.scandals.filter((t) => game.tick < t);
+            due.forEach(() => {
+              const fine = Math.min(game.money, 8000000);
+              game.money -= fine;
+              game.reputation = Math.max(0, game.reputation - 15);
+              addIntelLog(`📰 SKANDAL MELEDAK! Media membongkar kasus lama. Denda ${fine.toLocaleString("id-ID")} dan reputasi anjlok.`);
+              showToast("Skandal meledak! Reputasi -15 dan denda Rp 8 Jt", "📰");
+              SND.alarm();
+            });
+          }
+        }
+
+        // Hitung hari bebas api
+        if (game.sectors.some((s) => s.fireLevel > 0)) {
+          if (game.streak >= game.dayLen) addIntelLog(`🔥 Rekor bebas api (${Math.floor(game.streak / game.dayLen)} hari) terputus. Hitungan mulai dari nol.`);
+          game.streak = 0;
+        } else {
+          game.streak++;
+        }
+
+        if (game.streak >= game.goalDays * game.dayLen) {
+          endGame(true);
+          return;
+        }
+
+        // Kalah jika reputasi runtuh
+        if (game.reputation < 20) {
+          endGame(false, "rep");
+          return;
+        }
+        if (game.reputation < 35 && !game._repWarn) {
+          game._repWarn = true;
+          showToast("Reputasi kritis! Di bawah 20% Satgas dibubarkan!", "📉");
+          SND.alarm();
+        }
+        if (game.reputation >= 45) game._repWarn = false;
+
+        // Kalah jika udara berbahaya terlalu lama
+        if (game.ispu > 300) {
+          game.loseTicks++;
+          if (game.loseTicks === 1) showToast("ISPU berbahaya! Segera padamkan api!", "🌫️");
+          if (game.loseTicks >= 12) {
+            endGame(false, "ispu");
+            return;
+          }
+        } else {
+          game.loseTicks = 0;
+        }
+
+        // Tantangan acak
+        game.nextEvent--;
+        if (game.nextEvent <= 0) {
+          game.nextEvent = 20 + Math.floor(Math.random() * 16);
+          triggerEvent();
+        }
+      }
+
+      function endGame(win, reason) {
+        game.ended = true;
+        SND.stopMusic();
+        if (win) SND.win();
+        else SND.lose();
+        $("endIcon").textContent = win ? "🌳🎉" : "🌫️🚨";
+        $("endTitle").textContent = win ? "Misi Berhasil!" : reason === "rep" ? "Satgas Dibubarkan!" : "Darurat Nasional!";
+        $("endDesc").textContent = win
+          ? `Selama ${game.goalDays} hari berturut-turut tidak ada satu pun titik api. Langit Nusantara kembali biru berkat ${game.name}.`
+          : reason === "rep"
+            ? "Kepercayaan publik runtuh akibat skandal dan lambatnya penanganan kebakaran. Reputasi Satgas di bawah 20% dan DPR memutuskan membubarkan Satgas."
+            : "Kabut asap berbahaya menyelimuti wilayah terlalu lama. Satgas dibubarkan dan pemerintah menetapkan status darurat bencana.";
+        $("endStats").innerHTML = `<div>📅 Hari bertahan: <b class="text-stone-200">${game.day}</b></div>
+                <div>💰 Sisa dana: <b class="text-stone-200">Rp ${game.money.toLocaleString("id-ID")}</b></div>
+                <div>⭐ Reputasi: <b class="text-stone-200">${game.reputation}%</b></div>`;
+        $("eventModal").classList.add("hidden");
+        $("endModal").classList.remove("hidden");
+      }
+
+      function setSpawn(mult, ticks) {
+        game.spawnMult = mult;
+        game.spawnMultTicks = ticks;
+      }
+
+      function spawnSuspects(n) {
+        const pool = game.sectors
+          .filter((s) => !s.suspect && s.fireLevel < 2)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, n);
+        pool.forEach((s) => {
+          s.suspect = true;
+          s.suspectTimer = 40;
+        });
+        return pool.length;
+      }
+
+      function spawnThugs() {
+        const pool = game.sectors.filter((s) => !s.thugs);
+        if (!pool.length) return null;
+        const s = pool[Math.floor(Math.random() * pool.length)];
+        s.thugs = true;
+        return s;
+      }
+
+      function igniteRandom(n, lvl) {
+        const pool = game.sectors
+          .filter((s) => s.fireLevel === 0)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, n);
+        pool.forEach((s) => {
+          s.fireLevel = lvl;
+        });
+        return pool.length ? `${pool.length} hotspot baru menyala akibat percikan lintas batas.` : "Percikan api padam sebelum sempat membesar.";
+      }
+
+      function scheduleScandal(sec) {
+        (game.scandals = game.scandals || []).push(game.tick + sec);
+      }
+      const fmtRp = (n) => "Rp " + n.toLocaleString("id-ID");
+      const loseRep = (n) => {
+        game.reputation = Math.max(0, game.reputation - n);
+      };
+      const gainRep = (n) => {
+        game.reputation = Math.min(100, game.reputation + n);
+      };
+
+      const EVENTS = [
+        {
+          icon: "🏛️",
+          title: "Dugaan Korupsi Dana Siaga",
+          desc: "Seorang pejabat daerah diduga menyunat anggaran logistik pemadaman. Media sudah mencium kasusnya.",
+          options: [
+            {
+              label: "Serahkan ke KPK & audit terbuka",
+              detail: "Rp 4.000.000 · Reputasi +6 · tanpa efek lanjutan",
+              cost: 4000000,
+              apply: () => {
+                gainRep(6);
+                return "Kasus diserahkan ke KPK. Publik menghargai transparansi.";
+              },
+            },
+            {
+              label: "Salahkan bawahan (kambing hitam)",
+              detail: "Gratis · Reputasi -8 · 50% skandal meledak 30 detik lagi",
+              apply: () => {
+                loseRep(8);
+                if (Math.random() < 0.5) {
+                  scheduleScandal(30);
+                  return "Kambing hitam dipilih, tapi sebuah dokumen bocor ke wartawan...";
+                }
+                return "Kambing hitam dipilih. Untuk sementara kasus mereda.";
+              },
+            },
+            {
+              label: "Tutup-tutupi demi stabilitas",
+              detail: "Gratis · Reputasi -20 · warga lengah · skandal meledak 40 detik lagi",
+              apply: () => {
+                loseRep(20);
+                setSpawn(2, 40);
+                scheduleScandal(40);
+                return "Kasus ditutup-tutupi. Warga lengah, dan bom waktu skandal mulai berdetak.";
+              },
+            },
+          ],
+        },
+        {
+          icon: "💼",
+          title: "Uang Tutup Mulut dari Korporasi",
+          desc: "Sebuah korporasi menyodorkan amplop tebal agar Satgas menutup mata terhadap pembukaan lahan gambut.",
+          options: [
+            {
+              label: "Tolak dan laporkan",
+              detail: "Reputasi +5 · korporasi membalas: 1 oknum dan preman tanah muncul",
+              apply: () => {
+                gainRep(5);
+                spawnSuspects(1);
+                const t = spawnThugs();
+                return t ? `Suap ditolak. Korporasi membalas: oknum beraksi dan preman menguasai ${t.name}.` : "Suap ditolak. Satu oknum suruhan tetap beraksi.";
+              },
+            },
+            {
+              label: "Terima uang tutup mulut",
+              detail: "+Rp 12.000.000 · Reputasi -20 · 3 oknum · skandal meledak 45 detik lagi",
+              apply: () => {
+                game.money += 12000000;
+                loseRep(20);
+                const n = spawnSuspects(3);
+                scheduleScandal(45);
+                return `Uang diterima. ${n} oknum bebas beraksi, dan amplop itu ternyata direkam seseorang.`;
+              },
+            },
+          ],
+        },
+        {
+          icon: "🥷",
+          title: "Preman Tanah Menguasai Lahan",
+          desc: "Kelompok preman tanah mengklaim hutan sebagai milik mereka, memeras warga, dan membakar lahan untuk dijual.",
+          options: [
+            {
+              label: "Gerebek bersama Polhut",
+              detail: "Rp 3.000.000 · butuh Polhut · 60% berhasil, jika gagal Reputasi -5",
+              cost: 3000000,
+              apply: () => {
+                if (game.patrols > 0 && Math.random() < 0.6) {
+                  gainRep(4);
+                  return "Gerebekan berhasil! Preman diringkus.";
+                }
+                loseRep(5);
+                const t = spawnThugs();
+                return game.patrols > 0 ? `Preman melawan dan gerebekan gagal. ${t ? t.name + " kini dikuasai mereka." : ""}` : `Tidak ada Polhut! ${t ? t.name + " dikuasai preman." : ""}`;
+              },
+            },
+            {
+              label: "Bayar uang keamanan",
+              detail: "Rp 6.000.000 · Reputasi -6 · risiko api naik 1,5x selama 25 detik",
+              cost: 6000000,
+              apply: () => {
+                loseRep(6);
+                setSpawn(1.5, 25);
+                return "Uang keamanan dibayar. Preman pergi sementara, warga kecewa.";
+              },
+            },
+            {
+              label: "Abaikan",
+              detail: "Gratis · satu sektor dikuasai preman (api & oknum 3x lebih sering)",
+              apply: () => {
+                const t = spawnThugs();
+                return t ? `Preman tanah menguasai ${t.name}. Gerebek mereka dari kartu sektor.` : "Preman tidak jadi beraksi.";
+              },
+            },
+          ],
+        },
+        {
+          icon: "📢",
+          title: "Demo Warga Terdampak Asap",
+          desc: "Warga yang sesak napas dan anak-anak sekolah yang diliburkan turun ke jalan menuntut Satgas bertindak.",
+          options: [
+            {
+              label: "Beri kompensasi dan masker",
+              detail: "Rp 4.000.000 · Reputasi -2",
+              cost: 4000000,
+              apply: () => {
+                loseRep(2);
+                return "Kompensasi dibagikan. Massa membubarkan diri.";
+              },
+            },
+            {
+              label: "Bubarkan paksa",
+              detail: "Gratis · Reputasi -15",
+              apply: () => {
+                loseRep(15);
+                return "Demo dibubarkan paksa dan videonya viral. Citra Satgas tercoreng.";
+              },
+            },
+          ],
+        },
+        {
+          icon: "✂️",
+          title: "Anggaran Satgas Dipotong",
+          desc: "Rapat anggaran memutuskan memangkas dana darurat Satgas demi proyek lain.",
+          options: [
+            {
+              label: "Lobi anggota dewan",
+              detail: "Rp 2.000.000 · 50% pemotongan batal, jika gagal dana -30%",
+              cost: 2000000,
+              apply: () => {
+                if (Math.random() < 0.5) return "Lobi berhasil, anggaran batal dipotong.";
+                const cut = Math.round(game.money * 0.3);
+                game.money -= cut;
+                return `Lobi gagal. Dana terpotong ${fmtRp(cut)}.`;
+              },
+            },
+            {
+              label: "Terima pemotongan",
+              detail: "Dana darurat berkurang 30%",
+              apply: () => {
+                const cut = Math.round(game.money * 0.3);
+                game.money -= cut;
+                return `Dana darurat dipotong ${fmtRp(cut)}.`;
+              },
+            },
+          ],
+        },
+        {
+          icon: "🌬️",
+          title: "Kebakaran Lintas Batas",
+          desc: "Percikan dari kebun di perbatasan terbawa angin dan menyulut hotspot baru di wilayah Anda.",
+          options: [
+            { label: "Siagakan tim lintas sektor", detail: "Rp 3.000.000 · 1 hotspot kecil muncul", cost: 3000000, apply: () => igniteRandom(1, 1) },
+            { label: "Andalkan sektor masing-masing", detail: "Gratis · 2 hotspot sedang muncul", apply: () => igniteRandom(2, 2) },
+          ],
+        },
+        {
+          icon: "💨",
+          title: "Angin Kencang Memuncak",
+          desc: "Angin kering mengobarkan bara di lahan gambut dan membawa percikan api ke sektor lain.",
+          options: [
+            { label: "Siagakan seluruh pasukan", detail: "Rp 2.000.000 · api tidak melonjak", cost: 2000000, apply: () => "Pasukan disiagakan penuh, api berhasil ditahan." },
+            {
+              label: "Hadapi seadanya",
+              detail: "Gratis · semua api +1 level · risiko api 2x selama 25 detik",
+              apply: () => {
+                game.sectors.forEach((s) => {
+                  if (s.fireLevel > 0) s.fireLevel = Math.min(3, s.fireLevel + 1);
+                });
+                setSpawn(2, 25);
+                return "Angin kencang membesarkan api dan memicu hotspot baru.";
+              },
+            },
+          ],
+        },
+        {
+          icon: "🛠️",
+          title: "Helikopter Mengalami Kerusakan",
+          desc: "Salah satu helikopter water bombing mengalami kerusakan mesin saat patroli.",
+          options: [
+            { label: "Perbaiki sekarang", detail: "Rp 3.000.000", cost: 3000000, apply: () => "Helikopter diperbaiki dan kembali siaga." },
+            {
+              label: "Biarkan dulu",
+              detail: "Gratis · jumlah helikopter -1",
+              apply: () => {
+                game.helis = Math.max(0, game.helis - 1);
+                return "Satu helikopter keluar dari armada.";
+              },
+            },
+          ],
+        },
+        {
+          icon: "🌧️",
+          title: "Peluang Hujan Buatan",
+          desc: "BMKG melihat awan hujan potensial di atas wilayah rawan. Operasi modifikasi cuaca bisa dilakukan.",
+          options: [
+            {
+              label: "Lakukan modifikasi cuaca",
+              detail: "Rp 3.000.000 · api mereda · cuaca lebih lembap",
+              cost: 3000000,
+              apply: () => {
+                game.sectors.forEach((s) => {
+                  if (s.fireLevel > 0) s.fireLevel = Math.max(0, s.fireLevel - 1.5);
+                });
+                game.weatherIndex = Math.max(1.2, game.weatherIndex - 0.4);
+                return "Hujan buatan turun. Api mereda dan tanah lebih lembap.";
+              },
+            },
+            { label: "Tunggu hujan alami", detail: "Tidak ada perubahan", apply: () => "Satgas menunggu hujan alami." },
+          ],
+        },
+        {
+          icon: "🤝",
+          title: "Donasi CSR & Relawan",
+          desc: "Perusahaan yang taat aturan dan relawan masyarakat peduli lingkungan menawarkan bantuan.",
+          options: [
+            {
+              label: "Terima bantuan",
+              detail: "+Rp 6.000.000 · Reputasi +3",
+              apply: () => {
+                game.money += 6000000;
+                gainRep(3);
+                return "Bantuan CSR dan relawan diterima.";
+              },
+            },
+          ],
+        },
+      ];
+      let currentEvent = null,
+        lastEvent = null;
+
+      function triggerEvent() {
+        let ev;
+        do {
+          ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+        } while (ev === lastEvent);
+        lastEvent = currentEvent = ev;
+        game.paused = true;
+        SND.event();
+        $("evIcon").textContent = ev.icon;
+        $("evTitle").textContent = ev.title;
+        $("evDesc").textContent = ev.desc;
+        $("evOptions").innerHTML = ev.options
+          .map(
+            (o, i) => `
+                <button onclick="resolveEvent(${i})" class="w-full text-left px-4 py-3 rounded-2xl bg-stone-800 hover:bg-stone-700 border border-stone-600 transition">
+                    <div class="font-bold text-sm text-stone-100">${o.label}</div>
+                    <div class="text-[11px] text-stone-400 mt-0.5">${o.detail}</div>
+                </button>`,
+          )
+          .join("");
+        $("eventModal").classList.remove("hidden");
+      }
+
+      function resolveEvent(i) {
+        const opt = currentEvent.options[i];
+        if (opt.cost && game.money < opt.cost) {
+          showToast("Dana darurat tidak cukup untuk pilihan ini.", "⚠️");
+          return;
+        }
+        if (opt.cost) game.money -= opt.cost;
+        const msg = opt.apply();
+        $("eventModal").classList.add("hidden");
+        game.paused = false;
+        addIntelLog(`${currentEvent.icon} ${msg}`);
+        showToast(msg, currentEvent.icon);
+        renderSectors();
+        updateStats();
+      }
+
+      function addIntelLog(text) {
+        const container = $("intelContainer");
+        const item = mk("p-3 bg-stone-800/80 rounded-2xl border border-stone-700 text-xs text-stone-300 flex justify-between items-center");
+        item.innerHTML = `<span>${text}</span><span class="text-[10px] text-stone-500 font-semibold">Baru Saja</span>`;
+        container.prepend(item);
+        if (container.children.length > 8) container.lastChild.remove();
+      }
+
+      function updateStats() {
+        $("statMoney").textContent = "Rp " + game.money.toLocaleString("id-ID");
+        $("statHeli").textContent = game.helis;
+        $("statTeam").textContent = game.teams;
+        $("statPatrol").textContent = game.patrols;
+        const r = game.reputation;
+        const rl = r >= 80 ? "Prima" : r >= 50 ? "Baik" : r >= 35 ? "Menurun" : "KRITIS";
+        $("statRep").textContent = `${r}% (${rl})`;
+        $("statRep").className = "text-xs md:text-sm font-bold " + (r >= 50 ? "text-sky-300" : r >= 35 ? "text-amber-300" : "text-red-300 animate-pulse");
+        $("statRep").parentElement.parentElement.title = "Reputasi di bawah 20% = Satgas dibubarkan";
+        $("teamPrice").textContent = game.teamPrice.toLocaleString("id-ID");
+        $("heliPrice").textContent = game.heliPrice.toLocaleString("id-ID");
+        $("patrolPrice").textContent = game.patrolPrice.toLocaleString("id-ID");
+        $("policyLevel").textContent = "Lv. " + game.policyLevel;
+        $("policyCost").textContent = game.policyCost.toLocaleString("id-ID");
+
+        const ispuEl = $("statIspu");
+        ispuEl.textContent = `${game.ispu <= 50 ? "Baik" : game.ispu <= 100 ? "Sedang" : "TIDAK SEHAT"} (${game.ispu})`;
+        ispuEl.className = game.ispu <= 50 ? "text-green-300 text-xs md:text-sm font-bold" : game.ispu <= 100 ? "text-amber-300 text-xs md:text-sm font-bold" : "text-red-300 text-xs md:text-sm font-bold";
+
+        // Kabut asap menutupi layar seiring ISPU memburuk
+        $("smogOverlay").style.opacity = game.ispu > 60 ? Math.min(0.28, (game.ispu - 60) / 450) : 0;
+
+        $("statDay").textContent = game.day;
+        $("statStreak").textContent = Math.min(game.goalDays, Math.floor(game.streak / game.dayLen));
+        $("streakBar").style.width = Math.min(100, (game.streak / (game.goalDays * game.dayLen)) * 100) + "%";
+        const wi = game.weatherIndex;
+        $("statWeather").textContent = `${wi < 1.6 ? "Lembap" : wi < 2.5 ? "Kering" : "Sangat Kering"} (Indeks ${wi.toFixed(1)})`;
+      }
+    </script>
+  </body>
+</html>
