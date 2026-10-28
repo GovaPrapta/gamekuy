@@ -461,9 +461,6 @@
           <button id="btnMusic" onclick="toggleMusic()" title="Musik" class="w-9 h-9 rounded-xl bg-slate-800 border border-emerald-500/30 hover:bg-slate-700">🎵</button>
           <button id="btnSfx" onclick="toggleSfx()" title="Efek suara" class="w-9 h-9 rounded-xl bg-slate-800 border border-amber-500/30 hover:bg-slate-700">🔊</button>
         </div>
-        <a href="../index.html" data-i18n-title="homeTitle" data-i18n-aria-label="homeTitle" title="Kembali ke halaman utama" aria-label="Kembali ke halaman utama" class="icon-btn flex items-center gap-1.5 whitespace-nowrap">
-          🏠<span class="hidden md:inline" data-i18n="homeBtn">Kembali</span>
-        </a>
       </div>
     </header>
     <div id="suspendBar" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg"></div>
@@ -755,6 +752,17 @@
           }
           if (++game.tick % 15 === 0) game.hygiene = Math.max(0, game.hygiene - 1);
           if (game.riskBoost > 0) game.riskBoost = Math.max(0, game.riskBoost - 0.002);
+          let rr = false;
+          game.schools.forEach((sc) => {
+            if (sc.cooldown > 0) {
+              rr = true;
+              if (--sc.cooldown <= 0) sc.served = 0;
+            }
+          });
+          if (rr) {
+            renderSchools();
+            syncDeliveryScene();
+          }
         }
         updateStats();
       }
@@ -1180,9 +1188,15 @@
           const node = document.createElement("div");
           node.className = "d-school d-school-node";
           node.style.left = schoolX(i) + "px";
-          node.innerHTML = `🏫<small>${sch.name.split(" ")[0]} (${sch.served}/${sch.target})</small>`;
+          node.innerHTML = `🏫<small>${sch.name.split(" ")[0]} (${sch.cooldown > 0 ? "✅ jeda " + sch.cooldown + "s" : sch.served + "/" + sch.target})</small>`;
           scene.appendChild(node);
         });
+      }
+
+      const SCHOOL_COOLDOWN = 12; // detik jeda setelah sekolah terpenuhi
+      // Sekolah pertama yang masih butuh porsi (memperhitungkan porsi yang sedang diantar)
+      function pickSchool() {
+        return game.schools.findIndex((s) => !(s.cooldown > 0) && s.served + (s.incoming || 0) < s.target);
       }
 
       function updateCar(cr, dt) {
@@ -1192,10 +1206,12 @@
           case "idle":
             cr.timer -= dt;
             if (cr.timer <= 0 && game.readyBoxes >= 25) {
-              const targetIdx = game.schools.findIndex((s) => s.served < s.target);
+              const targetIdx = pickSchool();
               if (targetIdx >= 0) {
                 cr.schoolTarget = targetIdx;
-                const loadAmt = Math.min(game.readyBoxes, 40);
+                const sc = game.schools[targetIdx];
+                const loadAmt = Math.min(game.readyBoxes, 40, sc.target - sc.served - (sc.incoming || 0));
+                sc.incoming = (sc.incoming || 0) + loadAmt;
                 game.readyBoxes -= loadAmt;
                 cr.carryBoxes = loadAmt;
                 cr.state = "toSchool";
@@ -1214,11 +1230,12 @@
             cr.timer -= dt;
             if (cr.timer <= 0) {
               const sch = game.schools[cr.schoolTarget];
+              sch.incoming = Math.max(0, (sch.incoming || 0) - cr.carryBoxes);
               sch.served = Math.min(sch.target, sch.served + cr.carryBoxes);
               const subsidy = cr.carryBoxes * (16000 + game.menuLevel * 2000);
               game.money += subsidy;
               spawnFloatText(cr.x, "+Rp " + (subsidy / 1000).toFixed(0) + "K", "deliveryScene");
-              if (sch.served >= sch.target) sch.served = 0;
+              if (sch.served >= sch.target) sch.cooldown = SCHOOL_COOLDOWN;
               const n = cr.carryBoxes;
               cr.carryBoxes = 0;
               cr.state = "toHome";
@@ -1286,7 +1303,7 @@
                     <div class="text-[11px] text-slate-400 mb-2">Target Harian: ${sch.target} Siswa</div>
                     <div>
                         <div class="flex justify-between text-[10px] mb-1 font-semibold text-sky-300">
-                            <span>Distribusi SPPG</span><span>${sch.served}/${sch.target} Porsi</span>
+                            <span>Distribusi SPPG</span><span>${sch.cooldown > 0 ? "✅ Terpenuhi · jeda " + sch.cooldown + " dtk" : sch.served + "/" + sch.target + " Porsi"}</span>
                         </div>
                         <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-700">
                             <div class="bg-gradient-to-r from-emerald-500 to-sky-400 h-full transition-all duration-300" style="width: ${pct}%"></div>
@@ -1321,13 +1338,15 @@
       function sendDeliveryBatch() {
         if (blocked()) return;
         if (game.readyBoxes >= 30) {
+          const si = pickSchool();
+          if (si < 0) return toast("Semua sekolah terpenuhi, tunggu jeda selesai");
           game.readyBoxes -= 30;
           const subsidy = 30 * (16000 + game.menuLevel * 2000);
           game.money += subsidy;
-          const sch = game.schools[0];
+          const sch = game.schools[si];
           sch.served = Math.min(sch.target, sch.served + 30);
           afterDelivery(sch, 30, subsidy);
-          if (sch.served >= sch.target) sch.served = 0;
+          if (sch.served >= sch.target) sch.cooldown = SCHOOL_COOLDOWN;
           renderSchools();
           syncDeliveryScene();
           updateStats();
