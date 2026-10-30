@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#f7f0e6">
+    <title>Youtuber Keliling: Ckil-Ckil Ketar-Ketir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        cream: '#f7f0e6', paper: '#fffaf2', line: '#e4d8c6',
+                        ink: '#3d3229', mute: '#8a7b6b',
+                        clay: '#c0653f', clayd: '#a5532f',
+                        sage: '#5f8a6a', saged: '#4d7358',
+                        lake: '#4f7c96', laked: '#406a82',
+                        gold: '#b8892b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { touch-action: manipulation; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: contain; }
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        input { user-select: text; -webkit-user-select: text; font-size: 16px; } /* 16px: cegah zoom otomatis di iPhone */
+        .tap-scale { transition: transform 0.08s ease-in-out; touch-action: manipulation; }
+        .tap-scale:active { transform: scale(0.95); }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -70px) scale(1.15); }
+        }
+        .floating-text { animation: floatUp 0.8s ease-out forwards; pointer-events: none; white-space: nowrap; }
+        @keyframes idleWalk {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50% { transform: translateY(-5px) rotate(1deg); }
+        }
+        :root { --walk: 0.9s; --bg: 20s; --roadspd: 1.2s; }
+        #scene { --walk: 0.9s; --bg: 20s; --roadspd: 1.2s; }
+        .char-idle { animation: idleWalk calc(var(--walk) / 2) infinite ease-in-out; }
+        @keyframes legL { 0%,100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
+        @keyframes legR { 0%,100% { transform: rotate(22deg); } 50% { transform: rotate(-22deg); } }
+        @keyframes armSwing { 0%,100% { transform: rotate(20deg); } 50% { transform: rotate(-20deg); } }
+        @keyframes camBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        .walking .leg-l { animation: legL var(--walk) infinite ease-in-out; transform-origin: 86px 207px; }
+        .walking .leg-r { animation: legR var(--walk) infinite ease-in-out; transform-origin: 114px 207px; }
+        .walking .arm-l { animation: armSwing var(--walk) infinite ease-in-out; transform-origin: 52px 148px; }
+        .walking .arm-r { animation: camBob calc(var(--walk) / 2) infinite ease-in-out; }
+        @keyframes scrollHouses { to { background-position-x: -480px; } }
+        @keyframes scrollClouds { to { background-position-x: -600px; } }
+        @keyframes roadDash { to { background-position-x: -64px; } }
+        @keyframes birdFly { from { transform: translate(0, 0); } 50% { transform: translate(-340px, -10px); } to { transform: translate(-720px, 4px); } }
+        .bird { position: absolute; left: 100%; font-size: 14px; animation: birdFly 18s linear infinite; }
+        @keyframes dustPuff { 0% { opacity: .9; transform: translateX(0) scale(1); } 100% { opacity: 0; transform: translateX(-22px) scale(1.3); } }
+        @keyframes crowdBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        @keyframes passivePop { 0% { opacity: 0; transform: translate(-50%, 0); } 20% { opacity: .95; } 100% { opacity: 0; transform: translate(-50%, -42px); } }
+        .passive-pop { animation: passivePop 1.4s ease-out forwards; pointer-events: none; white-space: nowrap; }
+        @keyframes bounceChar {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.05); }
+        }
+        .char-bounce { animation: bounceChar 0.35s ease-in-out; }
+        .opt-selected { outline: 3px solid #c0653f; outline-offset: 2px; }
+        .opt-btn-selected { background: #c0653f !important; color: #fff !important; border-color: #a5532f !important; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6c8b2; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-cream text-ink min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Modal Event -->
+    <div id="eventModal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-paper border border-line rounded-2xl max-w-sm w-full p-6 shadow-xl text-center">
+            <div id="modalIcon" class="w-16 h-16 bg-stone-100 text-red-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border border-line">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="modalTitle" class="text-xl font-bold text-ink mb-2">Pemberitahuan</h3>
+            <p id="modalDesc" class="text-mute text-sm mb-6 leading-relaxed">...</p>
+            <button onclick="closeModal()" class="w-full bg-clay hover:bg-clayd text-white font-semibold py-3 px-4 rounded-xl shadow transition active:scale-95">
+                Siap, Lanjut!
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Pilihan Keputusan (skandal) -->
+    <div id="choiceModal" class="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-paper border border-line rounded-t-3xl sm:rounded-2xl max-w-md w-full max-h-[92vh] overflow-y-auto p-5 shadow-xl" style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))">
+            <div id="choiceIcon" class="w-14 h-14 bg-stone-100 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 border border-line"></div>
+            <h3 id="choiceTitle" class="text-lg font-extrabold text-ink text-center mb-1"></h3>
+            <p id="choiceDesc" class="text-mute text-sm text-center mb-4 leading-relaxed"></p>
+            <div id="choiceButtons" class="flex flex-col gap-2.5"></div>
+        </div>
+    </div>
+
+    <!-- Modal Ubah Karakter -->
+    <div id="charModal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-paper border border-line rounded-t-3xl sm:rounded-2xl max-w-md w-full max-h-[92vh] overflow-y-auto p-5 shadow-xl" style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-extrabold text-ink"><i class="fa-solid fa-user-pen text-clay mr-2"></i>Ubah Karakter</h3>
+                <button onclick="closeCharModal()" class="w-9 h-9 text-mute hover:text-ink text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="flex justify-center mb-4">
+                <div id="charPreview" class="w-32 h-40 bg-cream border border-line rounded-2xl flex items-center justify-center overflow-hidden"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                    <label class="text-[11px] font-bold text-mute uppercase">Nama Karakter</label>
+                    <input id="inpCharName" maxlength="14" type="text" class="mt-1 w-full bg-white border border-line rounded-xl px-3 py-2 text-ink focus:outline-none focus:border-clay" placeholder="Contoh: Budi">
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-mute uppercase">Nama Channel</label>
+                    <input id="inpChannel" maxlength="22" type="text" class="mt-1 w-full bg-white border border-line rounded-xl px-3 py-2 text-ink focus:outline-none focus:border-clay" placeholder="Contoh: BudiVlog">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="text-[11px] font-bold text-mute uppercase mb-1.5">Warna Kulit</div>
+                <div id="optSkin" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div class="mb-3">
+                <div class="text-[11px] font-bold text-mute uppercase mb-1.5">Gaya Rambut</div>
+                <div id="optHairStyle" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div class="mb-3">
+                <div class="text-[11px] font-bold text-mute uppercase mb-1.5">Warna Rambut</div>
+                <div id="optHairColor" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div class="mb-3">
+                <div class="text-[11px] font-bold text-mute uppercase mb-1.5">Warna Baju</div>
+                <div id="optOutfit" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div class="mb-4">
+                <div class="text-[11px] font-bold text-mute uppercase mb-1.5">Aksesoris</div>
+                <div id="optAcc" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="randomizeChar()" class="flex-1 bg-stone-200 hover:bg-stone-300 text-ink text-sm font-semibold py-3 rounded-xl transition"><i class="fa-solid fa-dice mr-1"></i> Acak</button>
+                <button data-nosfx onclick="saveChar()" class="flex-[2] bg-clay hover:bg-clayd text-white text-sm font-bold py-3 rounded-xl shadow transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="w-full max-w-xl mx-auto p-3 flex flex-col gap-2.5">
+        <div class="flex justify-between items-center bg-paper border border-line p-3.5 rounded-2xl shadow-sm">
+             <a href="../index.html" data-i18n-title="homeTitle" data-i18n-aria-label="homeTitle"
+                   title="Kembali ke halaman utama" aria-label="Kembali ke halaman utama"
+                   class="icon-btn flex items-center gap-1.5 whitespace-nowrap">
+                    🏠<span class="hidden md:inline" data-i18n="homeBtn">Kembali</span>
+                </a>
+            <div class="flex items-center gap-3 min-w-0">
+                <button onclick="openCharModal()" title="Ubah karakter" class="w-12 h-12 shrink-0 rounded-full bg-cream border-2 border-clay/50 overflow-hidden relative">
+                    <div id="headerAvatar" class="w-full h-full"></div>
+                </button>
+                <div class="min-w-0">
+                    <span class="text-[10px] uppercase tracking-wider text-clay font-bold">Channel YouTube</span>
+                    <h1 class="text-base font-extrabold text-ink tracking-tight flex items-center gap-2">
+                        <span id="channelName" class="truncate">@BocahNge-Vlog</span>
+                        <span class="text-[10px] px-2 py-0.5 bg-clay/10 text-clayd border border-clay/30 rounded-full whitespace-nowrap" id="channelTier">Level 1</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="text-right shrink-0 ml-2">
+                <div class="text-[11px] text-mute">Subscriber</div>
+                <div id="subCount" class="text-base font-bold text-laked">0</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+            <div class="bg-paper border border-line p-3 rounded-2xl shadow-sm flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-sage/15 text-saged flex items-center justify-center text-base border border-sage/30">
+                    <i class="fa-solid fa-rupiah-sign"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="text-[11px] text-mute">Saldo Dompet</div>
+                    <div id="moneyCount" class="text-base font-black text-saged truncate">Rp 0</div>
+                </div>
+            </div>
+            <div class="bg-paper border border-line p-3 rounded-2xl shadow-sm flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-lake/15 text-laked flex items-center justify-center text-base border border-lake/30">
+                    <i class="fa-solid fa-eye"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="text-[11px] text-mute">Total Views</div>
+                    <div id="viewCount" class="text-base font-black text-laked truncate">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-paper border border-line p-3 rounded-2xl shadow-sm">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-mute uppercase tracking-wider"><i class="fa-solid fa-heart-pulse text-clay mr-1"></i> Reputasi Channel</span>
+                <span id="repLabel" class="text-[11px] font-bold"></span>
+            </div>
+            <div class="w-full h-2.5 bg-stone-200 rounded-full overflow-hidden"><div id="repBar" class="h-full rounded-full transition-all duration-500" style="width:60%"></div></div>
+            <div id="statusChips" class="flex flex-wrap gap-1.5 mt-2 empty:hidden"></div>
+        </div>
+
+        <div class="flex justify-end gap-2">
+            <button id="btnMusic" onclick="toggleMusic()" data-nosfx class="text-[11px] font-bold px-3 py-2 rounded-full border border-line bg-paper text-ink"></button>
+            <button id="btnSfx" onclick="toggleSfx()" data-nosfx class="text-[11px] font-bold px-3 py-2 rounded-full border border-line bg-paper text-ink"></button>
+        </div>
+    </header>
+
+    <!-- Area Game -->
+    <main class="w-full max-w-xl mx-auto px-3 flex-1 flex flex-col items-center">
+        <div id="scene" class="w-full rounded-3xl p-4 shadow-md relative overflow-hidden flex flex-col items-center min-h-[390px] justify-between border border-line"
+             style="background: linear-gradient(to bottom, #dce9ee 0%, #f1e7d6 70%, #ead9bf 100%);">
+
+            <!-- Latar bergerak: awan, burung, rumah warga -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+                <div style="position:absolute;left:0;right:0;top:8px;height:70px;background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27600%27%20height%3D%2770%27%20viewBox%3D%270%200%20600%2070%27%3E%3Cg%20fill%3D%27%23ffffff%27%20opacity%3D%270.85%27%3E%3Cellipse%20cx%3D%2780%27%20cy%3D%2732%27%20rx%3D%2736%27%20ry%3D%2712%27%2F%3E%3Cellipse%20cx%3D%27108%27%20cy%3D%2724%27%20rx%3D%2724%27%20ry%3D%2712%27%2F%3E%3Cellipse%20cx%3D%27330%27%20cy%3D%2740%27%20rx%3D%2744%27%20ry%3D%2713%27%2F%3E%3Cellipse%20cx%3D%27360%27%20cy%3D%2730%27%20rx%3D%2726%27%20ry%3D%2712%27%2F%3E%3Cellipse%20cx%3D%27520%27%20cy%3D%2722%27%20rx%3D%2730%27%20ry%3D%2710%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');background-repeat:repeat-x;background-size:600px 70px;animation:scrollClouds 80s linear infinite;"></div>
+                <div class="bird" style="top:52px;">🐦</div>
+                <div class="bird" style="top:84px;animation-delay:-9s;animation-duration:24s;font-size:11px;">🕊️</div>
+                <div style="position:absolute;left:0;right:0;bottom:28px;height:110px;background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27480%27%20height%3D%27110%27%20viewBox%3D%270%200%20480%20110%27%3E%3Crect%20x%3D%2710%27%20y%3D%2750%27%20width%3D%2780%27%20height%3D%2760%27%20fill%3D%27%23d8c7a8%27%2F%3E%3Cpolygon%20points%3D%272%2C50%2050%2C18%2098%2C50%27%20fill%3D%27%23b9714f%27%2F%3E%3Crect%20x%3D%2722%27%20y%3D%2768%27%20width%3D%2716%27%20height%3D%2720%27%20fill%3D%27%23f3e6c8%27%2F%3E%3Crect%20x%3D%2756%27%20y%3D%2772%27%20width%3D%2720%27%20height%3D%2738%27%20fill%3D%27%239a7b5a%27%2F%3E%3Crect%20x%3D%27128%27%20y%3D%2772%27%20width%3D%278%27%20height%3D%2738%27%20fill%3D%27%238a6a4a%27%2F%3E%3Ccircle%20cx%3D%27132%27%20cy%3D%2760%27%20r%3D%2726%27%20fill%3D%27%238fae8f%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%2770%27%20r%3D%2714%27%20fill%3D%27%237b9c7e%27%2F%3E%3Crect%20x%3D%27170%27%20y%3D%2740%27%20width%3D%27100%27%20height%3D%2770%27%20fill%3D%27%23cdb99b%27%2F%3E%3Cpolygon%20points%3D%27160%2C40%20220%2C6%20280%2C40%27%20fill%3D%27%23a65f40%27%2F%3E%3Crect%20x%3D%27184%27%20y%3D%2760%27%20width%3D%2718%27%20height%3D%2722%27%20fill%3D%27%23f3e6c8%27%2F%3E%3Crect%20x%3D%27238%27%20y%3D%2760%27%20width%3D%2718%27%20height%3D%2722%27%20fill%3D%27%23f3e6c8%27%2F%3E%3Crect%20x%3D%27214%27%20y%3D%2774%27%20width%3D%2722%27%20height%3D%2736%27%20fill%3D%27%238a6d4d%27%2F%3E%3Crect%20x%3D%27312%27%20y%3D%2780%27%20width%3D%277%27%20height%3D%2730%27%20fill%3D%27%238a6a4a%27%2F%3E%3Ccircle%20cx%3D%27316%27%20cy%3D%2768%27%20r%3D%2722%27%20fill%3D%27%2386a688%27%2F%3E%3Crect%20x%3D%27350%27%20y%3D%2758%27%20width%3D%27100%27%20height%3D%2752%27%20fill%3D%27%23e0cfae%27%2F%3E%3Cpolygon%20points%3D%27342%2C58%20400%2C28%20458%2C58%27%20fill%3D%27%23c47a52%27%2F%3E%3Crect%20x%3D%27362%27%20y%3D%2772%27%20width%3D%2720%27%20height%3D%2716%27%20fill%3D%27%23f3e6c8%27%2F%3E%3Crect%20x%3D%27414%27%20y%3D%2772%27%20width%3D%2720%27%20height%3D%2716%27%20fill%3D%27%23f3e6c8%27%2F%3E%3Crect%20x%3D%27390%27%20y%3D%2784%27%20width%3D%2718%27%20height%3D%2726%27%20fill%3D%27%238f7253%27%2F%3E%3C%2Fsvg%3E');background-repeat:repeat-x;background-size:480px 110px;background-position:0 100%;animation:scrollHouses var(--bg) linear infinite;opacity:.9;"></div>
+            </div>
+
+            <div class="absolute top-3 left-4 text-[11px] text-ink/70 flex items-center gap-1.5 font-medium">
+                <span class="w-2 h-2 rounded-full bg-sage"></span>
+                <span id="locationText">Keliling Komplek Melati Indah</span>
+            </div>
+            <div class="absolute top-3 right-3 text-[11px] font-semibold text-clayd bg-white/70 px-2.5 py-1 rounded-full border border-clay/20">
+                <i class="fa-solid fa-users mr-1"></i> Warga: <span id="crowdCount">0</span>
+            </div>
+
+            <button onclick="openCharModal()" class="absolute top-11 right-3 text-[11px] font-bold bg-white/80 hover:bg-white border border-line text-ink px-3 py-1.5 rounded-full transition z-20">
+                <i class="fa-solid fa-user-pen mr-1 text-clay"></i> Ubah Karakter
+            </button>
+
+            <!-- Area Tap -->
+            <!-- Label di atas, karakter berdiri di jalan (bawah) -->
+            <div class="flex-1 w-full cursor-pointer tap-scale relative flex flex-col items-center justify-end group z-10 pt-12" style="transform-origin:50% 100%;" id="tapArea">
+                <div id="dust" class="hidden absolute pointer-events-none text-2xl" style="left:50%;margin-left:-120px;bottom:40px;animation:dustPuff .5s linear infinite;">💨</div>
+
+                <p class="mb-1 text-[11px] font-semibold text-ink/60 tracking-wide uppercase pointer-events-none">
+                    👉 Ketuk karakter untuk Ckil-Ckil! 👈
+                </p>
+                <div id="nameTag" class="px-3 py-1 rounded-full bg-white/80 border border-line text-xs font-bold text-ink pointer-events-none">Bocah</div>
+                <div id="passiveInfo" class="mt-1 text-[10px] font-semibold text-ink/60 pointer-events-none"></div>
+                <div class="h-9 flex items-center justify-center pointer-events-none">
+                    <div id="comboBadge" class="hidden px-3 py-1 rounded-full bg-gold/15 border border-gold/40 text-gold text-xs font-black"></div>
+                </div>
+
+                <div class="char-idle relative flex flex-col items-center pointer-events-none" style="margin-bottom:-8px;">
+                    <div id="youtuberChar" class="relative">
+                        <div id="mainChar" class="w-32 h-44"></div>
+                        <div class="absolute -top-1 left-1/2 -translate-x-1/2 bg-clay text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow uppercase tracking-wider whitespace-nowrap">
+                            REC 🔴
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="crowdRow" class="absolute left-3 flex items-end gap-0.5 pointer-events-none z-10" style="bottom:17px;"></div>
+
+            <div class="w-full h-3 rounded-full relative overflow-hidden bg-stone-600"
+                 style="background-image:linear-gradient(90deg, rgba(254,243,199,.85) 0 24px, transparent 24px 64px);background-size:64px 3px;background-repeat:repeat-x;background-position:0 50%;animation:roadDash var(--roadspd) linear infinite;"></div>
+        </div>
+
+        <div class="w-full mt-3 bg-paper border border-line rounded-2xl p-3 shadow-sm">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-mute uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt text-gold"></i> Log & Drama Warga
+                </span>
+                <span id="eventTimer" class="text-[10px] text-mute">Event berikutnya: 20s</span>
+            </div>
+            <div id="logContainer" class="text-xs text-ink/80 h-14 overflow-y-auto flex flex-col gap-1 pr-1 font-mono"></div>
+        </div>
+    </main>
+
+    <!-- Navigasi Bawah -->
+    <nav class="w-full max-w-xl mx-auto p-3 flex flex-col gap-2.5">
+        <div class="flex bg-paper border border-line p-1.5 rounded-2xl shadow-sm">
+            <button onclick="switchTab('upgrades')" id="tabBtnUpgrades" class="flex-1 py-3 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-shop mr-1"></i> Toko</button>
+            <button onclick="switchTab('team')" id="tabBtnTeam" class="flex-1 py-3 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-users-gear mr-1"></i> Kru</button>
+            <button onclick="switchTab('pajak')" id="tabBtnPajak" class="flex-1 py-3 rounded-xl text-xs font-bold transition relative"><i class="fa-solid fa-file-invoice-dollar mr-1"></i> Pajak
+                <span id="badgePajak" class="absolute top-1.5 right-3 w-2 h-2 rounded-full bg-red-500 hidden"></span>
+            </button>
+        </div>
+
+        <div class="bg-paper border border-line rounded-2xl p-3 shadow-sm h-56 overflow-y-auto">
+            <div id="panelUpgrades" class="flex flex-col gap-2.5">
+                <div class="bg-cream border border-line p-3 rounded-xl flex items-center justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm font-bold text-ink">Ring Light & Mic Kresek</h4>
+                        <p class="text-xs text-mute">+2 Pendapatan per Tap</p>
+                    </div>
+                    <button data-nosfx onclick="buyUpgrade(1)" class="bg-sage hover:bg-saged text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow-sm transition whitespace-nowrap"><span id="up1Cost">Rp 100</span></button>
+                </div>
+                <div class="bg-cream border border-line p-3 rounded-xl flex items-center justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm font-bold text-ink">Kamera DSLR Seken</h4>
+                        <p class="text-xs text-mute">+8 Pendapatan per Tap</p>
+                    </div>
+                    <button data-nosfx onclick="buyUpgrade(2)" class="bg-sage hover:bg-saged text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow-sm transition whitespace-nowrap"><span id="up2Cost">Rp 700</span></button>
+                </div>
+                <div class="bg-cream border border-line p-3 rounded-xl flex items-center justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm font-bold text-ink">Gimbal & Tripod Pro</h4>
+                        <p class="text-xs text-mute">+30 per Tap & Buka Rute Baru</p>
+                    </div>
+                    <button data-nosfx onclick="buyUpgrade(3)" class="bg-sage hover:bg-saged text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow-sm transition whitespace-nowrap"><span id="up3Cost">Rp 5.000</span></button>
+                </div>
+            </div>
+
+            <div id="panelTeam" class="hidden flex flex-col gap-2.5">
+                <div class="bg-cream border border-line p-3 rounded-xl flex items-center justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm font-bold text-ink">Cameraman Magang</h4>
+                        <p class="text-xs text-mute">Otomatis +2 View/detik</p>
+                    </div>
+                    <button data-nosfx onclick="buyTeam(1)" class="bg-lake hover:bg-laked text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow-sm transition whitespace-nowrap"><span id="team1Cost">Rp 1.000</span></button>
+                </div>
+                <div class="bg-cream border border-line p-3 rounded-xl flex items-center justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm font-bold text-ink">Editor Video TikTok</h4>
+                        <p class="text-xs text-mute">Otomatis +15 View & +5 Uang /detik</p>
+                    </div>
+                    <button data-nosfx onclick="buyTeam(2)" class="bg-lake hover:bg-laked text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow-sm transition whitespace-nowrap"><span id="team2Cost">Rp 7.500</span></button>
+                </div>
+            </div>
+
+            <div id="panelPajak" class="hidden flex flex-col gap-2.5">
+                <div class="bg-cream border border-line p-3.5 rounded-xl">
+                    <h4 class="text-sm font-bold text-gold mb-1 flex items-center gap-2"><i class="fa-solid fa-receipt"></i> Pajak & Birokrasi KPP</h4>
+                    <p class="text-xs text-mute mb-3">Patuhi pajak supaya channel aman dari razia petugas!</p>
+                    <button data-nosfx onclick="payTaxManually()" class="w-full bg-gold hover:bg-amber-700 text-white text-xs font-bold py-3 rounded-xl shadow-sm transition">
+                        Bayar Cicilan Pajak Sukarela (Rp 5.000)
+                    </button>
+                </div>
+                <div class="bg-cream border border-line p-3.5 rounded-xl">
+                    <h4 class="text-sm font-bold text-saged mb-1 flex items-center gap-2"><i class="fa-solid fa-user-tie"></i> Konsultan PR</h4>
+                    <p class="text-xs text-mute mb-3">Pulihkan nama baik channel: reputasi +15. Biaya 10% saldo (minimal Rp 300).</p>
+                    <button data-nosfx onclick="buyPR()" class="w-full bg-sage hover:bg-saged text-white text-xs font-bold py-3 rounded-xl shadow-sm transition">Sewa Konsultan PR</button>
+                </div>
+                <div class="bg-cream border border-line p-3.5 rounded-xl">
+                    <h4 class="text-sm font-bold text-clayd mb-1 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Riwayat Drama & Kasus</h4>
+                    <p class="text-xs text-mute" id="dramaHistory">Belum ada kasus besar. Aman terkendali!</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // =====================================================
+        //  AUDIO (disintesis langsung di browser, tanpa file)
+        // =====================================================
+        let audioCtx = null, masterGain = null, musicGain = null, sfxGain = null;
+        let musicOn = true, sfxOn = true;
+        try {
+            const s = JSON.parse(localStorage.getItem('ytKelilingAudio') || '{}');
+            if (typeof s.music === 'boolean') musicOn = s.music;
+            if (typeof s.sfx === 'boolean') sfxOn = s.sfx;
+        } catch (e) {}
+
+        function saveAudioPrefs() {
+            try { localStorage.setItem('ytKelilingAudio', JSON.stringify({ music: musicOn, sfx: sfxOn })); } catch (e) {}
+        }
+
+        function ensureAudio() {
+            if (!audioCtx) {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                audioCtx = new AC();
+                masterGain = audioCtx.createGain(); masterGain.gain.value = 0.9;
+                const comp = audioCtx.createDynamicsCompressor();
+                masterGain.connect(comp); comp.connect(audioCtx.destination);
+                musicGain = audioCtx.createGain(); musicGain.gain.value = musicOn ? 0.5 : 0; musicGain.connect(masterGain);
+                sfxGain = audioCtx.createGain(); sfxGain.gain.value = 0.8; sfxGain.connect(masterGain);
+                startMusicScheduler();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        // Browser (terutama iPhone) baru mengizinkan suara setelah sentuhan pertama
+        ['pointerdown', 'touchend', 'click', 'keydown'].forEach(evt => {
+            window.addEventListener(evt, () => { ensureAudio(); }, { passive: true });
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (!audioCtx) return;
+            if (document.hidden) audioCtx.suspend(); else audioCtx.resume();
+        });
+
+        function tone(freq, start, dur, type, vol, dest, slideTo) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = type || 'sine';
+            osc.frequency.setValueAtTime(freq, start);
+            if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, start + dur);
+            g.gain.setValueAtTime(0.0001, start);
+            g.gain.exponentialRampToValueAtTime(vol, start + 0.008);
+            g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+            osc.connect(g); g.connect(dest || sfxGain);
+            osc.start(start); osc.stop(start + dur + 0.02);
+        }
+
+        function sfxTap(combo, crit) {
+            if (!sfxOn || !audioCtx) return;
+            const t = audioCtx.currentTime;
+            const base = 480 + Math.min(combo, 40) * 11;
+            tone(base, t, 0.1, 'triangle', 0.3, sfxGain, base * 1.6);
+            tone(base * 2, t, 0.05, 'sine', 0.08, sfxGain);
+            if (crit) {
+                [660, 880, 1100, 1320].forEach((f, i) => tone(f, t + 0.05 + i * 0.06, 0.16, 'triangle', 0.18, sfxGain));
+            }
+        }
+        function sfxClick() {
+            if (!sfxOn || !audioCtx) return;
+            const t = audioCtx.currentTime;
+            tone(620, t, 0.06, 'triangle', 0.14, sfxGain, 420);
+        }
+        function sfxBuy() {
+            if (!sfxOn || !audioCtx) return;
+            const t = audioCtx.currentTime;
+            [784, 988, 1175, 1568].forEach((f, i) => tone(f, t + i * 0.07, 0.18, 'triangle', 0.2, sfxGain));
+        }
+        function sfxError() {
+            if (!sfxOn || !audioCtx) return;
+            const t = audioCtx.currentTime;
+            tone(220, t, 0.18, 'triangle', 0.25, sfxGain, 140);
+            tone(180, t + 0.12, 0.2, 'triangle', 0.25, sfxGain, 110);
+        }
+        function sfxAlert() {
+            if (!sfxOn || !audioCtx) return;
+            const t = audioCtx.currentTime;
+            [523, 392, 523, 392].forEach((f, i) => tone(f, t + i * 0.14, 0.13, 'triangle', 0.22, sfxGain));
+        }
+        function sfxChime() {
+            if (!sfxOn || !audioCtx) return;
+            const t = audioCtx.currentTime;
+            [659, 880, 1047].forEach((f, i) => tone(f, t + i * 0.09, 0.25, 'sine', 0.2, sfxGain));
+        }
+
+        // ---- Musik latar: melodi pentatonik santai (dibuat otomatis) ----
+        const PENTA = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+        const CHORDS = [
+            { bass: 130.81, notes: [261.63, 329.63, 392.00] },  // C
+            { bass: 110.00, notes: [220.00, 261.63, 329.63] },  // Am
+            { bass: 87.31,  notes: [174.61, 220.00, 261.63] },  // F
+            { bass: 98.00,  notes: [196.00, 246.94, 293.66] }   // G
+        ];
+        const STEP = 0.32;          // detik per 1/8 not (~94 bpm)
+        let nextNoteTime = 0, stepIdx = 0, melodyPos = 3, schedTimer = null;
+
+        function scheduleStep(step, time) {
+            const bar = Math.floor(step / 8) % CHORDS.length;
+            const pos = step % 8;
+            const chord = CHORDS[bar];
+            if (pos === 0) {
+                chord.notes.forEach(f => tone(f, time, STEP * 7.5, 'sine', 0.05, musicGain));
+            }
+            if (pos === 0 || pos === 4) {
+                tone(chord.bass, time, STEP * 2.6, 'triangle', 0.16, musicGain);
+            }
+            if (Math.random() < 0.62) {
+                melodyPos = Math.max(0, Math.min(PENTA.length - 1, melodyPos + Math.floor(Math.random() * 5) - 2));
+                tone(PENTA[melodyPos], time, STEP * 1.8, 'sine', 0.11, musicGain);
+            }
+            if (pos % 2 === 0) {   // detak lembut
+                tone(1800, time, 0.03, 'triangle', 0.015, musicGain);
+            }
+        }
+        function startMusicScheduler() {
+            nextNoteTime = audioCtx.currentTime + 0.1;
+            schedTimer = setInterval(() => {
+                if (!audioCtx || audioCtx.state !== 'running') return;
+                if (nextNoteTime < audioCtx.currentTime) nextNoteTime = audioCtx.currentTime + 0.05;
+                while (nextNoteTime < audioCtx.currentTime + 0.4) {
+                    if (musicOn) scheduleStep(stepIdx, nextNoteTime);
+                    stepIdx++;
+                    nextNoteTime += STEP;
+                }
+            }, 100);
+        }
+
+        function updateAudioButtons() {
+            document.getElementById('btnMusic').innerHTML = musicOn ? '🎵 Musik: Nyala' : '🔇 Musik: Mati';
+            document.getElementById('btnSfx').innerHTML = sfxOn ? '🔊 Efek: Nyala' : '🔈 Efek: Mati';
+            document.getElementById('btnMusic').style.opacity = musicOn ? '1' : '0.6';
+            document.getElementById('btnSfx').style.opacity = sfxOn ? '1' : '0.6';
+        }
+        function toggleMusic() {
+            ensureAudio();
+            musicOn = !musicOn;
+            if (musicGain) musicGain.gain.setTargetAtTime(musicOn ? 0.5 : 0, audioCtx.currentTime, 0.1);
+            saveAudioPrefs(); updateAudioButtons();
+            if (sfxOn) sfxClick();
+        }
+        function toggleSfx() {
+            ensureAudio();
+            sfxOn = !sfxOn;
+            saveAudioPrefs(); updateAudioButtons();
+            if (sfxOn) sfxClick();
+        }
+
+        // Bunyi klik untuk semua tombol biasa (kecuali yang punya suara sendiri)
+        document.addEventListener('click', (e) => {
+            const b = e.target.closest('button');
+            if (b && !b.hasAttribute('data-nosfx')) { ensureAudio(); sfxClick(); }
+        });
+
+        // =====================================================
+        //  KUSTOMISASI KARAKTER
+        // =====================================================
+        const SKINS = ['#fde0c5', '#f1c27d', '#d9a066', '#b97a4b', '#8d5524', '#5c3a21'];
+        const HAIR_COLORS = ['#1f1a17', '#4a2c17', '#8a5a2b', '#c9a15a', '#a94438', '#6d5a8c', '#c77a99', '#d9d4cc'];
+        const OUTFITS = ['#c0653f', '#b9473f', '#d49a3a', '#5f8a6a', '#4f7c96', '#6b7fb5', '#8a6a9a', '#3d3a38'];
+        const HAIR_STYLES = [
+            { id: 'pendek', label: 'Pendek' }, { id: 'panjang', label: 'Panjang' },
+            { id: 'cepol', label: 'Cepol' }, { id: 'keriting', label: 'Keriting' },
+            { id: 'topi', label: 'Topi' }, { id: 'botak', label: 'Botak' }
+        ];
+        const ACCS = [
+            { id: 'none', label: 'Tanpa' }, { id: 'kacamata', label: 'Kacamata' },
+            { id: 'headphone', label: 'Headphone' }, { id: 'bandana', label: 'Bandana' }
+        ];
+
+        function charSVG(c, animate) {
+            const skin = c.skin, hair = c.hairColor, outfit = c.outfit;
+            let hairBack = '', hairFront = '', acc = '';
+
+            if (c.hairStyle === 'panjang') {
+                hairBack = `<path d="M56 92 Q52 150 66 168 L134 168 Q148 150 144 92 Z" fill="${hair}"/>`;
+            }
+            switch (c.hairStyle) {
+                case 'pendek':
+                case 'panjang':
+                    hairFront = `<path d="M57 92 Q54 44 100 44 Q146 44 143 92 Q128 66 100 66 Q72 66 57 92Z" fill="${hair}"/>`;
+                    break;
+                case 'cepol':
+                    hairFront = `<path d="M57 92 Q54 44 100 44 Q146 44 143 92 Q128 66 100 66 Q72 66 57 92Z" fill="${hair}"/>
+                                 <circle cx="100" cy="36" r="17" fill="${hair}"/>`;
+                    break;
+                case 'keriting':
+                    hairFront = [[62,70],[78,52],[100,46],[122,52],[138,70],[56,88],[144,88]]
+                        .map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="17" fill="${hair}"/>`).join('');
+                    break;
+                case 'topi':
+                    hairFront = `<path d="M56 88 Q56 40 100 40 Q144 40 144 88 Z" fill="${outfit}"/>
+                                 <rect x="96" y="80" width="64" height="9" rx="4" fill="${outfit}" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
+                                 <path d="M57 92 Q58 84 62 84 L62 96 Z" fill="${hair}"/><path d="M143 92 Q142 84 138 84 L138 96 Z" fill="${hair}"/>`;
+                    break;
+                default: break;
+            }
+
+            if (c.acc === 'kacamata') {
+                acc = `<g fill="rgba(186,230,253,.25)" stroke="#3d3229" stroke-width="3">
+                        <circle cx="82" cy="100" r="11"/><circle cx="118" cy="100" r="11"/></g>
+                       <line x1="93" y1="100" x2="107" y2="100" stroke="#3d3229" stroke-width="3"/>`;
+            } else if (c.acc === 'headphone') {
+                acc = `<path d="M56 98 Q56 40 100 40 Q144 40 144 98" fill="none" stroke="#3d3a38" stroke-width="7" stroke-linecap="round"/>
+                       <rect x="48" y="90" width="14" height="28" rx="6" fill="#b9473f"/>
+                       <rect x="138" y="90" width="14" height="28" rx="6" fill="#b9473f"/>`;
+            } else if (c.acc === 'bandana') {
+                acc = `<path d="M57 78 Q100 62 143 78 L143 90 Q100 76 57 90 Z" fill="#b9473f"/>
+                       <path d="M143 80 L156 72 L154 92 Z" fill="#b9473f"/>`;
+            }
+
+            return `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" class="w-full h-full ${animate ? 'walking' : ''}" style="overflow:visible">
+                <ellipse cx="100" cy="252" rx="52" ry="7" fill="rgba(61,50,41,.25)"/>
+                ${hairBack}
+                
+                
+                <g class="leg-l"><rect x="76" y="205" width="20" height="42" rx="7" fill="#4a4540"/><ellipse cx="84" cy="248" rx="15" ry="6" fill="#f8f4ee"/></g>
+                <g class="leg-r"><rect x="104" y="205" width="20" height="42" rx="7" fill="#4a4540"/><ellipse cx="116" cy="248" rx="15" ry="6" fill="#f8f4ee"/></g>
+                <path d="M62 150 Q62 138 80 136 L120 136 Q138 138 138 150 L142 214 L58 214 Z" fill="${outfit}"/>
+                <path d="M88 136 Q100 148 112 136" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="3"/>
+                
+                <g class="arm-l"><rect x="40" y="144" width="24" height="52" rx="12" fill="${outfit}"/><circle cx="52" cy="200" r="11" fill="${skin}"/></g>
+                <g class="arm-r"><rect x="136" y="132" width="24" height="46" rx="12" fill="${outfit}" transform="rotate(-18 148 140)"/>
+                <circle cx="160" cy="130" r="11" fill="${skin}"/>
+                <rect x="150" y="96" width="26" height="40" rx="5" fill="#2f2a26" stroke="#8a7b6b" stroke-width="2"/>
+                <circle cx="163" cy="106" r="5" fill="#7fb0c9"/>
+                <circle cx="170" cy="124" r="3" fill="#d9534f"/></g>
+                <rect x="90" y="124" width="20" height="18" rx="6" fill="${skin}"/>
+                <circle cx="58" cy="100" r="8" fill="${skin}"/>
+                <circle cx="142" cy="100" r="8" fill="${skin}"/>
+                <circle cx="100" cy="94" r="42" fill="${skin}"/>
+                ${hairFront}
+                <ellipse cx="82" cy="100" rx="4" ry="5" fill="#2b231d"/>
+                <ellipse cx="118" cy="100" rx="4" ry="5" fill="#2b231d"/>
+                <circle cx="83.5" cy="98" r="1.4" fill="#fff"/><circle cx="119.5" cy="98" r="1.4" fill="#fff"/>
+                <ellipse cx="72" cy="114" rx="7" ry="4" fill="rgba(201,100,90,.25)"/>
+                <ellipse cx="128" cy="114" rx="7" ry="4" fill="rgba(201,100,90,.25)"/>
+                <path d="M88 118 Q100 130 112 118" fill="#8a3a32" stroke="#2b231d" stroke-width="2" stroke-linejoin="round"/>
+                ${acc}
+            </svg>`;
+        }
+
+        // =====================================================
+        //  STATE GAME
+        // =====================================================
+        const defaultChar = { name: 'Bocah', channel: 'BocahNge-Vlog', skin: SKINS[1], hairStyle: 'pendek', hairColor: HAIR_COLORS[0], outfit: OUTFITS[0], acc: 'none' };
+
+        let game = {
+            money: 50, views: 0, subs: 12, tapPower: 2, crowd: 1, tier: 1,
+            combo: 0, lastTap: 0,
+            idleViewRate: 0, idleMoneyRate: 0,
+            upgrades: {
+                1: { level: 0, cost: 100, name: "Ring Light & Mic Kresek", power: 2 },
+                2: { level: 0, cost: 700, name: "Kamera DSLR Seken", power: 8 },
+                3: { level: 0, cost: 5000, name: "Gimbal & Tripod Pro", power: 30 }
+            },
+            team: {
+                1: { count: 0, cost: 1000, rate: 2 },
+                2: { count: 0, cost: 7500, rate: 10 }
+            },
+            rep: 60, passiveFrac: 0, demonetUntil: 0, boostUntil: 0, history: [],
+            eventCountdown: 20,
+            char: Object.assign({}, defaultChar)
+        };
+
+        try {
+            const saved = localStorage.getItem('ytKelilingChar');
+            if (saved) game.char = Object.assign({}, defaultChar, JSON.parse(saved));
+        } catch (e) {}
+
+        function formatIDR(n) { return "Rp " + Math.floor(n).toLocaleString('id-ID'); }
+        function formatNum(n) { return Math.floor(n).toLocaleString('id-ID'); }
+        function esc(s) { return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+        function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function addLog(text) {
+            const container = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const div = document.createElement('div');
+            div.innerHTML = `<span class="text-mute">[${time}]</span> ${text}`;
+            container.prepend(div);
+            if (container.children.length > 15) container.lastChild.remove();
+        }
+
+        function applyChar() {
+            const c = game.char;
+            document.getElementById('mainChar').innerHTML = charSVG(c, true);
+            document.getElementById('headerAvatar').innerHTML = `<div style="width:170%;height:170%;margin:-6% 0 0 -35%;transform:translateY(-4%)">${charSVG(c)}</div>`;
+            document.getElementById('nameTag').innerText = c.name;
+            document.getElementById('channelName').innerText = '@' + c.channel;
+        }
+
+        // ---- Editor karakter ----
+        let draft = null;
+        function swatchBtn(color, selected, onclick) {
+            return `<button onclick="${onclick}" style="background:${color}" class="w-9 h-9 rounded-full border-2 border-line ${selected ? 'opt-selected' : ''}"></button>`;
+        }
+        function textBtn(label, selected, onclick) {
+            return `<button onclick="${onclick}" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white border border-line text-ink transition ${selected ? 'opt-btn-selected' : ''}">${label}</button>`;
+        }
+        function renderEditor() {
+            document.getElementById('charPreview').innerHTML = `<div class="w-28 h-36">${charSVG(draft)}</div>`;
+            document.getElementById('optSkin').innerHTML = SKINS.map(c => swatchBtn(c, draft.skin === c, `setDraft('skin','${c}')`)).join('');
+            document.getElementById('optHairColor').innerHTML = HAIR_COLORS.map(c => swatchBtn(c, draft.hairColor === c, `setDraft('hairColor','${c}')`)).join('');
+            document.getElementById('optOutfit').innerHTML = OUTFITS.map(c => swatchBtn(c, draft.outfit === c, `setDraft('outfit','${c}')`)).join('');
+            document.getElementById('optHairStyle').innerHTML = HAIR_STYLES.map(s => textBtn(s.label, draft.hairStyle === s.id, `setDraft('hairStyle','${s.id}')`)).join('');
+            document.getElementById('optAcc').innerHTML = ACCS.map(a => textBtn(a.label, draft.acc === a.id, `setDraft('acc','${a.id}')`)).join('');
+        }
+        function setDraft(key, val) { draft[key] = val; renderEditor(); }
+        function openCharModal() {
+            draft = Object.assign({}, game.char);
+            document.getElementById('inpCharName').value = draft.name;
+            document.getElementById('inpChannel').value = draft.channel;
+            renderEditor();
+            document.getElementById('charModal').classList.remove('hidden');
+        }
+        function closeCharModal() { document.getElementById('charModal').classList.add('hidden'); }
+        function randomizeChar() {
+            draft.skin = pick(SKINS); draft.hairColor = pick(HAIR_COLORS); draft.outfit = pick(OUTFITS);
+            draft.hairStyle = pick(HAIR_STYLES).id; draft.acc = pick(ACCS).id;
+            renderEditor();
+        }
+        function saveChar() {
+            const name = document.getElementById('inpCharName').value.trim() || 'Bocah';
+            const channel = document.getElementById('inpChannel').value.trim().replace(/^@+/, '').replace(/\s+/g, '') || 'BocahNge-Vlog';
+            draft.name = name; draft.channel = channel;
+            game.char = Object.assign({}, draft);
+            try { localStorage.setItem('ytKelilingChar', JSON.stringify(game.char)); } catch (e) {}
+            applyChar();
+            closeCharModal();
+            sfxChime();
+            addLog(`Karakter diubah! Sekarang ${esc(name)} dari channel @${esc(channel)}.`);
+        }
+
+        // =====================================================
+        //  GAMEPLAY
+        // =====================================================
+        function tapAction(e) {
+            const now = Date.now();
+            game.combo = (now - game.lastTap < 1200) ? Math.min(game.combo + 1, 50) : 1;
+            game.lastTap = now;
+            const mult = 1 + Math.floor(game.combo / 8);
+            const crit = Math.random() < 0.08;
+            const addMoney = game.tapPower * mult * (crit ? 5 : 1);
+            const addViews = addMoney * 2;
+            const earned = Math.floor(addMoney * incomeMult());
+            game.money += earned;
+            game.views += addViews;
+
+            if (Math.random() < 0.25) {
+                game.subs += 1;
+                if (game.crowd < 50) game.crowd += 1;
+            }
+            updateUI();
+            sfxTap(game.combo, crit);
+
+            const tapArea = document.getElementById('tapArea');
+            const rect = tapArea.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const floatEl = document.createElement('div');
+            floatEl.className = "absolute floating-text font-black text-base z-30";
+            floatEl.style.left = `${x}px`;
+            floatEl.style.top = `${y}px`;
+            floatEl.style.color = crit ? '#b8892b' : '#4d7358';
+            floatEl.style.textShadow = '0 1px 0 rgba(255,255,255,.8)';
+            floatEl.innerText = (crit ? '🔥 VIRAL! ' : '') + (earned > 0 ? `+${earned}` : '⛔ Rp0') + ` & +${addViews}v`;
+            tapArea.appendChild(floatEl);
+            setTimeout(() => floatEl.remove(), 800);
+            updateCombo();
+
+            const char = document.getElementById('youtuberChar');
+            char.classList.remove('char-bounce');
+            void char.offsetWidth;
+            char.classList.add('char-bounce');
+        }
+
+        // pointerdown = respons instan di HP, dan mendukung banyak jari sekaligus
+        document.getElementById('tapArea').addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            ensureAudio();
+            tapAction(e);
+        });
+
+        // ---- Kecepatan jalan/latar mengikuti combo ----
+        function setSpeed() {
+            const sc = document.getElementById('scene');
+            if (!sc) return;
+            let walk = '0.9s', bg = '20s', road = '1.2s', dust = false;
+            if (game.combo >= 24)     { walk = '0.32s'; bg = '5s';  road = '0.35s'; dust = true; }
+            else if (game.combo >= 8) { walk = '0.42s'; bg = '8s';  road = '0.55s'; dust = true; }
+            else if (game.combo >= 2) { walk = '0.55s'; bg = '11s'; road = '0.75s'; }
+            sc.style.setProperty('--walk', walk);
+            sc.style.setProperty('--bg', bg);
+            sc.style.setProperty('--roadspd', road);
+            document.getElementById('dust').classList.toggle('hidden', !dust);
+        }
+
+        // ---- Pemasukan pasif: jalan terus tetap menghasilkan, tapi jauh lebih kecil dari ketukan ----
+        function passiveRates() {
+            return { money: Math.max(1, Math.floor(game.tapPower * 0.2)), views: Math.max(2, Math.floor(game.tapPower * 0.4)) };
+        }
+        function spawnPassive(text) {
+            const area = document.getElementById('tapArea');
+            const el = document.createElement('div');
+            el.className = 'passive-pop absolute text-[11px] font-bold z-20';
+            el.style.left = (42 + Math.random() * 16) + '%';
+            el.style.top = '50%';
+            el.style.color = '#6f8f76';
+            el.innerText = text;
+            area.appendChild(el);
+            setTimeout(() => el.remove(), 1500);
+        }
+        function updatePassiveInfo() {
+            const el = document.getElementById('passiveInfo');
+            if (!el) return;
+            const mm = incomeMult();
+            if (mm === 0) { el.innerText = '⛔ Pemasukan berhenti sementara'; return; }
+            const pr = passiveRates();
+            const m = Math.round((pr.money + game.idleMoneyRate) * mm * 10) / 10;
+            const v = pr.views + game.idleViewRate;
+            el.innerText = `🚶 Jalan terus: +${m}/dtk • +${v} view/dtk`;
+        }
+
+        // ---- Warga yang ikut menonton (muncul seiring jumlah penonton) ----
+        const CROWD_EMOJI = ['🧑', '👩', '👴', '👧', '🧒', '👵'];
+        let lastCrowdN = -1;
+        function renderCrowd() {
+            const n = Math.min(CROWD_EMOJI.length, Math.floor(game.crowd / 3));
+            if (n === lastCrowdN) return;
+            lastCrowdN = n;
+            document.getElementById('crowdRow').innerHTML = CROWD_EMOJI.slice(0, n)
+                .map((e, i) => `<span style="font-size:20px;display:inline-block;animation:crowdBob ${(0.5 + i * 0.07).toFixed(2)}s ease-in-out infinite;animation-delay:${(i * 0.09).toFixed(2)}s">${e}</span>`).join('');
+        }
+
+        function updateCombo() {
+            setSpeed();
+            const el = document.getElementById('comboBadge');
+            if (game.combo < 2) { el.classList.add('hidden'); return; }
+            const mult = 1 + Math.floor(game.combo / 8);
+            el.classList.remove('hidden');
+            el.innerText = `🔥 COMBO ${game.combo}  •  x${mult}`;
+        }
+        setInterval(() => {
+            if (game.combo > 0 && Date.now() - game.lastTap > 1200) { game.combo = 0; updateCombo(); }
+        }, 200);
+
+        const TAB_BASE = "flex-1 py-3 rounded-xl text-xs font-bold transition";
+        function switchTab(tabName) {
+            ['panelUpgrades', 'panelTeam', 'panelPajak'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            const off = TAB_BASE + " text-mute";
+            document.getElementById('tabBtnUpgrades').className = off;
+            document.getElementById('tabBtnTeam').className = off;
+            document.getElementById('tabBtnPajak').className = off + " relative";
+            if (tabName === 'upgrades') {
+                document.getElementById('panelUpgrades').classList.remove('hidden');
+                document.getElementById('tabBtnUpgrades').className = TAB_BASE + " bg-clay text-white shadow-sm";
+            } else if (tabName === 'team') {
+                document.getElementById('panelTeam').classList.remove('hidden');
+                document.getElementById('tabBtnTeam').className = TAB_BASE + " bg-lake text-white shadow-sm";
+            } else {
+                document.getElementById('panelPajak').classList.remove('hidden');
+                document.getElementById('tabBtnPajak').className = TAB_BASE + " bg-gold text-white shadow-sm relative";
+                document.getElementById('badgePajak').classList.add('hidden');
+            }
+        }
+
+        function buyUpgrade(id) {
+            ensureAudio();
+            const up = game.upgrades[id];
+            if (game.money >= up.cost) {
+                game.money -= up.cost;
+                up.level++;
+                game.tapPower += up.power;
+                up.cost = Math.floor(up.cost * 1.5);
+                if (id === 3) {
+                    game.tier++;
+                    document.getElementById('channelTier').innerText = `Level ${game.tier} (Pro)`;
+                    document.getElementById('locationText').innerText = game.tier === 2 ? "Keliling Alun-Alun Kota" : "Keliling Jalan Protokol Sudirman";
+                }
+                sfxBuy();
+                addLog(`Berhasil upgrade ${up.name}! Tap power bertambah.`);
+                updateUI();
+            } else {
+                sfxError();
+                showModal("Saldo Kurang!", "Saldo dompetmu belum cukup buat beli peralatan ini. Ckil-ckil dulu!", "fa-circle-xmark", "text-red-600");
+            }
+        }
+
+        function buyTeam(id) {
+            ensureAudio();
+            const team = game.team[id];
+            if (game.money >= team.cost) {
+                game.money -= team.cost;
+                team.count++;
+                team.cost = Math.floor(team.cost * 1.7);
+                recalculateIdle();
+                sfxBuy();
+                addLog(`Berhasil merekrut kru baru! Produksi otomatis meningkat.`);
+                updateUI();
+            } else {
+                sfxError();
+                showModal("Saldo Kurang!", "Uang tidak cukup untuk menggaji kru baru. Gaskeun ckil-ckil!", "fa-circle-xmark", "text-red-600");
+            }
+        }
+
+        function recalculateIdle() {
+            game.idleViewRate = (game.team[1].count * 2) + (game.team[2].count * 15);
+            game.idleMoneyRate = (game.team[2].count * 5);
+        }
+
+        function showModal(title, desc, iconClass = "fa-triangle-exclamation", iconColor = "text-red-600") {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            const icon = document.getElementById('modalIcon');
+            icon.className = `w-16 h-16 bg-stone-100 ${iconColor} rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border border-line`;
+            icon.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+            document.getElementById('eventModal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('eventModal').classList.add('hidden'); }
+
+        // =====================================================
+        //  TANTANGAN, SKANDAL & EVENT ACAK
+        // =====================================================
+        function incomeMult() {
+            const now = Date.now();
+            if (now < game.demonetUntil) return 0;               // demonetisasi: tidak ada uang
+            let m = 1;
+            if (game.rep < 30) m *= 0.6;                         // dicancel netizen
+            else if (game.rep >= 80) m *= 1.2;                   // disukai publik
+            if (now < game.boostUntil) m *= 3;                   // viral dadakan
+            return m;
+        }
+
+        function changeRep(d) {
+            game.rep = Math.max(0, Math.min(100, game.rep + d));
+            if (game.rep <= 0) {
+                game.rep = 15;
+                game.demonetUntil = Date.now() + 20000;
+                addLog("🚫 Reputasi habis! Channel diblokir sementara 20 detik (tidak ada pemasukan).");
+                updateStatusChips();
+            }
+            updateRep();
+        }
+
+        function updateRep() {
+            const r = Math.round(game.rep);
+            let label, color;
+            if (r >= 80) { label = 'Disukai (+20% cuan)'; color = '#5f8a6a'; }
+            else if (r >= 50) { label = 'Aman'; color = '#4f7c96'; }
+            else if (r >= 30) { label = 'Digunjingkan'; color = '#b8892b'; }
+            else { label = 'Dicancel (-40% cuan)'; color = '#b9473f'; }
+            const bar = document.getElementById('repBar');
+            bar.style.width = r + '%';
+            bar.style.background = color;
+            const lab = document.getElementById('repLabel');
+            lab.innerText = `${r}/100 • ${label}`;
+            lab.style.color = color;
+        }
+
+        function chip(text, color) {
+            return `<span style="background:${color}" class="text-white text-[10px] font-bold px-2 py-1 rounded-full shadow w-fit">${text}</span>`;
+        }
+        function updateStatusChips() {
+            const now = Date.now();
+            let html = '';
+            if (now < game.demonetUntil) html += chip(`⛔ Demonetisasi ${Math.ceil((game.demonetUntil - now) / 1000)} dtk`, '#b9473f');
+            if (now < game.boostUntil) html += chip(`🚀 Boost x3 ${Math.ceil((game.boostUntil - now) / 1000)} dtk`, '#5f8a6a');
+            document.getElementById('statusChips').innerHTML = html;
+        }
+
+        function prCost() { return Math.max(300, Math.floor(game.money * 0.1)); }
+        function buyPR() {
+            ensureAudio();
+            if (game.rep >= 100) { showModal("Reputasi Sudah Penuh", "Reputasi channel kamu sudah maksimal, tidak perlu sewa PR.", "fa-circle-check", "text-emerald-600"); return; }
+            const cost = prCost();
+            if (game.money < cost) {
+                sfxError();
+                showModal("Saldo Kurang!", "Belum cukup uang untuk menyewa konsultan PR.", "fa-circle-xmark", "text-red-600");
+                return;
+            }
+            game.money -= cost;
+            changeRep(15);
+            sfxBuy();
+            addLog("Konsultan PR bekerja! Reputasi naik 15.");
+            updateUI();
+        }
+
+        function pay(cost) { const p = Math.min(game.money, Math.floor(cost)); game.money -= p; return p; }
+        function pct(p, floor) { return Math.max(floor, Math.floor(game.money * p)); }
+        function loseSubs(p) { const l = Math.floor(game.subs * p); game.subs = Math.max(0, game.subs - l); return l; }
+
+        function logDrama(text) {
+            game.history.unshift(text);
+            if (game.history.length > 6) game.history.pop();
+            document.getElementById('dramaHistory').innerHTML = game.history.map(h => '• ' + esc(h)).join('<br>');
+            document.getElementById('badgePajak').classList.remove('hidden');
+        }
+
+        function resolveEvent(title, text, icon, color, good) {
+            logDrama(title.replace(/[^\w\s!?'-]/g, '').trim() + ': ' + text);
+            addLog(esc(text));
+            if (good) sfxBuy(); else sfxError();
+            showModal(title, text, icon, color);
+            updateUI();
+        }
+
+        function showChoice(title, desc, icon, color, options) {
+            document.getElementById('choiceTitle').innerText = title;
+            document.getElementById('choiceDesc').innerText = desc;
+            const ic = document.getElementById('choiceIcon');
+            ic.className = `w-14 h-14 bg-stone-100 ${color} rounded-full flex items-center justify-center text-2xl mx-auto mb-3 border border-line`;
+            ic.innerHTML = `<i class="fa-solid ${icon}"></i>`;
+            const box = document.getElementById('choiceButtons');
+            box.innerHTML = '';
+            options.forEach(o => {
+                const b = document.createElement('button');
+                b.setAttribute('data-nosfx', '');
+                b.className = 'w-full text-left bg-cream hover:bg-stone-200 border border-line rounded-xl px-4 py-3 transition active:scale-95';
+                b.innerHTML = `<div class="text-sm font-bold text-ink">${o.label}</div><div class="text-xs text-mute">${o.sub}</div>`;
+                b.onclick = () => {
+                    ensureAudio(); sfxClick();
+                    document.getElementById('choiceModal').classList.add('hidden');
+                    o.run();
+                    updateUI();
+                };
+                box.appendChild(b);
+            });
+            document.getElementById('choiceModal').classList.remove('hidden');
+        }
+
+        function buildEvents() {
+            const n = game.char.name;
+            const chan = game.char.channel;
+            return [
+                // ---------- Kejadian biasa ----------
+                { w: 3, minSubs: 0, run: () => {
+                    const p = pay(pct(0.1, 60));
+                    resolveEvent("Ditagih Pajak KPP Virtual! 🧾", `Petugas pajak mendatangi ${n}. Kamu membayar ${formatIDR(p)} supaya aman dari razia.`, "fa-file-invoice-dollar", "text-amber-600", false);
+                }},
+                { w: 2, minSubs: 0, run: () => {
+                    const loss = Math.floor(game.money * 0.25);
+                    game.money -= loss; changeRep(-3);
+                    resolveEvent("Manager Kabur Bawa Endorse! 🏃‍♂️", `Manager keuangan kabur membawa ${formatIDR(loss)} (25% saldo) uang muka kontrak skincare abal-abal!`, "fa-person-running", "text-red-600", false);
+                }},
+                { w: 2, minSubs: 0, run: () => {
+                    const p = pay(pct(0.04, 40));
+                    resolveEvent("Kehujanan Pas Live! 🌧️", `Hujan deras turun waktu ${n} ngonten. Biaya jas hujan kamera dan servis: ${formatIDR(p)}.`, "fa-cloud-rain", "text-sky-700", false);
+                }},
+                { w: 2, minSubs: 0, run: () => {
+                    changeRep(-15);
+                    const l = loseSubs(0.04);
+                    resolveEvent("Video Diedit Jadi Hoaks! 🎞️", `Seseorang mengedit videomu jadi hoaks dan viral. Reputasi turun 15 dan ${l} subscriber pergi.`, "fa-film", "text-red-600", false);
+                }},
+                { w: 2, minSubs: 20, run: () => {
+                    game.combo = 0; updateCombo();
+                    changeRep(-5);
+                    const l = loseSubs(0.08);
+                    resolveEvent("Disabotase Youtuber Rival! 😈", `Rival menyebar fitnah dan menjatuhkan combo-mu. ${l} subscriber hilang, reputasi turun 5.`, "fa-user-ninja", "text-red-600", false);
+                }},
+
+                // ---------- Kejadian bagus (biar tidak stres terus) ----------
+                { w: 2, minSubs: 0, run: () => {
+                    game.boostUntil = Date.now() + 15000; updateStatusChips();
+                    resolveEvent("Viral Dadakan! 🚀", `Video ${n} tiba-tiba fyp! Pemasukan x3 selama 15 detik. Gas ketuk terus!`, "fa-rocket", "text-emerald-600", true);
+                }},
+                { w: 1, minSubs: 0, run: () => {
+                    const g = pct(0.25, 300);
+                    game.money += g; changeRep(5);
+                    resolveEvent("Endorse Sungguhan Datang! 🤝", `Brand lokal yang beneran legal ngajak kerja sama. Kamu dapat ${formatIDR(g)} dan reputasi naik 5.`, "fa-handshake", "text-emerald-600", true);
+                }},
+
+                // ---------- Skandal (pilih keputusan) ----------
+                { w: 3, minSubs: 30, choice: true, run: () => {
+                    const cost = pct(0.2, 150);
+                    showChoice("Dituduh Korupsi Dana Donasi! 🕵️",
+                        `Netizen menuduh ${n} menyelewengkan dana donasi penonton. #${chan}Korupsi langsung trending! Apa langkahmu?`,
+                        "fa-gavel", "text-red-600", [
+                        { label: `Sewa pengacara (${formatIDR(cost)})`, sub: "Aman. Uang berkurang, reputasi pulih sedikit.", run: () => {
+                            const p = pay(cost); changeRep(6);
+                            resolveEvent("Tuduhan Dibantah ⚖️", `Pengacara berhasil membantah tuduhan. Biaya ${formatIDR(p)}, reputasi naik 6.`, "fa-scale-balanced", "text-emerald-600", true);
+                        }},
+                        { label: "Klarifikasi live (judi 50:50)", sub: "Berhasil: reputasi & subscriber naik. Gagal: reputasi anjlok.", run: () => {
+                            if (Math.random() < 0.5) {
+                                const g = Math.max(10, Math.floor(game.subs * 0.1));
+                                game.subs += g; changeRep(12);
+                                resolveEvent("Klarifikasi Viral! 🎤", `Klarifikasimu meyakinkan banyak orang. Reputasi +12 dan +${g} subscriber.`, "fa-microphone", "text-emerald-600", true);
+                            } else {
+                                changeRep(-25);
+                                const l = loseSubs(0.12);
+                                resolveEvent("Klarifikasi Blunder! 💥", `Kamu salah ngomong waktu live. Reputasi -25 dan ${l} subscriber kabur.`, "fa-face-dizzy", "text-red-600", false);
+                            }
+                        }},
+                        { label: "Diamkan saja", sub: "Gratis, tapi reputasi jatuh.", run: () => {
+                            changeRep(-25);
+                            const l = loseSubs(0.05);
+                            resolveEvent("Dituduh Tanpa Jawaban 🤐", `Diam dianggap mengaku. Reputasi -25 dan ${l} subscriber pergi.`, "fa-comment-slash", "text-red-600", false);
+                        }}
+                    ]);
+                }},
+                { w: 3, minSubs: 30, choice: true, run: () => {
+                    const cost = pct(0.1, 100);
+                    showChoice("Skandal Video Lama Diangkat! 📼",
+                        `Netizen menggali video lawas ${n} yang memalukan dan menyebarkannya. Apa responmu?`,
+                        "fa-video-slash", "text-amber-600", [
+                        { label: "Minta maaf terbuka", sub: "Reputasi turun sedikit, beberapa subscriber pergi.", run: () => {
+                            changeRep(-5);
+                            const l = loseSubs(0.06);
+                            resolveEvent("Permintaan Maaf Diterima 🙏", `Netizen mulai memaafkan. Reputasi -5 dan ${l} subscriber pergi.`, "fa-hands-praying", "text-amber-600", false);
+                        }},
+                        { label: `Hapus & bersihkan jejak (${formatIDR(cost)})`, sub: "Bayar jasa admin. Reputasi turun sedikit.", run: () => {
+                            const p = pay(cost); changeRep(-8);
+                            resolveEvent("Video Dihapus 🧹", `Jejak digital dibersihkan seharga ${formatIDR(p)}. Tapi orang sudah screenshot, reputasi -8.`, "fa-eraser", "text-amber-600", false);
+                        }},
+                        { label: "Lawan netizen (judi 50:50)", sub: "Menang: reputasi naik. Kalah: reputasi hancur.", run: () => {
+                            if (Math.random() < 0.5) {
+                                changeRep(8);
+                                resolveEvent("Netizen Kalah Debat! 😎", "Argumenmu menang dan dibela penggemar. Reputasi +8.", "fa-fire", "text-emerald-600", true);
+                            } else {
+                                changeRep(-30);
+                                const l = loseSubs(0.15);
+                                resolveEvent("Kena Cancel Massal! 🔥", `Melawan netizen malah memperburuk keadaan. Reputasi -30, ${l} subscriber pergi.`, "fa-ban", "text-red-600", false);
+                            }
+                        }}
+                    ]);
+                }},
+                { w: 2, minSubs: 30, choice: true, run: () => {
+                    const cost = pct(0.15, 150);
+                    showChoice("Dituduh Beli Subscriber Palsu! 🤖",
+                        `Sistem mendeteksi lonjakan subscriber ${n} yang mencurigakan. Audit akan dimulai!`,
+                        "fa-robot", "text-amber-600", [
+                        { label: `Ajukan audit resmi (${formatIDR(cost)})`, sub: "Aman, bukti bersih. Reputasi sedikit naik.", run: () => {
+                            const p = pay(cost); changeRep(3);
+                            resolveEvent("Audit Bersih ✅", `Hasil audit bersih. Biaya ${formatIDR(p)}, reputasi +3.`, "fa-circle-check", "text-emerald-600", true);
+                        }},
+                        { label: "Terima saja hasil otomatis", sub: "Gratis, tapi 20% subscriber dibersihkan sistem.", run: () => {
+                            const l = loseSubs(0.2);
+                            resolveEvent("Subscriber Dibersihkan 🧽", `Sistem menghapus ${l} subscriber yang dianggap bot.`, "fa-broom", "text-red-600", false);
+                        }},
+                        { label: "Protes ke YouTube (judi 50:50)", sub: "Menang: bersih. Kalah: banyak subscriber hilang.", run: () => {
+                            if (Math.random() < 0.5) {
+                                changeRep(5);
+                                resolveEvent("Protes Berhasil! 💪", "YouTube mengakui kesalahan sistem. Reputasi +5.", "fa-thumbs-up", "text-emerald-600", true);
+                            } else {
+                                changeRep(-10);
+                                const l = loseSubs(0.25);
+                                resolveEvent("Protes Ditolak 📉", `Kamu dianggap ngeyel. ${l} subscriber hilang dan reputasi -10.`, "fa-thumbs-down", "text-red-600", false);
+                            }
+                        }}
+                    ]);
+                }},
+                { w: 2, minSubs: 50, choice: true, run: () => {
+                    const ransom = pct(0.3, 200);
+                    const lapor = pct(0.08, 100);
+                    showChoice("Akun Diretas! 🔓",
+                        `Hacker menguasai channel ${n} dan meminta tebusan. Waktu terus berjalan!`,
+                        "fa-user-secret", "text-red-600", [
+                        { label: `Bayar tebusan (${formatIDR(ransom)})`, sub: "Akun kembali aman, tapi uang terkuras.", run: () => {
+                            const p = pay(ransom);
+                            resolveEvent("Akun Kembali 🔑", `Kamu membayar ${formatIDR(p)} dan akun kembali. Dompet terasa ringan.`, "fa-key", "text-amber-600", false);
+                        }},
+                        { label: "Reset akun sendiri", sub: "Gratis, tapi kehilangan 15% views dan diblokir 8 detik.", run: () => {
+                            const lv = Math.floor(game.views * 0.15);
+                            game.views -= lv;
+                            game.demonetUntil = Date.now() + 8000; updateStatusChips();
+                            resolveEvent("Akun Direset 🔄", `Kamu kehilangan ${formatNum(lv)} views dan pemasukan berhenti 8 detik.`, "fa-rotate", "text-red-600", false);
+                        }},
+                        { label: `Lapor polisi siber (${formatIDR(lapor)})`, sub: "Judi 60:40. Menang: aman + reputasi. Kalah: uang melayang.", run: () => {
+                            const p = pay(lapor);
+                            if (Math.random() < 0.6) {
+                                changeRep(5);
+                                resolveEvent("Hacker Tertangkap! 👮", `Polisi siber melacak pelaku. Biaya laporan ${formatIDR(p)}, reputasi +5.`, "fa-shield-halved", "text-emerald-600", true);
+                            } else {
+                                const loss = Math.floor(game.money * 0.2); game.money -= loss;
+                                resolveEvent("Hacker Lolos 🕳️", `Pelaku kabur dan menguras ${formatIDR(loss)} lagi dari dompetmu.`, "fa-skull-crossbones", "text-red-600", false);
+                            }
+                        }}
+                    ]);
+                }},
+                { w: 2, minSubs: 50, choice: true, run: () => {
+                    const appeal = pct(0.12, 150);
+                    showChoice("Kena Demonetisasi! ⛔",
+                        `Konten ${n} dinilai tidak ramah iklan. Pemasukan akan dihentikan!`,
+                        "fa-ban", "text-red-600", [
+                        { label: `Ajukan banding cepat (${formatIDR(appeal)})`, sub: "Demonetisasi hanya 5 detik.", run: () => {
+                            const p = pay(appeal);
+                            game.demonetUntil = Date.now() + 5000; updateStatusChips();
+                            resolveEvent("Banding Dikebut ⏩", `Biaya ${formatIDR(p)}. Pemasukan berhenti 5 detik saja.`, "fa-bolt", "text-amber-600", false);
+                        }},
+                        { label: "Tunggu proses normal", sub: "Gratis, tapi pemasukan berhenti 20 detik.", run: () => {
+                            game.demonetUntil = Date.now() + 20000; updateStatusChips();
+                            resolveEvent("Pemasukan Dibekukan ⏳", "Pemasukan iklan berhenti 20 detik. Views tetap jalan, jadi terus ketuk!", "fa-hourglass-half", "text-red-600", false);
+                        }}
+                    ]);
+                }}
+            ];
+        }
+
+        function triggerRandomEvent() {
+            const blocked = ['eventModal', 'choiceModal', 'charModal'].some(id => !document.getElementById(id).classList.contains('hidden'));
+            if (blocked) { game.eventCountdown = 4; return; }
+            const pool = buildEvents().filter(e => game.subs >= e.minSubs);
+            const total = pool.reduce((s, e) => s + e.w, 0);
+            let r = Math.random() * total, ev = pool[0];
+            for (const e of pool) { r -= e.w; if (r <= 0) { ev = e; break; } }
+            if (ev.choice) sfxAlert();
+            ev.run();
+            updateUI();
+        }
+
+        function payTaxManually() {
+            ensureAudio();
+            if (game.money >= 5000) {
+                game.money -= 5000;
+                game.subs += 15; changeRep(5);
+                sfxBuy();
+                addLog("Sukses bayar cicilan pajak sukarela! Reputasi channel naik.");
+                showModal("Pajak Lunas & Berkah!", "Channel YouTube kamu bersih dari audit pajak. Bonus +15 Subscriber!", "fa-circle-check", "text-emerald-600");
+                updateUI();
+            } else {
+                sfxError();
+                showModal("Dana Kurang", "Saldo dompet belum cukup untuk bayar pajak sukarela Rp 5.000.", "fa-circle-xmark", "text-red-600");
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('moneyCount').innerText = formatIDR(game.money);
+            document.getElementById('viewCount').innerText = formatNum(game.views);
+            document.getElementById('subCount').innerText = formatNum(game.subs);
+            document.getElementById('crowdCount').innerText = game.crowd;
+            renderCrowd(); updatePassiveInfo();
+            document.getElementById('up1Cost').innerText = formatIDR(game.upgrades[1].cost);
+            document.getElementById('up2Cost').innerText = formatIDR(game.upgrades[2].cost);
+            document.getElementById('up3Cost').innerText = formatIDR(game.upgrades[3].cost);
+            document.getElementById('team1Cost').innerText = formatIDR(game.team[1].cost);
+            document.getElementById('team2Cost').innerText = formatIDR(game.team[2].cost);
+        }
+
+        setInterval(() => {
+            // Pemasukan pasif per detik (tanpa mengetuk) + kru
+            const pr = passiveRates();
+            game.passiveFrac += (pr.money + game.idleMoneyRate) * incomeMult();
+            const gainM = Math.floor(game.passiveFrac);
+            game.passiveFrac -= gainM;
+            const gainV = pr.views + game.idleViewRate;
+            game.money += gainM;
+            game.views += gainV;
+            if (Math.random() < 0.08) game.subs += 1;
+            if (Math.random() < 0.05 && game.crowd < 50) game.crowd += 1;
+            if (!document.hidden) spawnPassive(gainM > 0 ? `+${gainM}  +${gainV}v` : `+${gainV}v`);
+            updateUI();
+            updateStatusChips();
+            game.eventCountdown--;
+            document.getElementById('eventTimer').innerText = `Event berikutnya: ${game.eventCountdown}s`;
+            if (game.eventCountdown <= 0) {
+                game.eventCountdown = 25;
+                triggerRandomEvent();
+            }
+        }, 1000);
+
+        window.onload = function () {
+            applyChar();
+            updateUI();
+            updateAudioButtons();
+            updateRep();
+            setSpeed();
+            switchTab('upgrades');
+            addLog(`Game siap! Tap ${esc(game.char.name)} untuk mulai ngonten. Musik akan mulai setelah ketukan pertama.`);
+        };
+    </script>
+</body>
+</html>
